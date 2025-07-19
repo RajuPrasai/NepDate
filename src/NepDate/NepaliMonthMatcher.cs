@@ -49,11 +49,9 @@ namespace NepDate
         {
             if (string.IsNullOrWhiteSpace(input))
                 return null;
-
-            string normalizedInput = input;
-
+            
             // Try exact match first for performance
-            if (CanonicalMonthNames.TryGetValue(normalizedInput, out int exactMatch))
+            if (CanonicalMonthNames.TryGetValue(input, out int exactMatch))
                 return exactMatch;
 
             double bestScore = 0;
@@ -63,7 +61,7 @@ namespace NepDate
             foreach (var kvp in CanonicalMonthNames)
             {
                 string candidate = kvp.Key;
-                double similarity = CalculateSequenceAlignment(normalizedInput, candidate);
+                double similarity = CalculateSequenceAlignment(input, candidate);
 
                 if (similarity > bestScore && similarity >= threshold)
                 {
