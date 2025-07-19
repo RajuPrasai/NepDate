@@ -174,7 +174,7 @@ public class SmartDateParserTests
         Assert.True(success);
         Assert.Equal(expectedDate, result);
     }
-    
+
     [Theory]
     // Baisakh (1)
     [InlineData("baisakh", 1)]
@@ -322,6 +322,104 @@ public class SmartDateParserTests
     [InlineData("chaitram", 12)]
     [InlineData("chaitanya", 12)]
     [InlineData("chaitarah", 12)]
+
+    // Month 1 - Baisakh
+    [InlineData("बैशाख", 1)]
+    [InlineData("वैशाख", 1)]
+    [InlineData("बैसाख", 1)]
+    [InlineData("बैशाक", 1)]
+    [InlineData("वैसाख", 1)]
+    [InlineData("वैशाक", 1)]
+
+// Month 2 - Jestha
+    [InlineData("जेष्ठ", 2)]
+    [InlineData("जेठ", 2)]
+    [InlineData("जेस्थ", 2)]
+    [InlineData("ज्येष्ठ", 2)]
+    [InlineData("जेस्ठ", 2)]
+    [InlineData("जेष्ट", 2)]
+
+// Month 3 - Asar
+    [InlineData("आषाढ", 3)]
+    [InlineData("असार", 3)]
+    [InlineData("अषाढ", 3)]
+    [InlineData("आशाढ", 3)]
+    [InlineData("आषाढ़", 3)]
+    [InlineData("असाढ", 3)]
+    [InlineData("अषाड", 3)]
+
+// Month 4 - Shrawan
+    [InlineData("श्रावण", 4)]
+    [InlineData("सावन", 4)]
+    [InlineData("साउन", 4)]
+    [InlineData("श्रावन", 4)]
+    [InlineData("सावण", 4)]
+    [InlineData("श्रवण", 4)]
+
+// Month 5 - Bhadra
+    [InlineData("भाद्र", 5)]
+    [InlineData("भदौ", 5)]
+    [InlineData("भाद्रपद", 5)]
+    [InlineData("भदो", 5)]
+    [InlineData("भादोै", 5)]
+    [InlineData("भाद्रा", 5)]
+
+// Month 6 - Ashwin
+    [InlineData("आश्विन", 6)]
+    [InlineData("असोज", 6)]
+    [InlineData("अश्विन", 6)]
+    [InlineData("आसोज", 6)]
+    [InlineData("अस्विन", 6)]
+    [InlineData("अश्वीन", 6)]
+    [InlineData("अश्वीना", 6)]
+
+// Month 7 - Kartik
+    [InlineData("कार्तिक", 7)]
+    [InlineData("कात्तिक", 7)]
+    [InlineData("कार्तीक", 7)]
+    [InlineData("कार्तिका", 7)]
+    [InlineData("कातिक", 7)]
+    [InlineData("कर्तिक", 7)]
+    [InlineData("कार्तिक्", 7)]
+
+// Month 8 - Mangsir
+    [InlineData("मंसिर", 8)]
+    [InlineData("मङ्सिर", 8)]
+    [InlineData("मंग्सिर", 8)]
+    [InlineData("मंशिर", 8)]
+    [InlineData("मागशिर", 8)]
+    [InlineData("मार्गशीर्ष", 8)]
+
+// Month 9 - Poush
+    [InlineData("पौष", 9)]
+    [InlineData("पुष", 9)]
+    [InlineData("पुस", 9)]
+    [InlineData("पौश", 9)]
+    [InlineData("पौष्य", 9)]
+    [InlineData("पौस", 9)]
+
+// Month 10 - Magh
+    [InlineData("माघ", 10)]
+    [InlineData("माग", 10)]
+    [InlineData("माह", 10)]
+    [InlineData("माघा", 10)]
+    [InlineData("माग्ह", 10)]
+    [InlineData("मा्घ", 10)]
+
+// Month 11 - Falgun
+    [InlineData("फाल्गुन", 11)]
+    [InlineData("फागुन", 11)]
+    [InlineData("फाल्गुण", 11)]
+    [InlineData("फल्गुन", 11)]
+    [InlineData("फाल्गुना", 11)]
+
+// Month 12 - Chaitra
+    [InlineData("चैत्र", 12)]
+    [InlineData("चैत", 12)]
+    [InlineData("चैता", 12)]
+    [InlineData("चॆत्र", 12)]
+    [InlineData("चेत्र", 12)]
+    [InlineData("चैत्रा", 12)]
     public void Parse_WithNepaliMonthName_ReturnsCorrectDate(string input, int expectedMonth)
     {
         var expectedDate = new NepaliDate(2080, expectedMonth, 15);
