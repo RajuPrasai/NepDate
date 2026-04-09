@@ -49,6 +49,8 @@ namespace NepDate
             /// </example>
             public static IEnumerable<NepaliDate> ToNepaliDates(IEnumerable<DateTime> engDates, bool useParallel = true)
             {
+                if (engDates == null) throw new ArgumentNullException(nameof(engDates));
+
                 var datesList = engDates.ToList();
                 
                 if (useParallel && datesList.Count > ParallelThreshold)
@@ -86,6 +88,8 @@ namespace NepDate
             /// </example>
             public static IEnumerable<DateTime> ToEnglishDates(IEnumerable<string> nepDates, bool useParallel = true)
             {
+                if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
+
                 var datesList = nepDates.ToList();
                 
                 if (useParallel && datesList.Count > ParallelThreshold)
@@ -123,6 +127,8 @@ namespace NepDate
             /// </example>
             public static IEnumerable<DateTime> ToEnglishDates(IEnumerable<NepaliDate> nepDates, bool useParallel = true)
             {
+                if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
+
                 var datesList = nepDates.ToList();
                 
                 if (useParallel && datesList.Count > ParallelThreshold)
@@ -162,6 +168,9 @@ namespace NepDate
             /// </example>
             public static IEnumerable<NepaliDate> BatchProcessToNepaliDates(IEnumerable<DateTime> engDates, int batchSize = 1000)
             {
+                if (engDates == null) throw new ArgumentNullException(nameof(engDates));
+                if (batchSize < 1) throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be at least 1.");
+
                 var result = new List<NepaliDate>();
                 var batch = new List<DateTime>(batchSize);
                 
@@ -216,6 +225,9 @@ namespace NepDate
             /// </example>
             public static IEnumerable<DateTime> BatchProcessToEnglishDates(IEnumerable<NepaliDate> nepDates, int batchSize = 1000)
             {
+                if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
+                if (batchSize < 1) throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be at least 1.");
+
                 var result = new List<DateTime>();
                 var batch = new List<NepaliDate>(batchSize);
                 

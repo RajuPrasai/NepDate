@@ -6,7 +6,7 @@ namespace NepDate
     {
         public int CompareTo(NepaliDate obj)
         {
-            return obj.AsInteger.CompareTo(AsInteger);
+            return AsInteger.CompareTo(obj.AsInteger);
         }
     }
 }

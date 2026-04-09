@@ -194,13 +194,7 @@ namespace NepDate
         /// <returns>A 32-bit signed integer hash code based on the value of this NepaliDate instance.</returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Year;
-                hashCode = (hashCode * 397) ^ Month;
-                hashCode = (hashCode * 397) ^ Day;
-                return hashCode;
-            }
+            return AsInteger;
         }
     }
 }

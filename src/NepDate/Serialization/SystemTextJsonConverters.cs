@@ -26,6 +26,11 @@ namespace NepDate.Serialization
             /// <returns>The converted value.</returns>
             public override NepaliDate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    return default;
+                }
+
                 if (reader.TokenType == JsonTokenType.String)
                 {
                     string dateString = reader.GetString();
@@ -104,6 +109,11 @@ namespace NepDate.Serialization
             /// <returns>The converted value.</returns>
             public override NepaliDate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    return default;
+                }
+
                 if (reader.TokenType != JsonTokenType.StartObject)
                 {
                     throw new JsonException("Expected start of object");

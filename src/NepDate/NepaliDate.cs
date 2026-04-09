@@ -201,7 +201,7 @@ namespace NepDate
 
             if (months != roundedMonths)
             {
-                return AddDays(Math.Round(months * 30.41666666666667, 0, MidpointRounding.AwayFromZero));
+                return AddDays(Math.Round(months * _approxDaysPerMonth, 0, MidpointRounding.AwayFromZero));
             }
 
             var returnFirstDay = false;//added for future
@@ -276,7 +276,7 @@ namespace NepDate
 
             if (months != roundedMonths)
             {
-                return AddDays(-Math.Round(months * 30.41666666666667, 0, MidpointRounding.AwayFromZero));
+                return AddDays(-Math.Round(months * _approxDaysPerMonth, 0, MidpointRounding.AwayFromZero));
             }
 
             var returnFirstDay = false;//added for future
@@ -369,12 +369,13 @@ namespace NepDate
         /// - Except years divisible by 100 are not leap years
         /// - Unless they are also divisible by 400, in which case they are leap years
         /// 
-        /// Note that this logic applies to the equivalent Gregorian year, not the Nepali year itself,
+        /// Note that this evaluates the equivalent Gregorian year, not the Nepali year itself,
         /// as the Nepali calendar doesn't have the concept of leap years in the same way.
         /// </remarks>
         public bool IsLeapYear()
         {
-            return Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0);
+            var engYear = EnglishDate.Year;
+            return engYear % 4 == 0 && (engYear % 100 != 0 || engYear % 400 == 0);
         }
 
         /// <summary>

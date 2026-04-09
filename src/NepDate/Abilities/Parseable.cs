@@ -1,4 +1,6 @@
-﻿namespace NepDate
+﻿using System;
+
+namespace NepDate
 {
     public readonly partial struct NepaliDate
     {
@@ -15,7 +17,7 @@
                 result = Parse(rawNepDate);
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 result = default;
                 return false;
@@ -29,7 +31,7 @@
                 result = Parse(rawNepDate, autoAdjust, monthInMiddle);
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 result = default;
                 return false;

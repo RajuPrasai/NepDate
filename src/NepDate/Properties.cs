@@ -15,6 +15,8 @@ namespace NepDate
         /// The maximum supported year value for Nepali dates (2199 BS).
         /// </summary>
         private const ushort _maxYear = 2199;
+
+        private const double _approxDaysPerMonth = 30.41666666666667;
         
         /// <summary>
         /// Converts the date to an integer representation in the format YYYYMMDD.
@@ -24,6 +26,12 @@ namespace NepDate
         /// For the date 2080/05/15, the result would be 20800515.
         /// </example>
         internal int AsInteger => Year * 10000 + Month * 100 + Day;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is the default (uninitialized) value.
+        /// A default NepaliDate has Year=0, Month=0, Day=0 and does not represent a valid date.
+        /// </summary>
+        public bool IsDefault => Year == 0 && Month == 0 && Day == 0;
 
         /// <summary>
         /// Gets the year component of the Nepali date (in BS - Bikram Sambat).

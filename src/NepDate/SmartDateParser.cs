@@ -179,7 +179,7 @@ namespace NepDate
                 result = Parse(input);
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }
