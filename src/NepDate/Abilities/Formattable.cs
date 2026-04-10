@@ -1,7 +1,6 @@
 ﻿using NepDate.Core.Dictionaries;
 using NepDate.Exceptions;
 using System;
-using System.Text;
 
 namespace NepDate
 {
@@ -53,23 +52,13 @@ namespace NepDate
         }
         private string ConvertDigitsToNepaliUnicode(string date)
         {
-            string[] nepaliDigits = { "०", "१", "२", "३", "४", "५", "६", "७", "८", "९" };
-            var nepaliUnicode = new StringBuilder(date.Length);
-
-            foreach (var digit in date)
+            var chars = new char[date.Length];
+            for (int i = 0; i < date.Length; i++)
             {
-                if (char.IsDigit(digit))
-                {
-                    var digitValue = int.Parse(digit.ToString());
-                    nepaliUnicode.Append(nepaliDigits[digitValue]);
-                }
-                else
-                {
-                    nepaliUnicode.Append(digit);
-                }
+                char c = date[i];
+                chars[i] = (c >= '0' && c <= '9') ? (char)('\u0966' + (c - '0')) : c;
             }
-
-            return nepaliUnicode.ToString();
+            return new string(chars);
         }
 
         private string ConvertWordsToNepaliUnicode(string value)
@@ -77,6 +66,14 @@ namespace NepDate
             var converted = Unicode.data.TryGetValue(value, out var nepaliUnicode);
 
             return converted ? nepaliUnicode : value;
+        }
+        private static void WriteDigits(char[] buffer, int offset, int value, int width)
+        {
+            for (int i = width - 1; i >= 0; i--)
+            {
+                buffer[offset + i] = (char)('0' + (value % 10));
+                value /= 10;
+            }
         }
         #endregion
 
@@ -87,7 +84,13 @@ namespace NepDate
         /// <returns>A string that represents the current NepaliDate object in the format "yyyy/MM/dd".</returns>
         public override string ToString()
         {
-            return $"{Year:D4}/{Month:D2}/{Day:D2}";
+            var chars = new char[10];
+            WriteDigits(chars, 0, Year, 4);
+            chars[4] = '/';
+            WriteDigits(chars, 5, Month, 2);
+            chars[7] = '/';
+            WriteDigits(chars, 8, Day, 2);
+            return new string(chars);
         }
 
         /// <summary>

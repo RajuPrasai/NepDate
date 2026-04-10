@@ -69,4 +69,33 @@ public class NepaliDatePropertiesTests
         // Assert
         Assert.Equal(expectedNepaliDate, nowNepaliDate);
     }
-} 
+
+    [Fact]
+    public void DayOfYear_MatchesEnglishDateDayOfYear()
+    {
+        var date = new NepaliDate(2080, 1, 1);
+        Assert.Equal(date.EnglishDate.DayOfYear, date.DayOfYear);
+    }
+
+    [Fact]
+    public void DayOfYear_KnownDate_ReturnsCorrectValue()
+    {
+        // 2080/1/1 = April 14, 2023 = day 104 of 2023
+        Assert.Equal(104, new NepaliDate(2080, 1, 1).DayOfYear);
+    }
+
+    [Fact]
+    public void Equals_NullObject_ReturnsFalse()
+    {
+        var date = new NepaliDate(2080, 5, 15);
+        Assert.False(date.Equals(null));
+    }
+
+    [Fact]
+    public void Equals_DifferentType_ReturnsFalse()
+    {
+        var date = new NepaliDate(2080, 5, 15);
+        Assert.False(date.Equals("2080/05/15"));
+        Assert.False(date.Equals(42));
+    }
+}

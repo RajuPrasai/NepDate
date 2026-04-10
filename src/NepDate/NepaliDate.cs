@@ -436,48 +436,44 @@ namespace NepDate
                 throw new InvalidNepaliDateFormatException();
             }
 
-            // Optimized splitting to avoid multiple string replacements
-            // Pre-allocate array for better performance
-            var splitDate = new int[3];
+            int part0 = 0, part1 = 0, part2 = 0;
             var currentIndex = 0;
-            var numberStart = 0;
+            var hasDigits = false;
             var length = rawNepaliDate.Length;
 
             for (int i = 0; i < length; i++)
             {
                 char c = rawNepaliDate[i];
-                if (c == '-' || c == '/' || c == '.' || c == '_' || c == '\\' || c == ' ' || c == '।' || c == '|')
-                {
-                    if (i > numberStart) // There is a number before this separator
-                    {
-                        if (currentIndex >= 3) // Too many parts
-                        {
-                            throw new InvalidNepaliDateFormatException();
-                        }
 
-                        // Regular string parsing instead of Span
-                        if (!int.TryParse(rawNepaliDate.Substring(numberStart, i - numberStart), out splitDate[currentIndex++]))
-                        {
-                            throw new InvalidNepaliDateFormatException();
-                        }
+                if (c >= '0' && c <= '9')
+                {
+                    int digit = c - '0';
+                    switch (currentIndex)
+                    {
+                        case 0: part0 = part0 * 10 + digit; break;
+                        case 1: part1 = part1 * 10 + digit; break;
+                        case 2: part2 = part2 * 10 + digit; break;
+                        default: throw new InvalidNepaliDateFormatException();
                     }
-                    numberStart = i + 1; // Start of next number is after this separator
+                    hasDigits = true;
+                }
+                else if (c == '-' || c == '/' || c == '.' || c == '_' || c == '\\' || c == ' ' || c == '।' || c == '|')
+                {
+                    if (hasDigits)
+                    {
+                        currentIndex++;
+                        hasDigits = false;
+                    }
+                }
+                else
+                {
+                    throw new InvalidNepaliDateFormatException();
                 }
             }
 
-            // Handle the last number part
-            if (numberStart < length)
+            if (hasDigits)
             {
-                if (currentIndex >= 3) // Too many parts
-                {
-                    throw new InvalidNepaliDateFormatException();
-                }
-
-                // Regular string parsing instead of Span
-                if (!int.TryParse(rawNepaliDate.Substring(numberStart, length - numberStart), out splitDate[currentIndex++]))
-                {
-                    throw new InvalidNepaliDateFormatException();
-                }
+                currentIndex++;
             }
 
             if (currentIndex != 3)
@@ -485,7 +481,7 @@ namespace NepDate
                 throw new InvalidNepaliDateFormatException();
             }
 
-            return (splitDate[0], splitDate[1], splitDate[2]);
+            return (part0, part1, part2);
         }
     }
 }

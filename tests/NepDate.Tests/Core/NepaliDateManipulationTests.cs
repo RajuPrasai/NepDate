@@ -55,4 +55,20 @@ public class NepaliDateManipulationTests
         Assert.Equal(expectedMonth, result.Month);
         Assert.Equal(expectedDay, result.Day);
     }
-} 
+
+    [Fact]
+    public void Subtract_TwoDates_ReturnsCorrectTimeSpan()
+    {
+        var earlier = new NepaliDate(2080, 5, 1);
+        var later = new NepaliDate(2080, 5, 16);
+        Assert.Equal(TimeSpan.FromDays(15), later.Subtract(earlier));
+        Assert.Equal(TimeSpan.FromDays(-15), earlier.Subtract(later));
+    }
+
+    [Fact]
+    public void Subtract_SameDate_ReturnsZero()
+    {
+        var date = new NepaliDate(2080, 5, 15);
+        Assert.Equal(TimeSpan.Zero, date.Subtract(date));
+    }
+}

@@ -110,4 +110,25 @@ public class NepaliDateConstructionTests
         Assert.Equal(5, nepaliDate.Month);
         Assert.Equal(13, nepaliDate.Day);
     }
+
+    [Fact]
+    public void TryParse_ValidString_ReturnsTrueWithCorrectDate()
+    {
+        bool success = NepaliDate.TryParse("2080/05/15", out var date);
+        Assert.True(success);
+        Assert.Equal(2080, date.Year);
+        Assert.Equal(5, date.Month);
+        Assert.Equal(15, date.Day);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("invalid")]
+    [InlineData("2080/5")]
+    public void TryParse_InvalidString_ReturnsFalseWithDefault(string input)
+    {
+        bool success = NepaliDate.TryParse(input, out var date);
+        Assert.False(success);
+        Assert.Equal(default, date);
+    }
 }

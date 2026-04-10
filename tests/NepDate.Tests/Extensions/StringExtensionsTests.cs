@@ -1,4 +1,3 @@
-using System;
 using NepDate.Extensions;
 
 namespace NepDate.Tests.Extensions;

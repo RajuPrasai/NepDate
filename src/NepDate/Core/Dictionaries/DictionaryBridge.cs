@@ -42,12 +42,14 @@ namespace NepDate.Core.Dictionaries
             /// </remarks>
             internal static DateTime GetEnglishDate(int nepYear, int nepMonth, int nepDay)
             {
-                if (NepaliToEnglish.data.TryGetValue((nepYear, nepMonth), out var dictVal))
+                var index = (nepYear - NepaliToEnglish.MinYear) * 12 + (nepMonth - 1);
+                if ((uint)index >= (uint)NepaliToEnglish.data.Length)
                 {
-                    return new DateTime(dictVal.EngYear, dictVal.EngMonth, dictVal.EngDay).AddDays(nepDay - dictVal.NepMonthEndDay);
+                    throw new InvalidNepaliDateFormatException();
                 }
 
-                throw new InvalidNepaliDateFormatException();
+                var dictVal = NepaliToEnglish.data[index];
+                return new DateTime(dictVal.EngYear, dictVal.EngMonth, dictVal.EngDay).AddDays(nepDay - dictVal.NepMonthEndDay);
             }
 
             /// <summary>
@@ -67,11 +69,13 @@ namespace NepDate.Core.Dictionaries
             /// </remarks>
             internal static int GetNepaliMonthEndDay(int nepYear, int nepMonth)
             {
-                if (NepaliToEnglish.data.TryGetValue((nepYear, nepMonth), out var dictVal))
+                var index = (nepYear - NepaliToEnglish.MinYear) * 12 + (nepMonth - 1);
+                if ((uint)index >= (uint)NepaliToEnglish.data.Length)
                 {
-                    return dictVal.NepMonthEndDay;
+                    throw new InvalidNepaliDateFormatException();
                 }
-                throw new InvalidNepaliDateFormatException();
+
+                return NepaliToEnglish.data[index].NepMonthEndDay;
             }
         }
 
@@ -100,7 +104,8 @@ namespace NepDate.Core.Dictionaries
             /// </remarks>
             internal static (int, int, int) GetNepaliDate(int engYear, int engMonth, int engDay)
             {
-                _ = EnglishToNepali.data.TryGetValue((engYear, engMonth), out var dictVal);
+                var index = (engYear - EnglishToNepali.MinYear) * 12 + (engMonth - EnglishToNepali.MinMonth);
+                var dictVal = EnglishToNepali.data[index];
                 return SubtractNepaliDays(dictVal.NepYear, dictVal.NepMonth, dictVal.NepDay, (dictVal.EngMonthEndDay - engDay));
             }
 

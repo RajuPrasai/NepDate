@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace NepDate
 {
@@ -116,13 +114,6 @@ namespace NepDate
             { "चैत्र", 12 }, { "चैत", 12 }, { "चैता", 12 }, { "चॆत्र", 12 }, { "चेत्र", 12 }, { "चैत्रा", 12 }
         };
 
-        // Nepali unicode digit mappings
-        private static readonly Dictionary<char, char> NepaliToEnglishDigits = new Dictionary<char, char>
-        {
-            { '०', '0' }, { '१', '1' }, { '२', '2' }, { '३', '3' }, { '४', '4' },
-            { '५', '5' }, { '६', '6' }, { '७', '7' }, { '८', '8' }, { '९', '9' }
-        };
-
         // Common date separators
         private static readonly char[] DateSeparators = { '/', '-', '.', ' ', ',', '_', '|', '।' };
 
@@ -192,16 +183,105 @@ namespace NepDate
         {
             string result = input.Trim();
 
-            // Remove 'BS', 'B.S.', 'VS', 'V.S.' indicators
-            result = Regex.Replace(result, @"\b(?:B\.?S\.?|V\.?S\.?)\b", string.Empty, RegexOptions.IgnoreCase);
-
-            // Replace multiple spaces with a single space
-            result = Regex.Replace(result, @"\s+", " ");
-
-            // Replace 'gate', 'miti', etc.
-            result = Regex.Replace(result, @"\b(?:गते|मिति)\b", string.Empty, RegexOptions.IgnoreCase);
+            result = RemoveIndicators(result);
+            result = CollapseSpaces(result);
+            result = RemoveNepaliKeywords(result);
 
             return result.Trim();
+        }
+
+        private static string RemoveIndicators(string input)
+        {
+            // Remove BS, B.S., VS, V.S. (case-insensitive, word boundaries)
+            var chars = new char[input.Length];
+            int len = 0;
+            int i = 0;
+
+            while (i < input.Length)
+            {
+                if (i < input.Length - 1)
+                {
+                    char c0 = input[i];
+                    char c1 = input[i + 1];
+
+                    // Check for B.S. or V.S. (with optional dots)
+                    if ((c0 == 'B' || c0 == 'b' || c0 == 'V' || c0 == 'v') &&
+                        (c1 == 'S' || c1 == 's' || c1 == '.' ))
+                    {
+                        bool isAtWordBoundary = (i == 0 || !char.IsLetterOrDigit(input[i - 1]));
+                        if (isAtWordBoundary)
+                        {
+                            // Try to match: B.S. or BS or V.S. or VS
+                            int end = i;
+                            if (c1 == '.')
+                            {
+                                // B. or V. - check for S or S.
+                                end = i + 2;
+                                if (end < input.Length && (input[end] == 'S' || input[end] == 's'))
+                                {
+                                    end++;
+                                    if (end < input.Length && input[end] == '.') end++;
+                                }
+                            }
+                            else if (c1 == 'S' || c1 == 's')
+                            {
+                                // BS or VS
+                                end = i + 2;
+                                if (end < input.Length && input[end] == '.') end++;
+                            }
+
+                            if (end > i + 1 && (end >= input.Length || !char.IsLetterOrDigit(input[end])))
+                            {
+                                i = end;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                chars[len++] = input[i];
+                i++;
+            }
+
+            return new string(chars, 0, len);
+        }
+
+        private static string CollapseSpaces(string input)
+        {
+            var chars = new char[input.Length];
+            int len = 0;
+            bool lastWasSpace = false;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                bool isSpace = c == ' ' || c == '\t' || c == '\r' || c == '\n';
+                if (isSpace)
+                {
+                    if (!lastWasSpace)
+                    {
+                        chars[len++] = ' ';
+                    }
+                    lastWasSpace = true;
+                }
+                else
+                {
+                    chars[len++] = c;
+                    lastWasSpace = false;
+                }
+            }
+
+            return new string(chars, 0, len);
+        }
+
+        private static string RemoveNepaliKeywords(string input)
+        {
+            // Remove गते and मिति
+            const string gate = "\u0917\u0924\u0947";  // गते
+            const string miti = "\u092E\u093F\u0924\u093F";  // मिति
+
+            var result = ReplaceStringIgnoreCase(input, gate, string.Empty);
+            result = ReplaceStringIgnoreCase(result, miti, string.Empty);
+            return result;
         }
 
         /// <summary>
@@ -211,10 +291,8 @@ namespace NepDate
         {
             result = default;
 
-            // Try different separator-based formats
             foreach (char separator in DateSeparators)
             {
-                string pattern = $"{Regex.Escape(separator.ToString())}";
                 string[] parts = input.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length == 3)
@@ -243,71 +321,80 @@ namespace NepDate
         {
             result = default;
 
-            // Pattern for: [day] [month name] [year] or [month name] [day], [year]
-            var monthNameMatches = MonthNameMappings.Keys
-                .Where(monthName => input.IndexOf(monthName, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderByDescending(m => m.Length)  // Prefer longer matches to avoid partial matches
-                .ToList();
+            // Find the longest matching month name (avoids partial matches)
+            string bestMatch = null;
+            int bestLength = 0;
 
-            foreach (var monthName in monthNameMatches)
+            foreach (var key in MonthNameMappings.Keys)
             {
-                int monthValue = MonthNameMappings[monthName];
-
-                // Find year and day in the input
-                string remaining = ReplaceStringIgnoreCase(input, monthName, " ").Trim();
-
-                // Extract year and day
-                var numbers = Regex.Matches(remaining, @"\d+")
-                    .Cast<Match>()
-                    .Select(m => int.Parse(m.Value))
-                    .ToList();
-
-                if (numbers.Count >= 2)
+                if (key.Length > bestLength && input.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    // Determine which number is the year based on magnitude
-                    int year, day;
-                    if (numbers[0] > 1900) // Likely a year
-                    {
-                        year = numbers[0];
-                        day = numbers.Count > 1 ? numbers[1] : 1;
-                    }
-                    else if (numbers.Count > 1 && numbers[1] > 1900) // Second number is a year
-                    {
-                        year = numbers[1];
-                        day = numbers[0];
-                    }
-                    else // No obvious year, try heuristic
-                    {
-                        // Sort numbers by size, largest is likely year
-                        var sortedNumbers = numbers.OrderByDescending(n => n).ToList();
-                        year = sortedNumbers[0];
-                        day = sortedNumbers.Count > 1 ? sortedNumbers[1] : 1;
+                    bestMatch = key;
+                    bestLength = key.Length;
+                }
+            }
 
-                        // If largest number is too small to be a BS year, fallback
-                        if (year < 1900)
+            if (bestMatch == null)
+                return false;
+
+            int monthValue = MonthNameMappings[bestMatch];
+            string remaining = ReplaceStringIgnoreCase(input, bestMatch, " ").Trim();
+
+            // Extract numbers manually instead of Regex.Matches + LINQ
+            var numbers = ExtractNumbers(remaining);
+
+            if (numbers.Count >= 2)
+            {
+                int year, day;
+                if (numbers[0] > 1900)
+                {
+                    year = numbers[0];
+                    day = numbers.Count > 1 ? numbers[1] : 1;
+                }
+                else if (numbers.Count > 1 && numbers[1] > 1900)
+                {
+                    year = numbers[1];
+                    day = numbers[0];
+                }
+                else
+                {
+                    // Find max without sorting
+                    int maxVal = numbers[0], secondVal = 0;
+                    for (int i = 1; i < numbers.Count; i++)
+                    {
+                        if (numbers[i] > maxVal)
                         {
-                            // Add 2000 to years likely expressed in 2-digit short form (e.g., '80 for 2080)
-                            if (year >= 0 && year < 100)
-                                year += 2000;
-                            else if (year >= 100 && year < 999)
-                                year += 1000; // Convert 3-digit year like 080 to 1080 or 080 to 2080
+                            secondVal = maxVal;
+                            maxVal = numbers[i];
+                        }
+                        else if (numbers[i] > secondVal)
+                        {
+                            secondVal = numbers[i];
                         }
                     }
+                    if (numbers.Count == 1) { maxVal = numbers[0]; secondVal = 1; }
+                    else if (secondVal == 0) { secondVal = numbers[0] == maxVal && numbers.Count > 1 ? numbers[1] : 1; }
 
-                    // Validate and sanitize day
-                    if (day < 1 || day > 32)
-                        continue;
+                    year = maxVal;
+                    day = secondVal;
 
-                    // Try to create valid date
-                    try
-                    {
-                        result = new NepaliDate(year, monthValue, day);
-                        return true;
-                    }
-                    catch
-                    {
-                        // Continue to next attempt
-                    }
+                    if (year < 100)
+                        year += 2000;
+                    else if (year >= 100 && year < 999)
+                        year += 1000;
+                }
+
+                if (day < 1 || day > 32)
+                    return false;
+
+                try
+                {
+                    result = new NepaliDate(year, monthValue, day);
+                    return true;
+                }
+                catch
+                {
+                    // Fall through
                 }
             }
 
@@ -338,11 +425,7 @@ namespace NepDate
         {
             result = default;
 
-            // Extract all numbers from the input
-            var numbers = Regex.Matches(input, @"\d+")
-                .Cast<Match>()
-                .Select(m => int.Parse(m.Value))
-                .ToList();
+            var numbers = ExtractNumbers(input);
 
             if (numbers.Count >= 3)
             {
@@ -436,17 +519,22 @@ namespace NepDate
             if (string.IsNullOrEmpty(input))
                 return input;
 
-            char[] result = input.ToCharArray();
+            char[] result = null;
 
-            for (int i = 0; i < result.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                if (NepaliToEnglishDigits.TryGetValue(result[i], out char englishDigit))
+                char c = input[i];
+                if (c >= '\u0966' && c <= '\u096F')
                 {
-                    result[i] = englishDigit;
+                    if (result == null)
+                    {
+                        result = input.ToCharArray();
+                    }
+                    result[i] = (char)('0' + (c - '\u0966'));
                 }
             }
 
-            return new string(result);
+            return result != null ? new string(result) : input;
         }
 
         /// <summary>
@@ -487,6 +575,39 @@ namespace NepDate
             }
 
             return result.ToString();
+        }
+
+        private static List<int> ExtractNumbers(string input)
+        {
+            var numbers = new List<int>(4);
+            int current = 0;
+            bool inNumber = false;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                if (c >= '0' && c <= '9')
+                {
+                    current = current * 10 + (c - '0');
+                    inNumber = true;
+                }
+                else
+                {
+                    if (inNumber)
+                    {
+                        numbers.Add(current);
+                        current = 0;
+                        inNumber = false;
+                    }
+                }
+            }
+
+            if (inNumber)
+            {
+                numbers.Add(current);
+            }
+
+            return numbers;
         }
     }
 }

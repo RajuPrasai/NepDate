@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using NepDate.Serialization;
 using Newtonsoft.Json;
 using STJ = System.Text.Json;
-using Xunit;
 
 namespace NepDate.Tests.Serialization;
 
@@ -201,7 +197,7 @@ public class SerializationTests
         
         // Act - Deserialize
         var stringReader = new StringReader(xml);
-        var deserializedPersonXml = (PersonXml)serializer.Deserialize(stringReader);
+        var deserializedPersonXml = (PersonXml)serializer.Deserialize(stringReader)!;
         var deserializedPerson = deserializedPersonXml.ToPerson();
         
         // Assert
@@ -216,7 +212,7 @@ public class SerializationTests
 
     public class Person
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public NepaliDate BirthDate { get; set; }
         public NepaliDate JoinDate { get; set; }
     }
@@ -234,11 +230,11 @@ public class SerializationTests
             JoinDate = new NepaliDateXmlSerializer(person.JoinDate);
         }
         
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         
-        public NepaliDateXmlSerializer BirthDate { get; set; }
+        public NepaliDateXmlSerializer BirthDate { get; set; } = null!;
         
-        public NepaliDateXmlSerializer JoinDate { get; set; }
+        public NepaliDateXmlSerializer JoinDate { get; set; } = null!;
         
         public Person ToPerson()
         {
