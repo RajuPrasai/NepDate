@@ -1,7 +1,7 @@
 ﻿using NepDate.Core.Dictionaries;
-using NepDate.Extensions;
+using NepDate.TypeConversion;
 using System;
-using static NepDate.Exceptions.NepDateException;
+using System.ComponentModel;
 
 namespace NepDate
 {
@@ -14,6 +14,10 @@ namespace NepDate
     /// The Nepali date structure supports dates from 1901 BS to 2199 BS.
     /// This is an immutable value type that behaves similar to System.DateTime.
     /// </remarks>
+    [TypeConverter(typeof(NepaliDateTypeConverter))]
+#if NET5_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonConverter(typeof(NepDate.Serialization.SystemTextJsonConverters.NepaliDateJsonConverter))]
+#endif
     public readonly partial struct NepaliDate
     {
         #region Ctor

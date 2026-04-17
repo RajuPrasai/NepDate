@@ -361,7 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Private
 /tools
 /temp_check.csx
 /unique_events.txt

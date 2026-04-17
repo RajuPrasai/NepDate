@@ -206,7 +206,7 @@ namespace NepDate
 
                     // Check for B.S. or V.S. (with optional dots)
                     if ((c0 == 'B' || c0 == 'b' || c0 == 'V' || c0 == 'v') &&
-                        (c1 == 'S' || c1 == 's' || c1 == '.' ))
+                        (c1 == 'S' || c1 == 's' || c1 == '.'))
                     {
                         bool isAtWordBoundary = (i == 0 || !char.IsLetterOrDigit(input[i - 1]));
                         if (isAtWordBoundary)

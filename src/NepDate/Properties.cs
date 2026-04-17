@@ -1,5 +1,5 @@
-﻿using NepDate.Core.Dictionaries;
-using NepDate.Extensions;
+﻿using NepDate.Core.Calendar;
+using NepDate.Core.Dictionaries;
 using System;
 
 namespace NepDate
@@ -10,14 +10,14 @@ namespace NepDate
         /// The minimum supported year value for Nepali dates (1901 BS).
         /// </summary>
         private const ushort _minYear = 1901;
-        
+
         /// <summary>
         /// The maximum supported year value for Nepali dates (2199 BS).
         /// </summary>
         private const ushort _maxYear = 2199;
 
         private const double _approxDaysPerMonth = 30.41666666666667;
-        
+
         /// <summary>
         /// Converts the date to an integer representation in the format YYYYMMDD.
         /// This is optimized to use direct arithmetic instead of string operations.
@@ -126,5 +126,29 @@ namespace NepDate
         /// This is useful as a boundary value for date comparisons and validations.
         /// </remarks>
         public static readonly NepaliDate MaxValue = new NepaliDate(_maxYear, 12, 1).MonthEndDate();
+
+        /// <summary>
+        /// Gets the Tithi (lunar day) name in Nepali for this date.
+        /// Returns empty string when data is not available (outside 2001-2089 BS or no Tithi recorded).
+        /// </summary>
+        public string TithiNp => CalendarBridge.GetTithiNp(Year, Month, Day);
+
+        /// <summary>
+        /// Gets the Tithi (lunar day) name in English for this date.
+        /// Returns empty string when data is not available (outside 2001-2089 BS or no Tithi recorded).
+        /// </summary>
+        public string TithiEn => CalendarBridge.GetTithiEn(Year, Month, Day);
+
+        /// <summary>
+        /// Gets whether this date is a public holiday (based on HamroPatro data, 2001-2089 BS).
+        /// Returns false when outside the supported range.
+        /// </summary>
+        public bool IsPublicHoliday => CalendarBridge.IsHoliday(Year, Month, Day);
+
+        /// <summary>
+        /// Gets all calendar metadata for this date including Tithi, events, and holiday status.
+        /// Data is available for 2001-2089 BS. Returns empty values outside this range.
+        /// </summary>
+        public CalendarInfo GetCalendarInfo() => CalendarBridge.GetCalendarInfo(Year, Month, Day);
     }
 }

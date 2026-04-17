@@ -5,6 +5,7 @@ class Program
 {
     static void Main(string[] args)
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("=== NepDate Library Examples ===");
         Console.WriteLine("This program demonstrates the functionality of the NepDate library.\n");
 
@@ -40,6 +41,9 @@ class Program
                 case "7":
                     DateCalculationProfiler.RunProfiler();
                     break;
+                case "8":
+                    CalendarExamples.RunAllExamples();
+                    break;
                 case "0":
                     exit = true;
                     break;
@@ -69,6 +73,7 @@ class Program
         Console.WriteLine("5. BulkConvert Performance");
         Console.WriteLine("6. Run All Examples");
         Console.WriteLine("7. Run DateCalculationProfiler");
+        Console.WriteLine("8. Calendar, Tithi & Events");
         Console.WriteLine("0. Exit");
         Console.Write("\nEnter your choice: ");
     }
@@ -90,6 +95,9 @@ class Program
         Console.WriteLine("\n" + new string('-', 80) + "\n");
 
         BulkConvertExamples.RunAllExamples();
+        Console.WriteLine("\n" + new string('-', 80) + "\n");
+
+        CalendarExamples.RunAllExamples();
 
         Console.WriteLine("\n=== All Examples Completed ===");
     }

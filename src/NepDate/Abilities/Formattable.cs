@@ -1,10 +1,14 @@
 ﻿using NepDate.Core.Dictionaries;
-using NepDate.Exceptions;
 using System;
+using System.Text;
 
 namespace NepDate
 {
-    public readonly partial struct NepaliDate
+#if NET6_0_OR_GREATER
+    public readonly partial struct NepaliDate : IFormattable, ISpanFormattable
+#else
+    public readonly partial struct NepaliDate : IFormattable
+#endif
     {
         #region Private Methods
         /// <summary>
@@ -100,8 +104,8 @@ namespace NepDate
         /// <param name="separator"></param>
         /// <param name="leadingZeros"></param>
         /// <returns></returns>
-        /// <exception cref="NepDateException.InvalidNepaliDateFormatException"></exception>
-        /// <exception cref="NepDateException.InvalidNepaliDateFormatException"></exception>
+        /// <exception cref="InvalidNepaliDateFormatException"></exception>
+        /// <exception cref="InvalidNepaliDateFormatException"></exception>
         public string ToString(DateFormats dateFormat, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)
         {
             (var yearStr, var monthStr, var dayStr) = (GetLeadedString(Year, leadingZeros, isYear: true), GetLeadedString(Month, leadingZeros, isMonth: true), GetLeadedString(Day, leadingZeros));
@@ -118,7 +122,7 @@ namespace NepDate
                 case DateFormats.DayMonthYear: return AddSeparators(dayStr, monthStr, yearStr);
                 case DateFormats.DayYearMonth: return AddSeparators(dayStr, yearStr, monthStr);
                 default:
-                    throw new NepDateException.InvalidNepaliDateFormatException();
+                    throw new InvalidNepaliDateFormatException();
             }
 
 
@@ -133,7 +137,7 @@ namespace NepDate
                     case Separators.Underscore: return "_";
                     case Separators.Space: return " ";
                     default:
-                        throw new NepDateException.InvalidNepaliDateFormatException("Invalid separator value");
+                        throw new InvalidNepaliDateFormatException("Invalid separator value");
                 }
             }
 
@@ -179,10 +183,104 @@ namespace NepDate
             return ConvertDigitsToNepaliUnicode(ToLongDateString(leadingZeros, displayDayName, displayYear, true));
         }
 
-
-
         /// <summary>
-        /// Determines whether this NepaliDate instance is equal to another NepaliDate instance.
+        /// Formats the value of the current NepaliDate instance using the specified format string.
+        /// Supported predefined specifiers:
+        ///   "d"  → YYYY/MM/DD (same as default ToString)
+        ///   "D"  → Long date: "Baishakh 15, 2081"
+        ///   "s"  → Sortable ISO-style: "YYYY-MM-DD" (canonical for EF/serialization)
+        ///   "G"/"g" → same as "d"
+        ///   custom → tokens: yyyy, yy, MMMM, MM, M, dd, d (as literal 'd' in custom position is treated as day token)
+        /// Escape characters with backslash or single-quotes.
+        /// </summary>
+        public string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format) || format == "G" || format == "g")
+                return ToString();
+
+            switch (format)
+            {
+                case "d": return ToString();
+                case "D": return ToLongDateString(leadingZeros: true, displayDayName: false, displayYear: true);
+                case "s": return ToString(DateFormats.YearMonthDay, Separators.Dash);
+                default: return FormatCustom(format);
+            }
+        }
+
+#if NET6_0_OR_GREATER
+        bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider provider)
+        {
+            var result = ToString(format.Length == 0 ? null : new string(format), provider);
+            if (result.Length > destination.Length)
+            {
+                charsWritten = 0;
+                return false;
+            }
+            result.AsSpan().CopyTo(destination);
+            charsWritten = result.Length;
+            return true;
+        }
+#endif
+
+        private string FormatCustom(string format)
+        {
+            var sb = new StringBuilder(format.Length + 4);
+            int i = 0;
+            while (i < format.Length)
+            {
+                char c = format[i];
+                if (c == '\\' && i + 1 < format.Length)
+                {
+                    sb.Append(format[i + 1]);
+                    i += 2;
+                    continue;
+                }
+                if (c == '\'')
+                {
+                    i++;
+                    while (i < format.Length && format[i] != '\'')
+                        sb.Append(format[i++]);
+                    if (i < format.Length) i++;
+                    continue;
+                }
+                if (c == 'y')
+                {
+                    int run = CountRepeat(format, i, 'y');
+                    sb.Append(run >= 4 ? $"{Year:D4}" : $"{Year % 100:D2}");
+                    i += run;
+                    continue;
+                }
+                if (c == 'M')
+                {
+                    int run = CountRepeat(format, i, 'M');
+                    if (run >= 4) sb.Append(((NepaliMonths)Month).ToString());
+                    else if (run == 3) sb.Append(((NepaliMonths)Month).ToString().Substring(0, 3));
+                    else if (run == 2) sb.Append($"{Month:D2}");
+                    else sb.Append(Month);
+                    i += run;
+                    continue;
+                }
+                if (c == 'd')
+                {
+                    int run = CountRepeat(format, i, 'd');
+                    if (run == 2) sb.Append($"{Day:D2}");
+                    else sb.Append(Day);
+                    i += run;
+                    continue;
+                }
+                sb.Append(c);
+                i++;
+            }
+            return sb.ToString();
+        }
+
+        private static int CountRepeat(string s, int start, char c)
+        {
+            int count = 0;
+            while (start + count < s.Length && s[start + count] == c)
+                count++;
+            return count;
+        }
         /// </summary>
         /// <param name="other">The NepaliDate to compare with the current instance.</param>
         /// <returns>true if the specified NepaliDate has the same value as the current instance; otherwise, false.</returns>

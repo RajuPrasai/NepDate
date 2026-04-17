@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NepDate
 {
@@ -52,12 +51,12 @@ namespace NepDate
                 if (engDates == null) throw new ArgumentNullException(nameof(engDates));
 
                 var datesList = engDates.ToList();
-                
+
                 if (useParallel && datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => new NepaliDate(item)).ToList();
                 }
-                
+
                 return datesList.Select(item => new NepaliDate(item));
             }
 
@@ -91,12 +90,12 @@ namespace NepDate
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
                 var datesList = nepDates.ToList();
-                
+
                 if (useParallel && datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => Parse(item).EnglishDate).ToList();
                 }
-                
+
                 return datesList.Select(item => Parse(item).EnglishDate);
             }
 
@@ -130,15 +129,15 @@ namespace NepDate
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
                 var datesList = nepDates.ToList();
-                
+
                 if (useParallel && datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => item.EnglishDate).ToList();
                 }
-                
+
                 return datesList.Select(item => item.EnglishDate);
             }
-            
+
             /// <summary>
             /// Batch processes a large collection of English dates for conversion to Nepali dates,
             /// handling memory more efficiently by processing in smaller batches.
@@ -173,26 +172,26 @@ namespace NepDate
 
                 var result = new List<NepaliDate>();
                 var batch = new List<DateTime>(batchSize);
-                
+
                 foreach (var date in engDates)
                 {
                     batch.Add(date);
-                    
+
                     if (batch.Count >= batchSize)
                     {
                         result.AddRange(ToNepaliDates(batch, true));
                         batch.Clear();
                     }
                 }
-                
+
                 if (batch.Count > 0)
                 {
                     result.AddRange(ToNepaliDates(batch, true));
                 }
-                
+
                 return result;
             }
-            
+
             /// <summary>
             /// Batch processes a large collection of Nepali dates for conversion to English dates,
             /// handling memory more efficiently by processing in smaller batches.
@@ -230,23 +229,23 @@ namespace NepDate
 
                 var result = new List<DateTime>();
                 var batch = new List<NepaliDate>(batchSize);
-                
+
                 foreach (var date in nepDates)
                 {
                     batch.Add(date);
-                    
+
                     if (batch.Count >= batchSize)
                     {
                         result.AddRange(ToEnglishDates(batch, true));
                         batch.Clear();
                     }
                 }
-                
+
                 if (batch.Count > 0)
                 {
                     result.AddRange(ToEnglishDates(batch, true));
                 }
-                
+
                 return result;
             }
         }

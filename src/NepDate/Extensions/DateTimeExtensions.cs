@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NepDate.Extensions
+namespace NepDate
 {
     /// <summary>
     /// Provides extension methods for common date conversion operations between calendar systems.
@@ -9,7 +9,7 @@ namespace NepDate.Extensions
     /// These extension methods make it easy to convert between DateTime (Gregorian calendar)
     /// and NepaliDate (Bikram Sambat calendar) objects using a fluent, natural syntax.
     /// </remarks>
-    public static class Extensions
+    public static class DateTimeExtensions
     {
         /// <summary>
         /// Converts a DateTime object (Gregorian calendar) to its equivalent NepaliDate (Bikram Sambat calendar).

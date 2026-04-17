@@ -1,5 +1,3 @@
-using NepDate.Extensions;
-
 namespace NepDate.Tests.Core;
 
 public class SmartDateParserTests
@@ -7,10 +5,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_StandardFormat_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("2080/04/15"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("2080-04-15"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("2080.04.15"));
@@ -19,10 +15,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_InvertedFormat_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15/04/2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15-04-2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15.04.2080"));
@@ -31,10 +25,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_MonthDayYearFormat_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("04/15/2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("04-15-2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("04.15.2080"));
@@ -43,10 +35,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_WithMonthNames_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Shrawan 2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Sawan 2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Saun 2080"));
@@ -57,10 +47,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_WithNepaliUnicode_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("२०८०/०४/१५"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("१५/०४/२०८०"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("१५ श्रावण २०८०"));
@@ -70,10 +58,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_MixedFormats_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 साउन 2080"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("साउन 15, २०८०"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Shrawan २०८०"));
@@ -82,10 +68,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_WithSuffixes_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Shrawan 2080 B.S."));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 साउन 2080 BS"));
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Shrawan 2080 V.S."));
@@ -96,10 +80,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_WithTypos_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Srawan 2080")); // Typo in month name
         Assert.Equal(expectedDate, SmartDateParser.Parse("15 Shraawan 2080")); // Extra 'a'
     }
@@ -107,10 +89,8 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_ShorterYearFormats_ReturnsCorrectDate()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, SmartDateParser.Parse("15/04/80")); // 2-digit year
         Assert.Equal(expectedDate, SmartDateParser.Parse("15/04/080")); // 3-digit year with leading zero
     }
@@ -118,7 +98,6 @@ public class SmartDateParserTests
     [Fact]
     public void Parse_InvalidFormat_ThrowsFormatException()
     {
-        // Act & Assert
         Assert.Throws<FormatException>(() => SmartDateParser.Parse("not a date"));
         Assert.Throws<FormatException>(() => SmartDateParser.Parse("15/13/2080")); // Invalid month
         Assert.Throws<FormatException>(() => SmartDateParser.Parse("32/03/2080")); // Invalid day
@@ -127,13 +106,10 @@ public class SmartDateParserTests
     [Fact]
     public void TryParse_ValidFormat_ReturnsTrue()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act
         bool success = SmartDateParser.TryParse("15 Shrawan 2080", out var result);
 
-        // Assert
         Assert.True(success);
         Assert.Equal(expectedDate, result);
     }
@@ -141,10 +117,8 @@ public class SmartDateParserTests
     [Fact]
     public void TryParse_InvalidFormat_ReturnsFalse()
     {
-        // Act
         bool success = SmartDateParser.TryParse("not a date", out var result);
 
-        // Assert
         Assert.False(success);
         Assert.Equal(default, result);
     }
@@ -152,10 +126,8 @@ public class SmartDateParserTests
     [Fact]
     public void ExtensionMethod_ToNepaliDate_ParsesCorrectly()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act & Assert
         Assert.Equal(expectedDate, "2080/04/15".ToNepaliDate());
         Assert.Equal(expectedDate, "२०८०/०४/१५".ToNepaliDate());
         Assert.Equal(expectedDate, "15 Shrawan 2080".ToNepaliDate());
@@ -164,13 +136,10 @@ public class SmartDateParserTests
     [Fact]
     public void ExtensionMethod_TryToNepaliDate_ParsesCorrectly()
     {
-        // Arrange
         var expectedDate = new NepaliDate(2080, 4, 15);
 
-        // Act
         bool success = "15 Shrawan 2080".TryToNepaliDate(out var result);
 
-        // Assert
         Assert.True(success);
         Assert.Equal(expectedDate, result);
     }

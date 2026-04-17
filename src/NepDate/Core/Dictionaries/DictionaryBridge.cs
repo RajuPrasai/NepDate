@@ -1,5 +1,4 @@
 ﻿using System;
-using static NepDate.Exceptions.NepDateException;
 
 namespace NepDate.Core.Dictionaries
 {

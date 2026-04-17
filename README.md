@@ -29,6 +29,8 @@ NepDate is a **super-fast** and **memory-efficient** `struct` built on `.NET Sta
 | 🖨️ [Formatting & Display](#-formatting--display)      | Control how dates appear           |
 | 💼 [Fiscal Year Operations](#-fiscal-year-operations) | Business date calculations         |
 | 🔍 [Advanced Features](#-advanced-features)           | For power users                    |
+| 🗓️ [Calendar Data](#️-calendar-data)                  | Tithi, events and public holidays  |
+| 🗄️ [EF Core Integration](#️-ef-core-integration)      | NepaliDate as a database column    |
 | ⚡ [Performance](#-performance)                       | Why NepDate is faster              |
 | 👥 [Contributions](#-contributions)                   | How to help improve NepDate        |
 | 📝 [Change Log](#-change-log)                         | Recent updates                     |
@@ -47,6 +49,14 @@ Install-Package NepDate
 dotnet add package NepDate
 ```
 
+### NepDate.EntityFrameworkCore
+
+For Entity Framework Core integration:
+
+```bash
+dotnet add package NepDate.EntityFrameworkCore
+```
+
 ## ✨ Key Features
 
 - 🔄 **Date Conversion:** Seamlessly convert between Bikram Sambat (B.S.) and Gregorian (A.D.) dates
@@ -58,6 +68,9 @@ dotnet add package NepDate
 - 💾 **Serialization Support:** Complete integration with System.Text.Json, Newtonsoft.Json, and XML
 - ⚡ **Performance:** Benchmarked to be significantly faster than other Nepali date libraries
 - 📦 **Memory Efficient:** Implemented as a struct to minimize memory footprint
+- 🗓️ **Calendar Data:** Built-in Tithi (lunar day), public holiday flag, and events in Nepali and English for 2001–2089 BS
+- 🔗 **First-Class Type:** Implements `IFormattable`, `IComparable`, `IParsable<T>` (net7+), `TypeConverter`, and auto-registered `[JsonConverter]` (net5+)
+- 🗄️ **EF Core Integration:** Companion package with zero-config value converters for string and integer storage formats
 
 ## 🚀 Getting Started
 
@@ -85,7 +98,6 @@ var nepDate = NepaliDate.Parse("2079/12/16");
 
 ```csharp
 using NepDate;
-using NepDate.Extensions;
 
 var nepDate = new NepaliDate(DateTime.Now);
 // or
@@ -309,11 +321,39 @@ string nepaliDigits = nepDate.ToUnicodeString(DateFormats.DayMonthYear, Separato
 string nepaliLongDate = nepDate.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false);  // "शुक्रबार, जेठ ६"
 ```
 
+### Format Specifiers (IFormattable)
+
+`NepaliDate` implements `IFormattable`, enabling format strings in `$"{...}"` interpolation, `string.Format`, and any formatting context that accepts `IFormattable`.
+
+| Specifier | Output | Description |
+| --------- | ------ | ----------- |
+| `"d"` / `"G"` | `2079/02/06` | Default (same as `ToString()`) |
+| `"D"` | `Jestha 06, 2079` | Long date with month name |
+| `"s"` | `2079-02-06` | Sortable ISO-style, dash-separated |
+| custom | varies | Tokens: `yyyy`, `yy`, `MMMM`, `MMM`, `MM`, `M`, `dd`, `d` |
+
+```csharp
+var nepDate = new NepaliDate("2079/02/06");
+
+// Predefined specifiers
+Console.WriteLine(nepDate.ToString("d"));              // 2079/02/06
+Console.WriteLine(nepDate.ToString("D"));              // Jestha 06, 2079
+Console.WriteLine(nepDate.ToString("s"));              // 2079-02-06
+
+// Custom tokens
+Console.WriteLine(nepDate.ToString("dd-MM-yyyy"));     // 06-02-2079
+Console.WriteLine(nepDate.ToString("MMMM dd, yyyy"));  // Jestha 06, 2079
+Console.WriteLine(nepDate.ToString("dd 'of' MMMM"));   // 06 of Jestha
+
+// Works in interpolation and string.Format
+Console.WriteLine($"{nepDate:s}");                           // 2079-02-06
+Console.WriteLine(string.Format("{0:yyyy-MM-dd}", nepDate)); // 2079-02-06
+```
+
 ### Smart Date Parsing
 
 ```csharp
 using NepDate;
-using NepDate.Extensions;
 
 // Parse with auto adjustment
 var date1 = NepaliDate.Parse("2077_05_25", autoAdjust: true);  // 2077/05/25
@@ -482,6 +522,92 @@ var person = new PersonWithDate
 
 var serializer = new XmlSerializer(typeof(PersonWithDate));
 // Serialize to XML...
+```
+
+## 🗓️ Calendar Data
+
+`NepaliDate` exposes Tithi (lunar day), public holiday status, and calendar events sourced from HamroPatro. Data covers **2001–2089 BS**. All properties return empty values outside this range without throwing.
+
+```csharp
+using NepDate;
+
+var nepDate = new NepaliDate(2081, 4, 15);
+
+// Tithi (lunar day)
+string tithiNp = nepDate.TithiNp;         // "एकादशी"
+string tithiEn = nepDate.TithiEn;         // "Ekadashi"
+
+// Public holiday
+bool isHoliday = nepDate.IsPublicHoliday; // true / false
+
+// Full calendar info in one call
+CalendarInfo info = nepDate.GetCalendarInfo();
+Console.WriteLine(info.TithiEn);          // "Ekadashi"
+Console.WriteLine(info.IsPublicHoliday);  // true
+foreach (string evt in info.EventsEn)
+    Console.WriteLine(evt);               // "Haritalika Teej", "Gaura Parva", ...
+foreach (string evt in info.EventsNp)
+    Console.WriteLine(evt);               // "हरितालिका तीज", "गौरा पर्व", ...
+```
+
+| Property / Method | Returns | Description |
+| ----------------- | ------- | ----------- |
+| `TithiNp` | `string` | Lunar day name in Nepali. Empty if not available. |
+| `TithiEn` | `string` | Lunar day name in English. Empty if not available. |
+| `IsPublicHoliday` | `bool` | Whether the date is a public holiday. |
+| `GetCalendarInfo()` | `CalendarInfo` | All of the above plus `EventsNp` and `EventsEn` arrays. |
+
+## 🗄️ EF Core Integration
+
+Install the companion package:
+
+```bash
+dotnet add package NepDate.EntityFrameworkCore
+```
+
+### ConfigureConventions (recommended, EF Core 7+)
+
+Override `ConfigureConventions` in your `DbContext` to apply conversion to every `NepaliDate` property across all entities automatically:
+
+```csharp
+using NepDate.EntityFrameworkCore;
+
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+    // Store as "YYYY-MM-DD" string (default — lexicographic order = chronological)
+    configurationBuilder.UseNepaliDateConversions();
+
+    // Or store as YYYYMMDD integer
+    configurationBuilder.UseNepaliDateConversions(NepaliDateStorageFormat.Integer);
+}
+```
+
+Both storage formats preserve sort order, so `ORDER BY` and range queries work correctly at the database level without extra handling.
+
+| Format | Column type | Example value | SQL year extraction |
+| ------ | ----------- | ------------- | ------------------- |
+| String (default) | `nvarchar(10)` | `"2081-04-15"` | `LEFT(col, 4)` |
+| Integer | `int` | `20810415` | `col / 10000` |
+
+### Alternatives
+
+`OnModelCreating` scan (applies to all entities in the model):
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.UseNepaliDateConversions();
+}
+```
+
+Per-property configuration:
+
+```csharp
+modelBuilder.Entity<Employee>()
+    .Property(e => e.JoinDate)
+    .HasNepaliDateConversion();       // string
+    // or
+    .HasNepaliDateIntConversion();    // int
 ```
 
 ## ⚡ Performance
