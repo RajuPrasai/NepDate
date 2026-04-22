@@ -1,4 +1,3 @@
-using System;
 
 namespace NepDate.Examples;
 
@@ -93,6 +92,15 @@ public class NepaliDateExamples
         Console.WriteLine($"Month End Day: {date.MonthEndDay}");
         Console.WriteLine($"Is Leap Year: {date.IsLeapYear()}");
         Console.WriteLine($"Is Today: {date.IsToday()}");
+
+        // Calendar data (available for 2001-2089 BS)
+        NepaliDate calDate = new(2081, 1, 1);
+        var calInfo = calDate.GetCalendarInfo();
+        Console.WriteLine($"\nCalendar data for {calDate}:");
+        Console.WriteLine($"  Tithi:             {calDate.TithiNp} ({calDate.TithiEn})");
+        Console.WriteLine($"  Is Public Holiday: {calDate.IsPublicHoliday}");
+        Console.WriteLine($"  Events (Np):       {string.Join(", ", calInfo.EventsNp)}");
+        Console.WriteLine($"  Events (En):       {string.Join(", ", calInfo.EventsEn)}");
 
         Console.WriteLine();
     }

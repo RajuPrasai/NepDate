@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 using NepDate.Serialization;
 using Newtonsoft.Json;
+using System.Xml;
+using System.Xml.Serialization;
 using STJ = System.Text.Json;
-using Xunit;
 
 namespace NepDate.Tests.Serialization;
 
@@ -30,14 +26,11 @@ public class SerializationTests
     [Fact]
     public void SystemTextJson_String_SerializeDeserialize_SingleDate()
     {
-        // Arrange
         var options = new STJ.JsonSerializerOptions().ConfigureForNepaliDate();
-        
-        // Act
+
         string json = STJ.JsonSerializer.Serialize(_testDate, options);
         var deserializedDate = STJ.JsonSerializer.Deserialize<NepaliDate>(json, options);
-        
-        // Assert
+
         Assert.Equal("\"2080-04-15\"", json);
         Assert.Equal(_testDate, deserializedDate);
     }
@@ -45,14 +38,11 @@ public class SerializationTests
     [Fact]
     public void SystemTextJson_Object_SerializeDeserialize_SingleDate()
     {
-        // Arrange
         var options = new STJ.JsonSerializerOptions().ConfigureForNepaliDate(useObjectFormat: true);
-        
-        // Act
+
         string json = STJ.JsonSerializer.Serialize(_testDate, options);
         var deserializedDate = STJ.JsonSerializer.Deserialize<NepaliDate>(json, options);
-        
-        // Assert
+
         Assert.Contains("\"Year\":2080", json);
         Assert.Contains("\"Month\":4", json);
         Assert.Contains("\"Day\":15", json);
@@ -62,7 +52,6 @@ public class SerializationTests
     [Fact]
     public void SystemTextJson_String_SerializeDeserialize_DateList()
     {
-        // Arrange
         var options = new STJ.JsonSerializerOptions().ConfigureForNepaliDate();
         var dateList = new List<NepaliDate>
         {
@@ -70,12 +59,10 @@ public class SerializationTests
             _testDate,
             new(2080, 12, 30)
         };
-        
-        // Act
+
         string json = STJ.JsonSerializer.Serialize(dateList, options);
         var deserializedList = STJ.JsonSerializer.Deserialize<List<NepaliDate>>(json, options);
-        
-        // Assert
+
         Assert.Equal(3, deserializedList!.Count);
         Assert.Equal(dateList[0], deserializedList[0]);
         Assert.Equal(dateList[1], deserializedList[1]);
@@ -85,17 +72,14 @@ public class SerializationTests
     [Fact]
     public void SystemTextJson_String_SerializeDeserialize_ComplexObject()
     {
-        // Arrange
         var options = new STJ.JsonSerializerOptions
         {
             PropertyNamingPolicy = STJ.JsonNamingPolicy.CamelCase
         }.ConfigureForNepaliDate();
-        
-        // Act
+
         string json = STJ.JsonSerializer.Serialize(_testPerson, options);
         var deserializedPerson = STJ.JsonSerializer.Deserialize<Person>(json, options);
-        
-        // Assert
+
         Assert.Equal(_testPerson.Name, deserializedPerson!.Name);
         Assert.Equal(_testPerson.BirthDate, deserializedPerson.BirthDate);
         Assert.Equal(_testPerson.JoinDate, deserializedPerson.JoinDate);
@@ -108,14 +92,11 @@ public class SerializationTests
     [Fact]
     public void NewtonsoftJson_String_SerializeDeserialize_SingleDate()
     {
-        // Arrange
         var settings = new JsonSerializerSettings().ConfigureForNepaliDate();
-        
-        // Act
+
         string json = JsonConvert.SerializeObject(_testDate, settings);
         var deserializedDate = JsonConvert.DeserializeObject<NepaliDate>(json, settings);
-        
-        // Assert
+
         Assert.Equal("\"2080-04-15\"", json);
         Assert.Equal(_testDate, deserializedDate);
     }
@@ -123,14 +104,11 @@ public class SerializationTests
     [Fact]
     public void NewtonsoftJson_Object_SerializeDeserialize_SingleDate()
     {
-        // Arrange
         var settings = new JsonSerializerSettings().ConfigureForNepaliDate(useObjectFormat: true);
-        
-        // Act
+
         string json = JsonConvert.SerializeObject(_testDate, settings);
         var deserializedDate = JsonConvert.DeserializeObject<NepaliDate>(json, settings);
-        
-        // Assert
+
         Assert.Contains("\"Year\":2080", json);
         Assert.Contains("\"Month\":4", json);
         Assert.Contains("\"Day\":15", json);
@@ -140,7 +118,6 @@ public class SerializationTests
     [Fact]
     public void NewtonsoftJson_String_SerializeDeserialize_DateList()
     {
-        // Arrange
         var settings = new JsonSerializerSettings().ConfigureForNepaliDate();
         var dateList = new List<NepaliDate>
         {
@@ -148,12 +125,10 @@ public class SerializationTests
             _testDate,
             new(2080, 12, 30)
         };
-        
-        // Act
+
         string json = JsonConvert.SerializeObject(dateList, settings);
         var deserializedList = JsonConvert.DeserializeObject<List<NepaliDate>>(json, settings);
-        
-        // Assert
+
         Assert.Equal(3, deserializedList!.Count);
         Assert.Equal(dateList[0], deserializedList[0]);
         Assert.Equal(dateList[1], deserializedList[1]);
@@ -163,18 +138,15 @@ public class SerializationTests
     [Fact]
     public void NewtonsoftJson_String_SerializeDeserialize_ComplexObject()
     {
-        // Arrange
         var settings = new JsonSerializerSettings
         {
             Formatting = Newtonsoft.Json.Formatting.Indented,
             ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
         }.ConfigureForNepaliDate();
-        
-        // Act
+
         string json = JsonConvert.SerializeObject(_testPerson, settings);
         var deserializedPerson = JsonConvert.DeserializeObject<Person>(json, settings);
-        
-        // Assert
+
         Assert.Equal(_testPerson.Name, deserializedPerson!.Name);
         Assert.Equal(_testPerson.BirthDate, deserializedPerson.BirthDate);
         Assert.Equal(_testPerson.JoinDate, deserializedPerson.JoinDate);
@@ -187,24 +159,20 @@ public class SerializationTests
     [Fact]
     public void Xml_SerializeDeserialize_WithXmlWrapper()
     {
-        // Arrange
         var serializer = new XmlSerializer(typeof(PersonXml));
         var personXml = new PersonXml(_testPerson);
-        
-        // Act - Serialize
+
         var stringWriter = new StringWriter();
         using (var xmlWriter = XmlWriter.Create(stringWriter))
         {
             serializer.Serialize(xmlWriter, personXml);
         }
         string xml = stringWriter.ToString();
-        
-        // Act - Deserialize
+
         var stringReader = new StringReader(xml);
-        var deserializedPersonXml = (PersonXml)serializer.Deserialize(stringReader);
+        var deserializedPersonXml = (PersonXml)serializer.Deserialize(stringReader)!;
         var deserializedPerson = deserializedPersonXml.ToPerson();
-        
-        // Assert
+
         Assert.Equal(_testPerson.Name, deserializedPerson.Name);
         Assert.Equal(_testPerson.BirthDate, deserializedPerson.BirthDate);
         Assert.Equal(_testPerson.JoinDate, deserializedPerson.JoinDate);
@@ -216,7 +184,7 @@ public class SerializationTests
 
     public class Person
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public NepaliDate BirthDate { get; set; }
         public NepaliDate JoinDate { get; set; }
     }
@@ -226,20 +194,20 @@ public class SerializationTests
         public PersonXml()
         {
         }
-        
+
         public PersonXml(Person person)
         {
             Name = person.Name;
             BirthDate = new NepaliDateXmlSerializer(person.BirthDate);
             JoinDate = new NepaliDateXmlSerializer(person.JoinDate);
         }
-        
-        public string Name { get; set; }
-        
-        public NepaliDateXmlSerializer BirthDate { get; set; }
-        
-        public NepaliDateXmlSerializer JoinDate { get; set; }
-        
+
+        public string Name { get; set; } = null!;
+
+        public NepaliDateXmlSerializer BirthDate { get; set; } = null!;
+
+        public NepaliDateXmlSerializer JoinDate { get; set; } = null!;
+
         public Person ToPerson()
         {
             return new Person
@@ -252,4 +220,4 @@ public class SerializationTests
     }
 
     #endregion
-} 
+}

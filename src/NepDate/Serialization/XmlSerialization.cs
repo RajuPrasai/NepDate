@@ -50,7 +50,7 @@ namespace NepDate.Serialization
         public void ReadXml(XmlReader reader)
         {
             reader.MoveToContent();
-            
+
             if (reader.IsEmptyElement)
             {
                 reader.Read();
@@ -60,7 +60,7 @@ namespace NepDate.Serialization
 
             reader.ReadStartElement();
             string dateValue = reader.ReadContentAsString();
-            
+
             if (string.IsNullOrEmpty(dateValue))
             {
                 _value = default;
@@ -73,7 +73,7 @@ namespace NepDate.Serialization
             {
                 throw new InvalidOperationException($"Could not convert '{dateValue}' to a valid NepaliDate");
             }
-            
+
             reader.ReadEndElement();
         }
 
@@ -86,4 +86,4 @@ namespace NepDate.Serialization
             writer.WriteString($"{_value.Year:D4}-{_value.Month:D2}-{_value.Day:D2}");
         }
     }
-} 
+}

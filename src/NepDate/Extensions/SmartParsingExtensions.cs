@@ -1,6 +1,6 @@
 using System;
 
-namespace NepDate.Extensions
+namespace NepDate
 {
     /// <summary>
     /// Provides extension methods for intelligent date parsing in the NepDate library.
@@ -59,4 +59,4 @@ namespace NepDate.Extensions
             return SmartDateParser.TryParse(input, out result);
         }
     }
-} 
+}

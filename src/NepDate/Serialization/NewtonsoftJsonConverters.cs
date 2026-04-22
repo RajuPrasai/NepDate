@@ -1,6 +1,6 @@
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace NepDate.Serialization
 {
@@ -52,7 +52,7 @@ namespace NepDate.Serialization
                 if (reader.TokenType == JsonToken.StartObject)
                 {
                     JObject obj = JObject.Load(reader);
-                    
+
                     if (obj.TryGetValue("Year", StringComparison.OrdinalIgnoreCase, out JToken yearToken) &&
                         obj.TryGetValue("Month", StringComparison.OrdinalIgnoreCase, out JToken monthToken) &&
                         obj.TryGetValue("Day", StringComparison.OrdinalIgnoreCase, out JToken dayToken))
@@ -60,7 +60,7 @@ namespace NepDate.Serialization
                         int year = yearToken.Value<int>();
                         int month = monthToken.Value<int>();
                         int day = dayToken.Value<int>();
-                        
+
                         return new NepaliDate(year, month, day);
                     }
                 }
@@ -84,16 +84,16 @@ namespace NepDate.Serialization
             public override void WriteJson(JsonWriter writer, NepaliDate value, JsonSerializer serializer)
             {
                 writer.WriteStartObject();
-                
+
                 writer.WritePropertyName("Year");
                 writer.WriteValue(value.Year);
-                
+
                 writer.WritePropertyName("Month");
                 writer.WriteValue(value.Month);
-                
+
                 writer.WritePropertyName("Day");
                 writer.WriteValue(value.Day);
-                
+
                 writer.WriteEndObject();
             }
 
@@ -114,7 +114,7 @@ namespace NepDate.Serialization
                 if (reader.TokenType == JsonToken.StartObject)
                 {
                     JObject obj = JObject.Load(reader);
-                    
+
                     if (obj.TryGetValue("Year", StringComparison.OrdinalIgnoreCase, out JToken yearToken) &&
                         obj.TryGetValue("Month", StringComparison.OrdinalIgnoreCase, out JToken monthToken) &&
                         obj.TryGetValue("Day", StringComparison.OrdinalIgnoreCase, out JToken dayToken))
@@ -122,10 +122,10 @@ namespace NepDate.Serialization
                         int year = yearToken.Value<int>();
                         int month = monthToken.Value<int>();
                         int day = dayToken.Value<int>();
-                        
+
                         return new NepaliDate(year, month, day);
                     }
-                    
+
                     throw new JsonSerializationException("Missing required NepaliDate properties (Year, Month, Day)");
                 }
 
@@ -133,4 +133,4 @@ namespace NepDate.Serialization
             }
         }
     }
-} 
+}

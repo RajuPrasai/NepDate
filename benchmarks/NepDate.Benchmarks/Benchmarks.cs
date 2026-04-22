@@ -2,65 +2,76 @@
 
 namespace NepDate.Benchmarks;
 
+[MemoryDiagnoser]
 [RankColumn]
-[MemoryDiagnoser(true)]
-[BenchmarkDotNet.Attributes.AllStatisticsColumn]
+[GroupBenchmarksBy(BenchmarkDotNet.Configs.BenchmarkLogicalGroupRule.ByCategory)]
+[CategoriesColumn]
 public class Benchmarks
 {
-    [Benchmark]
-    public void GetEngDate_NepDate()
-    {
-        _ = new NepaliDate(2079, 12, 12).EnglishDate;
+    private static readonly DateTime FixedEngDate = new(2023, 8, 28);
 
+    // ── Nepali → English ──────────────────────────────────
+
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("NepToEng")]
+    public DateTime GetEngDate_NepDate()
+    {
+        return new NepaliDate(2079, 12, 12).EnglishDate;
     }
 
     [Benchmark]
-    public void GetNepDate_NepDate()
-    {
-        _ = new NepaliDate(DateTime.Now).ToString();
-    }
-
-
-    [Benchmark]
-    public void GetEngDate_NepaliDateConverter_NETCORE()
+    [BenchmarkCategory("NepToEng")]
+    public DateTime GetEngDate_NepaliDateConverter_NETCORE()
     {
         var date = NepaliDateConverter.DateConverter.ConvertToEnglish(2079, 12, 12);
-        _ = new DateTime(date.Year, date.Month, date.Day);
+        return new DateTime(date.Year, date.Month, date.Day);
     }
 
     [Benchmark]
-    public void GetNepDate_NepaliDateConverter_NETCORE()
+    [BenchmarkCategory("NepToEng")]
+    public DateTime GetEngDate_NepaliCalendarBS()
     {
-        var today = DateTime.Now;
-        var date = NepaliDateConverter.DateConverter.ConvertToNepali(today.Year, today.Month, today.Day);
-        _ = $"{date.Year:D4}/{date.Month:D2}/{date.Day:D2}";
+        return NepaliCalendarBS.NepaliCalendar.Convert_BS2AD("2079/12/12");
     }
 
     [Benchmark]
-    public void GetEngDate_NepaliCalendarBS()
-    {
-        _ = NepaliCalendarBS.NepaliCalendar.Convert_BS2AD("2079/12/12");
-    }
-
-    [Benchmark]
-    public void GetNepDate_NepaliCalendarBS()
-    {
-        var date = NepaliCalendarBS.NepaliCalendar.Convert_AD2BS(DateTime.Now);
-        _ = $"{date.Year:D4}/{date.Month:D2}/{date.Day:D2}";
-    }
-
-    [Benchmark]
-    public void GetEngDate_NepaliDateConverter_Net()
+    [BenchmarkCategory("NepToEng")]
+    public DateTime GetEngDate_NepaliDateConverter_Net()
     {
         var date = NepaliDateConverter.Net.DateConverter.ConvertToEnglish(2079, 12, 12);
-        _ = new DateTime(date.Year, date.Month, date.Day);
+        return new DateTime(date.Year, date.Month, date.Day);
+    }
+
+    // ── English → Nepali ──────────────────────────────────
+
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("EngToNep")]
+    public NepaliDate GetNepDate_NepDate()
+    {
+        return new NepaliDate(FixedEngDate);
     }
 
     [Benchmark]
-    public void GetNepDate_NepaliDateConverter_Net()
+    [BenchmarkCategory("EngToNep")]
+    public (int Year, int Month, int Day) GetNepDate_NepaliDateConverter_NETCORE()
     {
-        var today = DateTime.Now;
-        var date = NepaliDateConverter.Net.DateConverter.ConvertToNepali(today.Year, today.Month, today.Day);
-        _ = $"{date.Year:D4}/{date.Month:D2}/{date.Day:D2}";
+        var date = NepaliDateConverter.DateConverter.ConvertToNepali(2023, 8, 28);
+        return (date.Year, date.Month, date.Day);
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EngToNep")]
+    public (int Year, int Month, int Day) GetNepDate_NepaliCalendarBS()
+    {
+        var date = NepaliCalendarBS.NepaliCalendar.Convert_AD2BS(FixedEngDate);
+        return (date.Year, date.Month, date.Day);
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EngToNep")]
+    public (int Year, int Month, int Day) GetNepDate_NepaliDateConverter_Net()
+    {
+        var date = NepaliDateConverter.Net.DateConverter.ConvertToNepali(2023, 8, 28);
+        return (date.Year, date.Month, date.Day);
     }
 }

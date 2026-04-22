@@ -1,5 +1,5 @@
-using System.Text.Json;
 using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace NepDate.Serialization
 {
@@ -25,7 +25,7 @@ namespace NepDate.Serialization
             {
                 options.Converters.Add(new SystemTextJsonConverters.NepaliDateJsonConverter());
             }
-            
+
             return options;
         }
 
@@ -51,8 +51,8 @@ namespace NepDate.Serialization
             {
                 settings.Converters.Add(new NewtonsoftJsonConverters.NepaliDateJsonConverter());
             }
-            
+
             return settings;
         }
     }
-} 
+}

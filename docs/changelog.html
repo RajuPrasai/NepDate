@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ea580c" />
+  <title>Changelog - NepDate</title>
+  <meta name="description" content="Release notes and version history for the NepDate Bikram Sambat library for .NET." />
+  <link rel="canonical" href="https://rajuprasai.github.io/NepDate/changelog.html" />
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=2" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=2" />
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Inline theme bootstrap. Resolves stored preference (light/dark/system)
+       to a concrete data-theme so first paint matches the final state. -->
+  <script>
+    (function () {
+      try {
+        var p = localStorage.getItem('nepdate-theme');
+        if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'system';
+        var resolved = p === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : p;
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.setAttribute('data-theme-pref', p);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-theme-pref', 'system');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+        <span>NepDate</span>
+      </a>
+      <nav class="nav-main" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="docs.html">Documentation</a>
+        <a href="changelog.html" class="active">Changelog</a>
+      </nav>
+      <div class="header-right">
+                <a class="btn btn-momo btn-sm" href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener" aria-label="Buy me a momo">
+          <span class="momo-ico" aria-hidden="true"><svg class="momo-ico-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M9 6.6c.4-1.1 1.5-1.9 2.7-1.9.4 0 .8.1 1.2.3-.4.4-.7.9-.9 1.5l-.2.7c-.4-.1-.8-.3-1.2-.3-.6 0-1.1.2-1.6.5l-.5-.4c.2-.2.3-.3.5-.4Zm6 0 .5-.4c.2.1.3.2.5.4-.4-.3-1-.5-1.6-.5-.4 0-.8.2-1.2.3l-.2-.7c-.2-.6-.5-1.1-.9-1.5.4-.2.8-.3 1.2-.3 1.2 0 2.3.8 2.7 1.9-.3.3-.6.6-1 .8Z"/><path d="M12 4.5c0-.7.6-1.3 1.3-1.3.4 0 .7.1 1 .4-.3.6-.5 1.3-.5 2 0 .3 0 .7.1 1l-.7-.1c-.7 0-1.3-.6-1.3-1.3 0-.3.1-.5.1-.7Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/></svg></span>
+          <span>Buy me a momo</span>
+        </a>
+        <a class="github-btn" href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener" aria-label="GitHub repository">
+          <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <div class="theme-switch" role="group" aria-label="Theme">
+          <button type="button" data-theme-value="light" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          </button>
+          <button type="button" data-theme-value="dark" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </button>
+        </div>
+        <button class="icon-btn hamburger" aria-label="Open menu"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="overlay"></div>
+  <nav class="mobile-nav" aria-label="Mobile">
+    <a href="index.html">Home</a>
+    <a href="docs.html">Documentation</a>
+    <a href="changelog.html" class="active">Changelog</a>
+    <a href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Buy me a momo</a>
+  </nav>
+
+  <main id="main">
+    <section class="section">
+      <div class="container" style="max-width: 900px;">
+        <div class="changelog-wrap">
+          <div style="margin-bottom: 32px;">
+            <div class="section-eyebrow">Release History</div>
+            <h1 style="font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 12px;">Changelog</h1>
+            <p class="sub" style="color: var(--text-muted); font-size: 1.05rem;">
+              All notable changes to NepDate are documented here. Versions follow <a href="https://semver.org" target="_blank" rel="noopener">semantic versioning</a>.
+            </p>
+          </div>
+
+          <!-- v2.0.5 -->
+          <article class="release latest">
+            <header class="release-head">
+              <h2>v2.0.5</h2>
+              <span class="tag">Latest</span>
+              <span class="date">October 2025</span>
+            </header>
+
+            <h3>Added</h3>
+            <ul>
+              <li>Full calendar metadata support for <code>2001–2089 BS</code> including Tithi (lunar day), public holiday flag, and event descriptions in both Nepali and English.</li>
+              <li><code>NepaliDateRange</code> type with intersection, union, split-by-month, split-by-fiscal-quarter, working-days-only iteration, and set operations.</li>
+              <li><code>FiscalYear</code> static helpers plus instance methods on <code>NepaliDate</code> for Nepal fiscal year (Shrawan–Ashadh) start/end, quarter detection, and boundary queries.</li>
+              <li><code>SmartDateParser</code> with support for 100+ month-name spellings (English, Nepali Devanagari, and transliterations), alternate separators, short-year input, and Nepali Unicode digits.</li>
+              <li><code>BulkConvert.ToNepaliDates</code> and <code>BulkConvert.ToEnglishDates</code> with automatic parallelization for datasets over 500 items and explicit <code>batchSize</code> control.</li>
+              <li>Native <code>IParsable&lt;NepaliDate&gt;</code>, <code>ISpanParsable&lt;NepaliDate&gt;</code>, and <code>ISpanFormattable</code> implementations on the <code>net8.0</code> target.</li>
+              <li><code>System.Text.Json</code> and <code>Newtonsoft.Json</code> converters with string-mode and object-mode options.</li>
+              <li><code>XmlSerializer</code> support via the <code>NepaliDateXmlSerializer</code> wrapper.</li>
+              <li><code>TypeConverter</code> registration for ASP.NET model binding, WPF, and WinForms property grids.</li>
+              <li><code>NepaliMonths</code>, <code>DateFormats</code>, <code>Separators</code>, and <code>FiscalYearQuarters</code> enums.</li>
+              <li><code>CalendarInfo</code> rich metadata struct returned by <code>NepaliDate.Calendar</code>.</li>
+            </ul>
+
+            <h3>Improved</h3>
+            <ul>
+              <li>BS → AD conversion path rewritten to use flat-array lookups. Now runs at <strong>62 ns/op</strong> with <strong>zero allocations</strong>.</li>
+              <li>AD → BS conversion optimized to <strong>277 ns/op</strong>, over 750× faster than the previous version and every competing library.</li>
+              <li>Parsing performance improved across all input formats, including Unicode digit handling.</li>
+              <li>Internalized <code>Newtonsoft.Json</code> dependency using <code>PrivateAssets=all</code>, so consumers get a zero-dependency NuGet install.</li>
+              <li>Memory layout of <code>NepaliDate</code> tightened to pack into 4 bytes where possible.</li>
+            </ul>
+
+            <h3>Fixed</h3>
+            <ul>
+              <li>Corrected boundary handling at the start and end of the supported year range (<code>1901 BS</code> and <code>2199 BS</code>).</li>
+              <li>Leap-day handling in <code>AddMonths</code> and <code>AddYears</code> now clamps correctly when the target month has fewer days than the source.</li>
+              <li><code>TryParse</code> no longer throws on empty strings or whitespace; it returns <code>false</code> as documented.</li>
+            </ul>
+          </article>
+
+          <!-- v2.0.0 -->
+          <article class="release">
+            <header class="release-head">
+              <h2>v2.0.0</h2>
+              <span class="date">2024</span>
+            </header>
+
+            <h3>Breaking</h3>
+            <ul>
+              <li>Namespace reorganization: split into <code>NepDate.Core</code>, <code>NepDate.Abilities</code>, <code>NepDate.Extensions</code>, <code>NepDate.Exceptions</code>, <code>NepDate.Serialization</code>, and <code>NepDate.TypeConversion</code>.</li>
+              <li><code>NepaliDate</code> converted from <code>struct</code> to <code>readonly partial struct</code>. Public API is source-compatible but binary-breaking.</li>
+              <li><code>Parse</code> signatures unified. Old overloads removed in favor of optional parameters.</li>
+            </ul>
+
+            <h3>Added</h3>
+            <ul>
+              <li><code>SmartDateParser</code> foundation.</li>
+              <li><code>BulkConvert</code> foundation with sequential and parallel modes.</li>
+              <li><code>FiscalYear</code> initial API surface.</li>
+            </ul>
+          </article>
+
+          <!-- v1.x -->
+          <article class="release">
+            <header class="release-head">
+              <h2>v1.x</h2>
+              <span class="date">2023</span>
+            </header>
+            <p>Initial public releases. Established the core <code>NepaliDate</code> type, bidirectional conversion, basic parsing, and <code>ToString</code> formatting. Target framework was <code>.NET Standard 2.0</code>.</p>
+            <ul>
+              <li><code>NepaliDate</code> core type.</li>
+              <li>BS ↔ AD conversion.</li>
+              <li>Basic <code>Parse</code> and <code>TryParse</code>.</li>
+              <li><code>AddDays</code>, <code>AddMonths</code>, <code>AddYears</code>, comparison operators.</li>
+              <li><code>DayOfWeek</code>, <code>Year</code>, <code>Month</code>, <code>Day</code> properties.</li>
+            </ul>
+          </article>
+
+          <div class="release-cta" style="margin-top: 48px; text-align: center; padding: 32px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-alt);">
+            <h3 style="margin-top:0;">Looking for older versions?</h3>
+            <p style="color: var(--text-muted);">Full release history, binaries, and source archives are on GitHub.</p>
+            <a class="btn btn-primary" href="https://github.com/rajuprasai/NepDate/releases" target="_blank" rel="noopener">View all releases on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" style="margin-bottom:12px;">
+            <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+            <span>NepDate</span>
+          </a>
+          <p>The fastest Bikram Sambat library for .NET. Open source, MIT licensed.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="changelog.html">Changelog</a></li>
+            <li><a href="https://www.nuget.org/packages/NepDate/" target="_blank" rel="noopener">NuGet</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/issues" target="_blank" rel="noopener">Issues</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Sponsor</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2023–2026 NepDate · MIT License</div>
+        <div>Made with care for the Nepali developer community.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+

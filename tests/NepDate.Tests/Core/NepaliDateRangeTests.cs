@@ -14,14 +14,11 @@ public class NepaliDateRangeTests
     [Fact]
     public void Constructor_ValidDates_CreatesRange()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 1);
         var end = new NepaliDate(2080, 1, 15);
 
-        // Act
         var range = new NepaliDateRange(start, end);
 
-        // Assert
         Assert.Equal(start, range.Start);
         Assert.Equal(end, range.End);
         Assert.False(range.IsEmpty);
@@ -31,14 +28,11 @@ public class NepaliDateRangeTests
     [Fact]
     public void Constructor_EndBeforeStart_CreatesEmptyRange()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 15);
         var end = new NepaliDate(2080, 1, 1);
 
-        // Act
         var range = new NepaliDateRange(start, end);
 
-        // Assert
         Assert.True(range.IsEmpty);
         Assert.Equal(0, range.Length);
     }
@@ -46,13 +40,10 @@ public class NepaliDateRangeTests
     [Fact]
     public void SingleDay_CreatesRangeWithOneDay()
     {
-        // Arrange
         var date = new NepaliDate(2080, 1, 1);
 
-        // Act
         var range = NepaliDateRange.SingleDay(date);
 
-        // Assert
         Assert.Equal(date, range.Start);
         Assert.Equal(date, range.End);
         Assert.Equal(1, range.Length);
@@ -61,14 +52,11 @@ public class NepaliDateRangeTests
     [Fact]
     public void FromDayCount_CreatesCorrectRange()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 1);
         const int days = 10;
 
-        // Act
         var range = NepaliDateRange.FromDayCount(start, days);
 
-        // Assert
         Assert.Equal(start, range.Start);
         Assert.Equal(start.AddDays(days - 1), range.End);
         Assert.Equal(days, range.Length);
@@ -77,14 +65,11 @@ public class NepaliDateRangeTests
     [Fact]
     public void ForMonth_CreatesCorrectRange()
     {
-        // Arrange
         const int year = 2080;
         const int month = 1; // Baisakh
 
-        // Act
         var range = NepaliDateRange.ForMonth(year, month);
 
-        // Assert
         Assert.Equal(new NepaliDate(year, month, 1), range.Start);
         var monthEndDay = new NepaliDate(year, month, 1).MonthEndDay;
         Assert.Equal(new NepaliDate(year, month, monthEndDay), range.End);
@@ -96,13 +81,10 @@ public class NepaliDateRangeTests
     [Fact]
     public void ForFiscalYear_CreatesCorrectRange()
     {
-        // Arrange
         const int fiscalYear = 2080;
 
-        // Act
         var range = NepaliDateRange.ForFiscalYear(fiscalYear);
 
-        // Assert
         Assert.Equal(new NepaliDate(fiscalYear, 4, 1), range.Start); // 1 Shrawan
         Assert.Equal(new NepaliDate(fiscalYear + 1, 3, 1).MonthEndDate(), range.End); // Last day of Ashadh
 
@@ -113,39 +95,32 @@ public class NepaliDateRangeTests
     [Fact]
     public void Contains_DateInRange_ReturnsTrue()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 1);
         var end = new NepaliDate(2080, 1, 15);
         var range = new NepaliDateRange(start, end);
         var date = new NepaliDate(2080, 1, 10);
 
-        // Act
         var contains = range.Contains(date);
 
-        // Assert
         Assert.True(contains);
     }
 
     [Fact]
     public void Contains_DateOutsideRange_ReturnsFalse()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 1);
         var end = new NepaliDate(2080, 1, 15);
         var range = new NepaliDateRange(start, end);
         var date = new NepaliDate(2080, 1, 20);
 
-        // Act
         var contains = range.Contains(date);
 
-        // Assert
         Assert.False(contains);
     }
 
     [Fact]
     public void Contains_RangeFullyContained_ReturnsTrue()
     {
-        // Arrange
         var outerRange = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 30));
@@ -154,17 +129,14 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 10),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var contains = outerRange.Contains(innerRange);
 
-        // Assert
         Assert.True(contains);
     }
 
     [Fact]
     public void Overlaps_RangesOverlap_ReturnsTrue()
     {
-        // Arrange
         var range1 = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 15));
@@ -173,17 +145,14 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 10),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var overlaps = range1.Overlaps(range2);
 
-        // Assert
         Assert.True(overlaps);
     }
 
     [Fact]
     public void Overlaps_RangesDontOverlap_ReturnsFalse()
     {
-        // Arrange
         var range1 = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 10));
@@ -192,17 +161,14 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 15),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var overlaps = range1.Overlaps(range2);
 
-        // Assert
         Assert.False(overlaps);
     }
 
     [Fact]
     public void IsAdjacentTo_AdjacentRanges_ReturnsTrue()
     {
-        // Arrange
         var range1 = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 10));
@@ -211,17 +177,14 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 11),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var isAdjacent = range1.IsAdjacentTo(range2);
 
-        // Assert
         Assert.True(isAdjacent);
     }
 
     [Fact]
     public void Intersect_OverlappingRanges_ReturnsIntersection()
     {
-        // Arrange
         var range1 = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 15));
@@ -230,10 +193,8 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 10),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var intersection = range1.Intersect(range2);
 
-        // Assert
         Assert.Equal(new NepaliDate(2080, 1, 10), intersection.Start);
         Assert.Equal(new NepaliDate(2080, 1, 15), intersection.End);
         Assert.Equal(6, intersection.Length); // 10, 11, 12, 13, 14, 15 (inclusive)
@@ -246,7 +207,6 @@ public class NepaliDateRangeTests
     [Fact]
     public void Union_OverlappingRanges_ReturnsUnion()
     {
-        // Arrange
         var range1 = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 15));
@@ -255,10 +215,8 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 10),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var union = range1.Union(range2);
 
-        // Assert
         Assert.Equal(new NepaliDate(2080, 1, 1), union.Start);
         Assert.Equal(new NepaliDate(2080, 1, 20), union.End);
 
@@ -270,7 +228,6 @@ public class NepaliDateRangeTests
     [Fact]
     public void Except_RemovingRangeFromMiddle_ReturnsTwoRanges()
     {
-        // Arrange
         var fullRange = new NepaliDateRange(
             new NepaliDate(2080, 1, 1),
             new NepaliDate(2080, 1, 30));
@@ -279,10 +236,8 @@ public class NepaliDateRangeTests
             new NepaliDate(2080, 1, 10),
             new NepaliDate(2080, 1, 20));
 
-        // Act
         var result = fullRange.Except(middleRange);
 
-        // Assert
         Assert.Equal(2, result.Length);
 
         var firstPart = result[0];
@@ -303,15 +258,12 @@ public class NepaliDateRangeTests
     [Fact]
     public void SplitByMonth_RangeAcrossMonths_SplitsCorrectly()
     {
-        // Arrange
         var range = new NepaliDateRange(
             new NepaliDate(2080, 1, 15), // 15 Baisakh
             new NepaliDate(2080, 3, 10)); // 10 Ashadh
 
-        // Act
         var monthRanges = range.SplitByMonth();
 
-        // Assert
         Assert.Equal(3, monthRanges.Length); // Parts of Baisakh, Jestha, and Ashadh
 
         // First range should be 15-end of Baisakh
@@ -335,7 +287,6 @@ public class NepaliDateRangeTests
     [Fact]
     public void WorkingDays_ReturnsCorrectDays()
     {
-        // Arrange - Create a two-week range that includes weekends
         var startDate = new NepaliDate(2080, 1, 1);
         int weekendDaysExpected = 0;
 
@@ -354,10 +305,8 @@ public class NepaliDateRangeTests
 
         var range = NepaliDateRange.FromDayCount(startDate, 14);
 
-        // Act
         var workingDays = range.WorkingDays().ToList();
 
-        // Assert
         Assert.Equal(14 - weekendDaysExpected, workingDays.Count);
         Assert.All(workingDays, day => Assert.NotEqual(DayOfWeek.Saturday, day.DayOfWeek));
 
@@ -372,15 +321,12 @@ public class NepaliDateRangeTests
     [Fact]
     public void Enumeration_EnumeratesAllDaysInRange()
     {
-        // Arrange
         var start = new NepaliDate(2080, 1, 1);
         var end = new NepaliDate(2080, 1, 10);
         var range = new NepaliDateRange(start, end);
 
-        // Act
         var days = range.ToList();
 
-        // Assert
         Assert.Equal(10, days.Count);
         for (int i = 0; i < 10; i++)
         {

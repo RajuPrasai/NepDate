@@ -1,6 +1,4 @@
-﻿using NepDate.Exceptions;
-
-namespace NepDate
+﻿namespace NepDate
 {
     public readonly partial struct NepaliDate
     {
@@ -17,7 +15,7 @@ namespace NepDate
         /// 
         /// This method determines which quarter the current date falls into.
         /// </remarks>
-        /// <exception cref="NepDateException.InvalidNepaliDateFormatException">
+        /// <exception cref="InvalidNepaliDateFormatException">
         /// Thrown if the month is outside the valid range of 1-12.
         /// </exception>
         private FiscalYearQuarters FiscalYearQuarter()
@@ -41,7 +39,7 @@ namespace NepDate
                 case 3:
                     return FiscalYearQuarters.Fourth;
                 default:
-                    throw new NepDateException.InvalidNepaliDateFormatException();
+                    throw new InvalidNepaliDateFormatException();
             }
         }
 
@@ -139,12 +137,17 @@ namespace NepDate
                 fiscalYearQuarters = FiscalYearQuarter();
             }
 
+            // When this date is in Q4 (months 1-3), Year is already one calendar year ahead of
+            // the fiscal year start, so subtract 1 to normalise to the fiscal year base year.
+            var baseYear = Month <= 3 ? Year - 1 : Year;
+
+            // Q4 spans into the calendar year following the fiscal year start.
             if (fiscalYearQuarters == FiscalYearQuarters.Fourth)
             {
-                yearOffset++;
+                baseYear++;
             }
 
-            return new NepaliDate(Year + yearOffset, (int)fiscalYearQuarters, 1);
+            return new NepaliDate(baseYear + yearOffset, (int)fiscalYearQuarters, 1);
         }
 
 
@@ -176,11 +179,17 @@ namespace NepDate
                 fiscalYearQuarters = FiscalYearQuarter();
             }
 
+            // When this date is in Q4 (months 1-3), Year is already one calendar year ahead of
+            // the fiscal year start, so subtract 1 to normalise to the fiscal year base year.
+            var baseYear = Month <= 3 ? Year - 1 : Year;
+
+            // Q4 spans into the calendar year following the fiscal year start.
             if (fiscalYearQuarters == FiscalYearQuarters.Fourth)
             {
-                yearOffset++;
+                baseYear++;
             }
-            return new NepaliDate(Year + yearOffset, (int)fiscalYearQuarters + 2, 1).MonthEndDate();
+
+            return new NepaliDate(baseYear + yearOffset, (int)fiscalYearQuarters + 2, 1).MonthEndDate();
         }
 
 

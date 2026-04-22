@@ -1,14 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace NepDate
 {
     /// <summary>
-    /// Provides intelligent date parsing for Nepali dates with support for
-    /// various formats, fuzzy matching, and ambiguity resolution.
+    /// Provides intelligent parsing of Nepali date strings across a wide variety of formats,
+    /// month name spellings, scripts, and separator styles.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Unlike <see cref="NepaliDate.Parse(string)"/>, which requires a strict numeric
+    /// <c>YYYY/MM/DD</c> input, <see cref="SmartDateParser"/> accepts:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Over 100 English and Nepali transliteration spellings of month names (e.g. <c>Shrawan</c>, <c>Saun</c>, <c>साउन</c>).</description></item>
+    ///   <item><description>Nepali Devanagari digit strings (<c>२०८०/०८/१५</c>).</description></item>
+    ///   <item><description>Optional locale suffixes such as <c>B.S.</c>, <c>V.S.</c>, <c>गते</c>, and <c>मिति</c>.</description></item>
+    ///   <item><description>2-digit year abbreviations expanded to the current millennium.</description></item>
+    ///   <item><description>Ambiguous component ordering resolved by heuristic permutation.</description></item>
+    /// </list>
+    /// <para>
+    /// For strict numeric parsing without heuristics, use <see cref="NepaliDate.Parse(string)"/>
+    /// or its <c>autoAdjust</c> overload instead.
+    /// </para>
+    /// </remarks>
     public static class SmartDateParser
     {
         // Month name mappings (English, Nepali transliteration, and Unicode)
@@ -116,22 +131,29 @@ namespace NepDate
             { "चैत्र", 12 }, { "चैत", 12 }, { "चैता", 12 }, { "चॆत्र", 12 }, { "चेत्र", 12 }, { "चैत्रा", 12 }
         };
 
-        // Nepali unicode digit mappings
-        private static readonly Dictionary<char, char> NepaliToEnglishDigits = new Dictionary<char, char>
-        {
-            { '०', '0' }, { '१', '1' }, { '२', '2' }, { '३', '3' }, { '४', '4' },
-            { '५', '5' }, { '६', '6' }, { '७', '7' }, { '८', '8' }, { '९', '9' }
-        };
-
         // Common date separators
         private static readonly char[] DateSeparators = { '/', '-', '.', ' ', ',', '_', '|', '।' };
 
         /// <summary>
-        /// Parses a string representation of a Nepali date in various formats and returns a NepaliDate.
+        /// Parses a Nepali date string that may use any supported format, script, or month name spelling.
         /// </summary>
-        /// <param name="input">The string to parse.</param>
-        /// <returns>A NepaliDate representing the parsed date.</returns>
-        /// <exception cref="FormatException">Thrown when the input string cannot be parsed as a Nepali date.</exception>
+        /// <param name="input">
+        /// The date string to parse. Accepts numeric formats (<c>YYYY/MM/DD</c>), month-name formats
+        /// (<c>"15 Shrawan 2080"</c>, <c>"Shrawan 15, 2080"</c>), Nepali Unicode digits and month names,
+        /// and strings with optional locale suffixes (<c>B.S.</c>, <c>गते</c>).
+        /// </param>
+        /// <returns>A <see cref="NepaliDate"/> representing the parsed date.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="input"/> is <see langword="null"/> or whitespace.</exception>
+        /// <exception cref="FormatException">Thrown when the string cannot be interpreted as a valid Nepali date by any parsing strategy.</exception>
+        /// <example>
+        /// <code>
+        /// NepaliDate d1 = SmartDateParser.Parse("15 Shrawan 2080");   // DD Month YYYY
+        /// NepaliDate d2 = SmartDateParser.Parse("Shrawan 15, 2080");   // Month DD, YYYY
+        /// NepaliDate d3 = SmartDateParser.Parse("15 Saun 2080");       // alternate spelling
+        /// NepaliDate d4 = SmartDateParser.Parse("२०८०/०८/१५");        // Nepali digits
+        /// NepaliDate d5 = SmartDateParser.Parse("१५ श्रावण २०८०");     // full Nepali
+        /// </code>
+        /// </example>
         public static NepaliDate Parse(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -162,11 +184,15 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string representation of a Nepali date in various formats.
+        /// Attempts to parse a Nepali date string using the same heuristics as <see cref="Parse(string)"/>,
+        /// without throwing an exception on failure.
         /// </summary>
         /// <param name="input">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed NepaliDate if successful, or default if not.</param>
-        /// <returns>true if the parsing was successful; otherwise, false.</returns>
+        /// <param name="result">
+        /// When this method returns <see langword="true"/>, contains the parsed <see cref="NepaliDate"/>;
+        /// otherwise contains the default value.
+        /// </param>
+        /// <returns><see langword="true"/> if parsing succeeded; otherwise <see langword="false"/>.</returns>
         public static bool TryParse(string input, out NepaliDate result)
         {
             result = default;
@@ -174,47 +200,164 @@ namespace NepDate
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
+            if (NepaliDate.TryParse(input, out result))
+                return true;
+
             try
             {
-                result = Parse(input);
-                return true;
+                string normalizedInput = NormalizeInput(input);
+
+                if (TryParseStandardFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseNepaliUnicodeFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseMonthNameFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseAmbiguousFormat(normalizedInput, out result))
+                    return true;
             }
-            catch (Exception)
+            catch
             {
-                return false;
+                result = default;
             }
+
+            return false;
         }
 
         /// <summary>
-        /// Normalizes the input string by trimming, replacing separators, and handling common aliases.
+        /// Applies pre-processing to the raw input string: trims whitespace, strips locale suffixes
+        /// (<c>B.S.</c>, <c>V.S.</c>, <c>गते</c>, <c>मिति</c>), and collapses repeated whitespace
+        /// to a single space.
         /// </summary>
         private static string NormalizeInput(string input)
         {
             string result = input.Trim();
 
-            // Remove 'BS', 'B.S.', 'VS', 'V.S.' indicators
-            result = Regex.Replace(result, @"\b(?:B\.?S\.?|V\.?S\.?)\b", string.Empty, RegexOptions.IgnoreCase);
-
-            // Replace multiple spaces with a single space
-            result = Regex.Replace(result, @"\s+", " ");
-
-            // Replace 'gate', 'miti', etc.
-            result = Regex.Replace(result, @"\b(?:गते|मिति)\b", string.Empty, RegexOptions.IgnoreCase);
+            result = RemoveIndicators(result);
+            result = CollapseSpaces(result);
+            result = RemoveNepaliKeywords(result);
 
             return result.Trim();
         }
 
         /// <summary>
-        /// Tries to parse a string in standard numeric formats like YYYY/MM/DD, DD/MM/YYYY, etc.
+        /// Removes <c>B.S.</c>, <c>BS</c>, <c>V.S.</c>, and <c>VS</c> calendar-era markers
+        /// (case-insensitive) from <paramref name="input"/>, preserving all other content.
+        /// </summary>
+        private static string RemoveIndicators(string input)
+        {
+            // Remove BS, B.S., VS, V.S. (case-insensitive, word boundaries)
+            var chars = new char[input.Length];
+            int len = 0;
+            int i = 0;
+
+            while (i < input.Length)
+            {
+                if (i < input.Length - 1)
+                {
+                    char c0 = input[i];
+                    char c1 = input[i + 1];
+
+                    // Check for B.S. or V.S. (with optional dots)
+                    if ((c0 == 'B' || c0 == 'b' || c0 == 'V' || c0 == 'v') &&
+                        (c1 == 'S' || c1 == 's' || c1 == '.'))
+                    {
+                        bool isAtWordBoundary = (i == 0 || !char.IsLetterOrDigit(input[i - 1]));
+                        if (isAtWordBoundary)
+                        {
+                            // Try to match: B.S. or BS or V.S. or VS
+                            int end = i;
+                            if (c1 == '.')
+                            {
+                                // B. or V. - check for S or S.
+                                end = i + 2;
+                                if (end < input.Length && (input[end] == 'S' || input[end] == 's'))
+                                {
+                                    end++;
+                                    if (end < input.Length && input[end] == '.') end++;
+                                }
+                            }
+                            else if (c1 == 'S' || c1 == 's')
+                            {
+                                // BS or VS
+                                end = i + 2;
+                                if (end < input.Length && input[end] == '.') end++;
+                            }
+
+                            if (end > i + 1 && (end >= input.Length || !char.IsLetterOrDigit(input[end])))
+                            {
+                                i = end;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                chars[len++] = input[i];
+                i++;
+            }
+
+            return new string(chars, 0, len);
+        }
+
+        /// <summary>
+        /// Normalises all whitespace runs (space, tab, CR, LF) in <paramref name="input"/> to a single space character.
+        /// </summary>
+        private static string CollapseSpaces(string input)
+        {
+            var chars = new char[input.Length];
+            int len = 0;
+            bool lastWasSpace = false;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                bool isSpace = c == ' ' || c == '\t' || c == '\r' || c == '\n';
+                if (isSpace)
+                {
+                    if (!lastWasSpace)
+                    {
+                        chars[len++] = ' ';
+                    }
+                    lastWasSpace = true;
+                }
+                else
+                {
+                    chars[len++] = c;
+                    lastWasSpace = false;
+                }
+            }
+
+            return new string(chars, 0, len);
+        }
+
+        /// <summary>
+        /// Removes the Nepali date-suffix keywords <c>गते</c> (gate) and <c>मिति</c> (miti)
+        /// from <paramref name="input"/> wherever they appear.
+        /// </summary>
+        private static string RemoveNepaliKeywords(string input)
+        {
+            // Remove गते and मिति
+            const string gate = "\u0917\u0924\u0947";  // गते
+            const string miti = "\u092E\u093F\u0924\u093F";  // मिति
+
+            var result = ReplaceStringIgnoreCase(input, gate, string.Empty);
+            result = ReplaceStringIgnoreCase(result, miti, string.Empty);
+            return result;
+        }
+
+        /// <summary>
+        /// Tries to parse a fully numeric date string by splitting on each recognised separator
+        /// and testing the three most common component orderings: YMD, DMY, and MDY.
         /// </summary>
         private static bool TryParseStandardFormat(string input, out NepaliDate result)
         {
             result = default;
 
-            // Try different separator-based formats
             foreach (char separator in DateSeparators)
             {
-                string pattern = $"{Regex.Escape(separator.ToString())}";
                 string[] parts = input.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length == 3)
@@ -237,77 +380,88 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string containing month names like "15 Jestha 2080" or "Jestha 15, 2080".
+        /// Tries to parse a date string that contains at least one month name from
+        /// <see cref="MonthNameMappings"/>. Extracts the remaining numeric tokens and
+        /// attempts to identify year and day by magnitude (year &gt; 1900).
         /// </summary>
         private static bool TryParseMonthNameFormat(string input, out NepaliDate result)
         {
             result = default;
 
-            // Pattern for: [day] [month name] [year] or [month name] [day], [year]
-            var monthNameMatches = MonthNameMappings.Keys
-                .Where(monthName => input.IndexOf(monthName, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderByDescending(m => m.Length)  // Prefer longer matches to avoid partial matches
-                .ToList();
+            // Find the longest matching month name (avoids partial matches)
+            string bestMatch = null;
+            int bestLength = 0;
 
-            foreach (var monthName in monthNameMatches)
+            foreach (var key in MonthNameMappings.Keys)
             {
-                int monthValue = MonthNameMappings[monthName];
-
-                // Find year and day in the input
-                string remaining = ReplaceStringIgnoreCase(input, monthName, " ").Trim();
-
-                // Extract year and day
-                var numbers = Regex.Matches(remaining, @"\d+")
-                    .Cast<Match>()
-                    .Select(m => int.Parse(m.Value))
-                    .ToList();
-
-                if (numbers.Count >= 2)
+                if (key.Length > bestLength && input.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    // Determine which number is the year based on magnitude
-                    int year, day;
-                    if (numbers[0] > 1900) // Likely a year
-                    {
-                        year = numbers[0];
-                        day = numbers.Count > 1 ? numbers[1] : 1;
-                    }
-                    else if (numbers.Count > 1 && numbers[1] > 1900) // Second number is a year
-                    {
-                        year = numbers[1];
-                        day = numbers[0];
-                    }
-                    else // No obvious year, try heuristic
-                    {
-                        // Sort numbers by size, largest is likely year
-                        var sortedNumbers = numbers.OrderByDescending(n => n).ToList();
-                        year = sortedNumbers[0];
-                        day = sortedNumbers.Count > 1 ? sortedNumbers[1] : 1;
+                    bestMatch = key;
+                    bestLength = key.Length;
+                }
+            }
 
-                        // If largest number is too small to be a BS year, fallback
-                        if (year < 1900)
+            if (bestMatch == null)
+                return false;
+
+            int monthValue = MonthNameMappings[bestMatch];
+            string remaining = ReplaceStringIgnoreCase(input, bestMatch, " ").Trim();
+
+            // Extract numbers manually instead of Regex.Matches + LINQ
+            var numbers = ExtractNumbers(remaining);
+
+            if (numbers.Count >= 2)
+            {
+                int year, day;
+                if (numbers[0] > 1900)
+                {
+                    year = numbers[0];
+                    day = numbers.Count > 1 ? numbers[1] : 1;
+                }
+                else if (numbers.Count > 1 && numbers[1] > 1900)
+                {
+                    year = numbers[1];
+                    day = numbers[0];
+                }
+                else
+                {
+                    // Find max without sorting
+                    int maxVal = numbers[0], secondVal = 0;
+                    for (int i = 1; i < numbers.Count; i++)
+                    {
+                        if (numbers[i] > maxVal)
                         {
-                            // Add 2000 to years likely expressed in 2-digit short form (e.g., '80 for 2080)
-                            if (year >= 0 && year < 100)
-                                year += 2000;
-                            else if (year >= 100 && year < 999)
-                                year += 1000; // Convert 3-digit year like 080 to 1080 or 080 to 2080
+                            secondVal = maxVal;
+                            maxVal = numbers[i];
+                        }
+                        else if (numbers[i] > secondVal)
+                        {
+                            secondVal = numbers[i];
                         }
                     }
+                    if (numbers.Count == 1) { maxVal = numbers[0]; secondVal = 1; }
+                    else if (secondVal == 0) { secondVal = numbers[0] == maxVal && numbers.Count > 1 ? numbers[1] : 1; }
 
-                    // Validate and sanitize day
-                    if (day < 1 || day > 32)
-                        continue;
+                    year = maxVal;
+                    day = secondVal;
 
-                    // Try to create valid date
-                    try
-                    {
-                        result = new NepaliDate(year, monthValue, day);
-                        return true;
-                    }
-                    catch
-                    {
-                        // Continue to next attempt
-                    }
+                    if (year < 100)
+                        year += 2000;
+                    else if (year >= 100 && year < 999)
+                        year += 1000;
+                }
+
+                if (day < 1 || day > 32)
+                    return false;
+
+                try
+                {
+                    result = new NepaliDate(year, monthValue, day);
+                    return true;
+                }
+                catch
+                {
+                    // Fall through
                 }
             }
 
@@ -315,7 +469,9 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string containing Nepali unicode digits and month names.
+        /// Converts any Devanagari digits (०–९) in <paramref name="input"/> to their ASCII equivalents
+        /// and then delegates to <see cref="TryParse(string, out NepaliDate)"/>.
+        /// Returns <see langword="false"/> without further processing when no Devanagari digits are present.
         /// </summary>
         private static bool TryParseNepaliUnicodeFormat(string input, out NepaliDate result)
         {
@@ -332,17 +488,14 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse ambiguous date formats by making educated guesses about the intended date.
+        /// Last-resort parser that extracts all numeric tokens from <paramref name="input"/> and
+        /// exhaustively tries all six YMD component permutations until one produces a valid date.
         /// </summary>
         private static bool TryParseAmbiguousFormat(string input, out NepaliDate result)
         {
             result = default;
 
-            // Extract all numbers from the input
-            var numbers = Regex.Matches(input, @"\d+")
-                .Cast<Match>()
-                .Select(m => int.Parse(m.Value))
-                .ToList();
+            var numbers = ExtractNumbers(input);
 
             if (numbers.Count >= 3)
             {
@@ -393,7 +546,9 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Attempts to parse year, month, and day components and create a valid NepaliDate.
+        /// Validates and constructs a <see cref="NepaliDate"/> from three string tokens expected to represent
+        /// year, month, and day in that order. Accepts 2- or 3-digit year abbreviations and expands them to
+        /// the current millennium.
         /// </summary>
         private static bool TryParseYearMonthDay(string yearStr, string monthStr, string dayStr, out NepaliDate result)
         {
@@ -429,24 +584,32 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Converts Nepali unicode digits to English digits.
+        /// Converts Devanagari digits (०–९, Unicode code points U+0966–U+096F) in
+        /// <paramref name="input"/> to their ASCII equivalents (0–9). Non-digit characters
+        /// are passed through unchanged. Returns the original string reference when no
+        /// Devanagari digits are found, avoiding an unnecessary allocation.
         /// </summary>
         private static string ConvertNepaliDigitsToEnglish(string input)
         {
             if (string.IsNullOrEmpty(input))
                 return input;
 
-            char[] result = input.ToCharArray();
+            char[] result = null;
 
-            for (int i = 0; i < result.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
-                if (NepaliToEnglishDigits.TryGetValue(result[i], out char englishDigit))
+                char c = input[i];
+                if (c >= '\u0966' && c <= '\u096F')
                 {
-                    result[i] = englishDigit;
+                    if (result == null)
+                    {
+                        result = input.ToCharArray();
+                    }
+                    result[i] = (char)('0' + (c - '\u0966'));
                 }
             }
 
-            return new string(result);
+            return result != null ? new string(result) : input;
         }
 
         /// <summary>
@@ -487,6 +650,44 @@ namespace NepDate
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Extracts all contiguous sequences of ASCII digit characters from <paramref name="input"/>
+        /// and returns their integer values in order of appearance.
+        /// Non-digit characters act as delimiters; at most four values are pre-allocated.
+        /// </summary>
+        private static List<int> ExtractNumbers(string input)
+        {
+            var numbers = new List<int>(4);
+            int current = 0;
+            bool inNumber = false;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                if (c >= '0' && c <= '9')
+                {
+                    current = current * 10 + (c - '0');
+                    inNumber = true;
+                }
+                else
+                {
+                    if (inNumber)
+                    {
+                        numbers.Add(current);
+                        current = 0;
+                        inNumber = false;
+                    }
+                }
+            }
+
+            if (inNumber)
+            {
+                numbers.Add(current);
+            }
+
+            return numbers;
         }
     }
 }

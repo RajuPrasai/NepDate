@@ -5,13 +5,10 @@ public class NepaliDatePropertiesTests
     [Fact]
     public void EnglishDate_Conversion_ReturnsCorrectDate()
     {
-        // Arrange
         var nepaliDate = new NepaliDate(2080, 5, 15);
 
-        // Act
         var englishDate = nepaliDate.EnglishDate;
 
-        // Assert
         Assert.Equal(2023, englishDate.Year);
         Assert.Equal(9, englishDate.Month);
         Assert.Equal(1, englishDate.Day);
@@ -20,53 +17,75 @@ public class NepaliDatePropertiesTests
     [Fact]
     public void DayOfWeek_ReturnsCorrectValue()
     {
-        // Arrange
         var nepaliDate = new NepaliDate(2080, 5, 15);
 
-        // Act
         var dayOfWeek = nepaliDate.DayOfWeek;
 
-        // Assert
         Assert.Equal(DayOfWeek.Friday, dayOfWeek);
     }
 
     [Fact]
     public void MonthEndDay_ReturnsCorrectValue()
     {
-        // Arrange
         var nepaliDate = new NepaliDate(2080, 5, 15);
 
-        // Act
         var monthEndDay = nepaliDate.MonthEndDay;
 
-        // Assert
         Assert.Equal(31, monthEndDay);
     }
 
     [Fact]
     public void MonthName_ReturnsCorrectEnum()
     {
-        // Arrange
         var nepaliDate = new NepaliDate(2080, 5, 15);
 
-        // Act
         var monthName = nepaliDate.MonthName;
 
-        // Assert
         Assert.Equal(NepaliMonths.Bhadra, monthName);
     }
 
     [Fact]
-    public void Now_ReturnsCurrentNepaliDate()
+    public void Today_ReturnsCurrentNepaliDate()
     {
-        // Arrange
         var today = DateTime.Today;
         var expectedNepaliDate = new NepaliDate(today);
 
-        // Act
-        var nowNepaliDate = NepaliDate.Now;
+        var todayNepaliDate = NepaliDate.Today;
 
-        // Assert
-        Assert.Equal(expectedNepaliDate, nowNepaliDate);
+        Assert.Equal(expectedNepaliDate, todayNepaliDate);
     }
-} 
+
+    [Fact]
+    public void DayOfYear_FirstDayOfYear_Returns1()
+    {
+        // Baisakh 1 is the first day of the Nepali calendar year.
+        var date = new NepaliDate(2080, 1, 1);
+        Assert.Equal(1, date.DayOfYear);
+    }
+
+    [Fact]
+    public void DayOfYear_FirstDayOfMonth4_EqualsSum_Of_Months1To3_Plus1()
+    {
+        // DayOfYear for the first day of month 4 should equal (m1 + m2 + m3) + 1.
+        var m1 = new NepaliDate(2080, 1, 1).MonthEndDay;
+        var m2 = new NepaliDate(2080, 2, 1).MonthEndDay;
+        var m3 = new NepaliDate(2080, 3, 1).MonthEndDay;
+        int expected = m1 + m2 + m3 + 1;
+        Assert.Equal(expected, new NepaliDate(2080, 4, 1).DayOfYear);
+    }
+
+    [Fact]
+    public void Equals_NullObject_ReturnsFalse()
+    {
+        var date = new NepaliDate(2080, 5, 15);
+        Assert.False(date.Equals(null));
+    }
+
+    [Fact]
+    public void Equals_DifferentType_ReturnsFalse()
+    {
+        var date = new NepaliDate(2080, 5, 15);
+        Assert.False(date.Equals("2080/05/15"));
+        Assert.False(date.Equals(42));
+    }
+}

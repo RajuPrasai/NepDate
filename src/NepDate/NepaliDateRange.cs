@@ -620,7 +620,10 @@ namespace NepDate
         /// <returns>A hash code based on the start and end dates.</returns>
         public override int GetHashCode()
         {
-            return Start.GetHashCode() + End.GetHashCode();
+            unchecked
+            {
+                return (Start.GetHashCode() * 397) ^ End.GetHashCode();
+            }
         }
 
         /// <summary>

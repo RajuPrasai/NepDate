@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ea580c" />
+  <title>NepDate - The Fastest Bikram Sambat Library for .NET</title>
+  <meta name="description" content="High performance, zero-allocation Bikram Sambat (B.S.) date library for .NET. Conversion, smart parsing, fiscal year, calendar metadata, and more." />
+  <link rel="canonical" href="https://rajuprasai.github.io/NepDate/" />
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=2" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=2" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="NepDate - The Fastest Bikram Sambat Library for .NET" />
+  <meta property="og:description" content="Nanosecond Nepali date conversions, smart parsing, fiscal year operations, and rich calendar metadata for any .NET app." />
+  <meta property="og:image" content="https://user-images.githubusercontent.com/37014558/231635618-bf6599e3-554e-4b02-93df-019e7b8aecc3.png" />
+  <meta property="og:url" content="https://rajuprasai.github.io/NepDate/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "NepDate",
+    "operatingSystem": ".NET Standard 2.0, .NET 5+, .NET Framework 4.6.1+",
+    "applicationCategory": "DeveloperApplication",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "rajuprasai" },
+    "url": "https://rajuprasai.github.io/NepDate/",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Inline theme bootstrap. Resolves stored preference (light/dark/system)
+       to a concrete data-theme so first paint matches the final state. -->
+  <script>
+    (function () {
+      try {
+        var p = localStorage.getItem('nepdate-theme');
+        if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'system';
+        var resolved = p === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : p;
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.setAttribute('data-theme-pref', p);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-theme-pref', 'system');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+        <span>NepDate</span>
+      </a>
+      <nav class="nav-main" aria-label="Primary">
+        <a href="index.html" class="active">Home</a>
+        <a href="docs.html">Documentation</a>
+        <a href="changelog.html">Changelog</a>
+      </nav>
+      <div class="header-right">
+                <a class="btn btn-momo btn-sm" href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener" aria-label="Buy me a momo">
+          <span class="momo-ico" aria-hidden="true"><svg class="momo-ico-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M9 6.6c.4-1.1 1.5-1.9 2.7-1.9.4 0 .8.1 1.2.3-.4.4-.7.9-.9 1.5l-.2.7c-.4-.1-.8-.3-1.2-.3-.6 0-1.1.2-1.6.5l-.5-.4c.2-.2.3-.3.5-.4Zm6 0 .5-.4c.2.1.3.2.5.4-.4-.3-1-.5-1.6-.5-.4 0-.8.2-1.2.3l-.2-.7c-.2-.6-.5-1.1-.9-1.5.4-.2.8-.3 1.2-.3 1.2 0 2.3.8 2.7 1.9-.3.3-.6.6-1 .8Z"/><path d="M12 4.5c0-.7.6-1.3 1.3-1.3.4 0 .7.1 1 .4-.3.6-.5 1.3-.5 2 0 .3 0 .7.1 1l-.7-.1c-.7 0-1.3-.6-1.3-1.3 0-.3.1-.5.1-.7Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/></svg></span>
+          <span>Buy me a momo</span>
+        </a>
+        <a class="github-btn" href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener" aria-label="GitHub repository">
+          <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <div class="theme-switch" role="group" aria-label="Theme">
+          <button type="button" data-theme-value="light" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          </button>
+          <button type="button" data-theme-value="dark" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </button>
+        </div>
+        <button class="icon-btn hamburger" aria-label="Open menu"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="overlay"></div>
+  <nav class="mobile-nav" aria-label="Mobile">
+    <a href="index.html" class="active">Home</a>
+    <a href="docs.html">Documentation</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.nuget.org/packages/NepDate/" target="_blank" rel="noopener">NuGet</a>
+    <a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Buy me a momo</a>
+  </nav>
+
+  <main id="main">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <div class="chips" aria-label="Project facts">
+              <a class="chip" href="https://www.nuget.org/packages/NepDate/" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                NuGet package
+              </a>
+              <span class="chip chip-accent">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                .NET Standard 2.0+ &middot; .NET 8
+              </span>
+              <span class="chip chip-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                Zero dependencies
+              </span>
+              <span class="chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                MIT License
+              </span>
+            </div><h1>
+              Bikram Sambat for <span class="grad">.NET</span>, done right.
+            </h1>
+            <p class="lede">
+              NepDate is a zero-dependency, stack-allocated <code>struct</code> that brings nanosecond
+              Bikram Sambat conversions, smart parsing, fiscal year math, and rich calendar metadata
+              to every .NET application.
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="docs.html">Get Started
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </a>
+              <a class="btn btn-secondary" href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                Star on GitHub
+              </a>
+              <a class="btn btn-momo" href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">
+                <span class="momo-ico" aria-hidden="true"><svg class="momo-ico-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M9 6.6c.4-1.1 1.5-1.9 2.7-1.9.4 0 .8.1 1.2.3-.4.4-.7.9-.9 1.5l-.2.7c-.4-.1-.8-.3-1.2-.3-.6 0-1.1.2-1.6.5l-.5-.4c.2-.2.3-.3.5-.4Zm6 0 .5-.4c.2.1.3.2.5.4-.4-.3-1-.5-1.6-.5-.4 0-.8.2-1.2.3l-.2-.7c-.2-.6-.5-1.1-.9-1.5.4-.2.8-.3 1.2-.3 1.2 0 2.3.8 2.7 1.9-.3.3-.6.6-1 .8Z"/><path d="M12 4.5c0-.7.6-1.3 1.3-1.3.4 0 .7.1 1 .4-.3.6-.5 1.3-.5 2 0 .3 0 .7.1 1l-.7-.1c-.7 0-1.3-.6-1.3-1.3 0-.3.1-.5.1-.7Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/></svg></span>
+                Buy me a momo
+              </a>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat"><span class="n">4.5<small style="font-size:.6em;color:var(--text-muted)">ns</small></span><span class="l">BS → AD</span></div>
+              <div class="hero-stat"><span class="n">8,600<small style="font-size:.6em;color:var(--text-muted)">×</small></span><span class="l">Faster</span></div>
+              <div class="hero-stat"><span class="n">0<small style="font-size:.6em;color:var(--text-muted)">B</small></span><span class="l">Allocations</span></div>
+              <div class="hero-stat"><span class="n">1901–2199</span><span class="l">Year Range</span></div>
+            </div>
+          </div>
+
+          <div class="terminal" aria-hidden="true">
+            <div class="terminal-bar">
+              <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+              <div class="title">Program.cs</div>
+            </div>
+            <div class="terminal-body" data-typer></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section class="section" id="install">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">Installation</div>
+          <h2 class="section-title">Get started in seconds</h2>
+          <p class="section-sub">One command, zero configuration. Works anywhere .NET Standard 2.0 runs: .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5&ndash;9, Mono, Xamarin, Unity, and MAUI.</p>
+        </div>
+
+        <div class="install-tabs" data-tabs>
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="cli" role="tab">.NET CLI</button>
+            <button class="tab" data-tab="pm" role="tab">Package Manager Console</button>
+            <button class="tab" data-tab="ref" role="tab">PackageReference</button>
+          </div>
+          <div class="tab-panel active" data-panel="cli">
+            <pre><code class="language-bash">dotnet add package NepDate</code></pre>
+          </div>
+          <div class="tab-panel" data-panel="pm">
+            <pre><code class="language-bash">Install-Package NepDate</code></pre>
+          </div>
+          <div class="tab-panel" data-panel="ref">
+<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.0.5" /&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features" style="background:var(--bg-alt);">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">Features</div>
+          <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+          <p class="section-sub">One lightweight package with full coverage of Bikram Sambat date operations, built to the same quality bar as <code>System.DateTime</code>.</p>
+        </div>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <h3>Blazing Fast</h3>
+            <p>Up to 8,600× faster than alternatives. Zero heap allocations on both conversion paths. Sub 5 ns BS → AD, sub 14 ns AD → BS.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4M3 11v-1a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 01-4 4H3"/></svg></div>
+            <h3>Bidirectional Conversion</h3>
+            <p>Convert between Bikram Sambat and Gregorian in nanoseconds. Both directions, fully supported.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <h3>Smart Parsing</h3>
+            <p>Accepts 100+ month-name spellings, Nepali Unicode digits, alternate separators, and short-year inputs.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+            <h3>Rich Formatting</h3>
+            <p>Custom format tokens, Unicode Devanagari digits, long-form Nepali strings, and full <code>IFormattable</code> support.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg></div>
+            <h3>Fiscal Year Operations</h3>
+            <p>Nepal FY (Shrawan–Ashadh) quarter and boundary calculations, both instance and static.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <h3>Calendar Metadata</h3>
+            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English for 2001–2089 BS.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
+            <h3>Date Range Operations</h3>
+            <p>Intersection, union, split by month or fiscal quarter, working days, and interval iteration.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <h3>Serialization</h3>
+            <p><code>System.Text.Json</code>, <code>Newtonsoft.Json</code>, and XML. String and object modes. Zero config on .NET 5+.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <h3>First-Class .NET Type</h3>
+            <p><code>IFormattable</code>, <code>IComparable</code>, <code>IEquatable</code>, <code>IParsable</code>, <code>ISpanFormattable</code>, <code>TypeConverter</code>, <code>JsonConverter</code>. Behaves like <code>DateTime</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <h3>Zero Dependencies</h3>
+            <p>No external runtime dependencies. Lightweight, self-contained, single-package install.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L12 3 4 7l8 4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg></div>
+            <h3>Bulk Conversion</h3>
+            <p>Auto parallel processing for 500+ items. Explicit batch-size control for very large datasets.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+            <h3>Struct by Design</h3>
+            <p><code>readonly partial struct</code> keeps instances on the stack and eliminates GC pressure in high-volume workloads.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section class="section" id="performance">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">Performance</div>
+          <h2 class="section-title">Benchmarked, not just advertised</h2>
+          <p class="section-sub">Flat array dictionaries for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
+        </div>
+
+        <div class="bench-headline">
+          <div class="bench-kpi">
+            <div class="bench-kpi-label">BS &rarr; AD (NepDate)</div>
+            <div class="bench-kpi-value">4.55 <span>ns</span></div>
+            <div class="bench-kpi-sub">vs 39,144 ns &middot; up to <strong>8,603&times;</strong> faster</div>
+          </div>
+          <div class="bench-kpi">
+            <div class="bench-kpi-label">AD &rarr; BS (NepDate)</div>
+            <div class="bench-kpi-value">13.60 <span>ns</span></div>
+            <div class="bench-kpi-sub">vs 66,488 ns &middot; up to <strong>4,890&times;</strong> faster</div>
+          </div>
+          <div class="bench-kpi">
+            <div class="bench-kpi-label">Allocations</div>
+            <div class="bench-kpi-value">0 <span>B</span></div>
+            <div class="bench-kpi-sub">on every conversion, both directions</div>
+          </div>
+        </div>
+
+        <div class="bench-grid">
+          <div class="bench-card">
+            <div class="bench-card-head">
+              <h3>BS &rarr; AD <span class="bench-card-tag">Nepali to English</span></h3>
+            </div>
+            <div class="benchmark-wrap">
+              <table class="data-table bench-table">
+                <thead>
+                  <tr>
+                    <th>Library</th>
+                    <th class="bench-col-bar">Mean</th>
+                    <th style="text-align:right">Ratio</th>
+                    <th style="text-align:right">Allocated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight">
+                    <td><strong>NepDate</strong></td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.012%"></span></div><span class="bench-num">4.55 ns</span></div></td>
+                    <td class="num">1.00&times;</td>
+                    <td class="num">0 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliCalendarBS</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:36.92%"></span></div><span class="bench-num">14.45 &micro;s</span></div></td>
+                    <td class="num">3,176&times;</td>
+                    <td class="num">688 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliDateConverter.Net</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:94.91%"></span></div><span class="bench-num">37.15 &micro;s</span></div></td>
+                    <td class="num">8,164&times;</td>
+                    <td class="num">19,968 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliDateConverter.NETCORE</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">39.14 &micro;s</span></div></td>
+                    <td class="num">8,603&times;</td>
+                    <td class="num">20,688 B</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bench-card">
+            <div class="bench-card-head">
+              <h3>AD &rarr; BS <span class="bench-card-tag">English to Nepali</span></h3>
+            </div>
+            <div class="benchmark-wrap">
+              <table class="data-table bench-table">
+                <thead>
+                  <tr>
+                    <th>Library</th>
+                    <th class="bench-col-bar">Mean</th>
+                    <th style="text-align:right">Ratio</th>
+                    <th style="text-align:right">Allocated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight">
+                    <td><strong>NepDate</strong></td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.020%"></span></div><span class="bench-num">13.60 ns</span></div></td>
+                    <td class="num">1.00&times;</td>
+                    <td class="num">0 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliCalendarBS</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.244%"></span></div><span class="bench-num">162.5 ns</span></div></td>
+                    <td class="num">12&times;</td>
+                    <td class="num">32 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliDateConverter.Net</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:99.97%"></span></div><span class="bench-num">66.47 &micro;s</span></div></td>
+                    <td class="num">4,889&times;</td>
+                    <td class="num">19,968 B</td>
+                  </tr>
+                  <tr>
+                    <td>NepaliDateConverter.NETCORE</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">66.49 &micro;s</span></div></td>
+                    <td class="num">4,890&times;</td>
+                    <td class="num">20,688 B</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <p class="bench-caption">
+          BenchmarkDotNet 0.15.8 &middot; .NET 10.0.5 (X64 RyuJIT, AVX2) &middot; 12th Gen Intel Core i5-12500H 3.10 GHz, Windows 11.
+          Smaller is better. Bars are scaled to the slowest method per category.
+        </p>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="section" id="comparison" style="background:var(--bg-alt);">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">Comparison</div>
+          <h2 class="section-title">How NepDate compares</h2>
+          <p class="section-sub">A head-to-head feature matrix against the best-known Nepali date libraries on NuGet.</p>
+        </div>
+        <div class="compare-wrap">
+          <table class="data-table compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="col-highlight">NepDate</th>
+                <th>NepaliDateConverter</th>
+                <th>NepaliCalendarBS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>BS → AD Conversion</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+              <tr><td>AD → BS Conversion</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+              <tr><td>Zero-allocation BS → AD</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Smart multi-format parsing</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Nepali Unicode digit support</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Fiscal year operations</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Date range operations</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Tithi, holidays &amp; events</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>Bulk conversion</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>JSON serialization</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>XML serialization</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>IFormattable / IComparable</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>TypeConverter (model binding)</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+              <tr><td>.NET Standard 2.0</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+              <tr><td>Actively maintained</td><td class="col-highlight"><span class="check">✓</span></td><td><span class="partial">~</span></td><td><span class="partial">~</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">FAQ</div>
+          <h2 class="section-title">Frequently asked questions</h2>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item">
+            <button class="faq-q">What .NET versions does NepDate support?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate targets <code>.NET Standard 2.0</code>, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5/6/7/8/9, Xamarin, Unity, and MAUI. It also ships a <code>net8.0</code> target for newer API features like <code>IParsable</code> and <code>ISpanFormattable</code>.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">What is the supported date range?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (approximately 1844-04-13 AD) to the last day of <strong>2199/12 BS</strong> (approximately 2143-04-12 AD). Calendar metadata (Tithi, holidays, events) is available for <strong>2001 through 2089 BS</strong>.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Does NepDate have any external dependencies?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has zero external runtime dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> references are internalized using <code>PrivateAssets=all</code>, so they never surface in your dependency graph.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Is NepDate thread-safe?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>Yes. <code>NepaliDate</code> is a <code>readonly struct</code>, making it inherently immutable and safe for concurrent access. <code>BulkConvert</code> operations use thread-safe parallel processing.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">How does NepDate handle invalid dates?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>Constructors and <code>Parse</code> throw <code>InvalidNepaliDateFormatException</code> or <code>ArgumentOutOfRangeException</code> for invalid input. Use <code>TryParse</code> for non-throwing validation. Each month's day count is enforced per year (29 to 32 days depending on month and year).</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">Can I use NepDate with ASP.NET model binding?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>Yes. <code>NepaliDate</code> has a registered <code>TypeConverter</code> that enables automatic model binding in ASP.NET MVC/Web API, WPF, and WinForms property grids. It converts to/from <code>string</code>, <code>int</code> (YYYYMMDD), and <code>DateTime</code>.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">How is calendar data (Tithi, holidays) sourced?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 through 2089 BS</strong>. The data is compiled into the library at build time. Properties return empty/default values for dates outside this range without throwing exceptions.</p></div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">What is the advantage of the struct design?</button>
+            <div class="faq-a"><div class="faq-a-inner"><p><code>NepaliDate</code> is a <code>readonly partial struct</code>, which means instances live on the stack rather than the heap. This eliminates garbage collection pressure and makes it extremely efficient for high-throughput scenarios like bulk date processing, large LINQ pipelines, and server-side batch jobs.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contributors -->
+    <section class="section" id="contributors" style="background:var(--bg-alt);">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-eyebrow">Community</div>
+          <h2 class="section-title">Built by contributors like you</h2>
+          <p class="section-sub">NepDate is open source and welcomes pull requests, bug reports, and ideas from anyone.</p>
+        </div>
+        <div class="contributors">
+          <a href="https://github.com/rajuprasai/NepDate/graphs/contributors" target="_blank" rel="noopener">
+            <img src="https://contrib.rocks/image?repo=rajuprasai/NepDate" alt="NepDate contributors" loading="lazy" />
+          </a>
+          <div style="margin-top:8px;">
+            <a class="btn btn-secondary" href="https://github.com/rajuprasai/NepDate/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Read the Contributing Guide</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sponsor -->
+    <section class="section" id="sponsor">
+      <div class="container">
+        <div class="sponsor-card">
+          <div class="sponsor-ico" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/><path d="M9 6c.5-1 1.6-1.6 2.7-1.6.5 0 1 .1 1.4.4-.5.5-.9 1.1-1.1 1.8l-.2.6c-.4-.1-.8-.2-1.2-.2-.6 0-1.2.2-1.6.5L8 7c.3-.4.6-.7 1-1Zm6 0 .5.6c.4.3 1 .5 1.6.5-.4-.3-1-.5-1.6-.5-.4 0-.8.1-1.2.2l-.2-.6c-.2-.7-.6-1.3-1.1-1.8.4-.3.9-.4 1.4-.4 1.1 0 2.2.6 2.6 1.6Z"/></svg>
+          </div>
+          <h3>Support NepDate</h3>
+          <p>NepDate is free, MIT licensed, and built in spare time. If it saves your project effort, drop a momo. It keeps the library, NepDate Widget, and the docs site actively maintained.</p>
+          <a class="btn btn-momo btn-lg" href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">
+            <span class="momo-ico" aria-hidden="true"><svg class="momo-ico-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M9 6.6c.4-1.1 1.5-1.9 2.7-1.9.4 0 .8.1 1.2.3-.4.4-.7.9-.9 1.5l-.2.7c-.4-.1-.8-.3-1.2-.3-.6 0-1.1.2-1.6.5l-.5-.4c.2-.2.3-.3.5-.4Zm6 0 .5-.4c.2.1.3.2.5.4-.4-.3-1-.5-1.6-.5-.4 0-.8.2-1.2.3l-.2-.7c-.2-.6-.5-1.1-.9-1.5.4-.2.8-.3 1.2-.3 1.2 0 2.3.8 2.7 1.9-.3.3-.6.6-1 .8Z"/><path d="M12 4.5c0-.7.6-1.3 1.3-1.3.4 0 .7.1 1 .4-.3.6-.5 1.3-.5 2 0 .3 0 .7.1 1l-.7-.1c-.7 0-1.3-.6-1.3-1.3 0-.3.1-.5.1-.7Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/></svg></span>
+            Buy me a momo
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" style="margin-bottom:12px;">
+            <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+            <span>NepDate</span>
+          </a>
+          <p>The fastest Bikram Sambat library for .NET. Open source, MIT licensed, made with care for the Nepali developer community.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="changelog.html">Changelog</a></li>
+            <li><a href="https://www.nuget.org/packages/NepDate/" target="_blank" rel="noopener">NuGet Package</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/issues" target="_blank" rel="noopener">Issues</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Sponsor</a></li>
+            <li><a href="https://github.com/rajuprasai/NepDate/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2023–2026 NepDate · MIT License</div>
+        <div>Made with care for the Nepali developer community.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

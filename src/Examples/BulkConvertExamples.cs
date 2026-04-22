@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace NepDate.Examples;
 
@@ -25,14 +22,14 @@ public class BulkConvertExamples
         Console.WriteLine("--- Basic Bulk Conversion ---");
 
         // Create a list of English dates
-        List<DateTime> englishDates = new()
-        {
-            new DateTime(2023, 4, 14),
-            new DateTime(2023, 4, 15),
-            new DateTime(2023, 4, 16),
-            new DateTime(2023, 4, 17),
-            new DateTime(2023, 4, 18)
-        };
+        List<DateTime> englishDates =
+        [
+            new(2023, 4, 14),
+            new(2023, 4, 15),
+            new(2023, 4, 16),
+            new(2023, 4, 17),
+            new(2023, 4, 18)
+        ];
 
         Console.WriteLine("Original English dates:");
         foreach (var date in englishDates)
