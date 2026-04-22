@@ -66,6 +66,7 @@ jobs:
           else
             v="${{ inputs.version }}"
             [ -z "$v" ] && v="${{ steps.csproj.outputs.version }}"
+            v="${v#v}"
           fi
           echo "version=$v" >> "$GITHUB_OUTPUT"
           echo "target version: $v"
