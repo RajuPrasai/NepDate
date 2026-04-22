@@ -1,6 +1,6 @@
 name: Publish NepDate to NuGet
 
-# Triggered when a version tag is pushed (e.g. v2.0.5) or manually from the
+# Triggered when a version tag is pushed (e.g. v2.0.6) or manually from the
 # Actions tab. The csproj <Version> is the source of truth; the tag (or
 # workflow_dispatch input) must match it exactly, otherwise publish fails.
 on:
