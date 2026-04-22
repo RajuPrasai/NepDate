@@ -90,11 +90,8 @@ jobs:
             exit 1
           fi
 
-      - name: Restore
-        run: dotnet restore "$PROJECT"
-
       - name: Pack
-        run: dotnet pack "$PROJECT" -c Release --no-restore -o "$ARTIFACTS"
+        run: dotnet pack "$PROJECT" -c Release -o "$ARTIFACTS"
 
       - name: List packed artifacts
         run: ls -la "$ARTIFACTS"
