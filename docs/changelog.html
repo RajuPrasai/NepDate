@@ -92,14 +92,14 @@
             <header class="release-head">
               <h2>v2.0.5</h2>
               <span class="tag">Latest</span>
-              <span class="date">October 2025</span>
+              <span class="date">April 2026</span>
             </header>
 
             <h3>Added</h3>
             <ul>
-              <li>Full calendar metadata support for <code>2001–2089 BS</code> including Tithi (lunar day), public holiday flag, and event descriptions in both Nepali and English.</li>
-              <li><code>NepaliDateRange</code> type with intersection, union, split-by-month, split-by-fiscal-quarter, working-days-only iteration, and set operations.</li>
-              <li><code>FiscalYear</code> static helpers plus instance methods on <code>NepaliDate</code> for Nepal fiscal year (Shrawan–Ashadh) start/end, quarter detection, and boundary queries.</li>
+              <li>Full calendar metadata support for <code>2001–2089 BS</code> including Tithi (lunar day), public holiday flag, and event descriptions in both Nepali and English, exposed through <code>NepaliDate.Calendar</code> returning a <code>CalendarInfo</code> struct.</li>
+              <li><code>NepaliDateRange</code> type with intersection, union, except, split-by-month, split-by-fiscal-quarter, working-day and weekend iteration, and interval-based enumeration.</li>
+              <li><code>FiscalYear</code> static helpers plus instance methods on <code>NepaliDate</code> for Nepal fiscal year (Shrawan–Ashadh) start, end, quarter detection, and boundary queries.</li>
               <li><code>SmartDateParser</code> with support for 100+ month-name spellings (English, Nepali Devanagari, and transliterations), alternate separators, short-year input, and Nepali Unicode digits.</li>
               <li><code>BulkConvert.ToNepaliDates</code> and <code>BulkConvert.ToEnglishDates</code> with automatic parallelization for datasets over 500 items and explicit <code>batchSize</code> control.</li>
               <li>Native <code>IParsable&lt;NepaliDate&gt;</code>, <code>ISpanParsable&lt;NepaliDate&gt;</code>, and <code>ISpanFormattable</code> implementations on the <code>net8.0</code> target.</li>
@@ -107,23 +107,47 @@
               <li><code>XmlSerializer</code> support via the <code>NepaliDateXmlSerializer</code> wrapper.</li>
               <li><code>TypeConverter</code> registration for ASP.NET model binding, WPF, and WinForms property grids.</li>
               <li><code>NepaliMonths</code>, <code>DateFormats</code>, <code>Separators</code>, and <code>FiscalYearQuarters</code> enums.</li>
-              <li><code>CalendarInfo</code> rich metadata struct returned by <code>NepaliDate.Calendar</code>.</li>
+              <li>Custom format strings via <code>FormatCustom</code> with token support (<code>yyyy</code>, <code>yy</code>, <code>MMMM</code>, <code>MMM</code>, <code>MM</code>, <code>M</code>, <code>dd</code>, <code>d</code>) plus literal quoting and escape sequences.</li>
             </ul>
 
             <h3>Improved</h3>
             <ul>
-              <li>BS → AD conversion path rewritten to use flat-array lookups. Now runs at <strong>62 ns/op</strong> with <strong>zero allocations</strong>.</li>
-              <li>AD → BS conversion optimized to <strong>277 ns/op</strong>, over 750× faster than the previous version and every competing library.</li>
+              <li>BS → AD conversion path rewritten to use flat-array lookups. Now runs at <strong>4.5 ns/op</strong> with <strong>zero allocations</strong>.</li>
+              <li>AD → BS conversion optimized to be over <strong>8,600× faster</strong> than the previous version and every competing library.</li>
               <li>Parsing performance improved across all input formats, including Unicode digit handling.</li>
-              <li>Internalized <code>Newtonsoft.Json</code> dependency using <code>PrivateAssets=all</code>, so consumers get a zero-dependency NuGet install.</li>
-              <li>Memory layout of <code>NepaliDate</code> tightened to pack into 4 bytes where possible.</li>
+              <li>Internalized <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> dependencies using <code>PrivateAssets=all</code>, so consumers get a zero-dependency NuGet install.</li>
+              <li>Memory layout of <code>NepaliDate</code> tightened; the type now packs into 4 bytes and is fully stack-allocated.</li>
+              <li>Documentation website launched at <a href="https://rajuprasai.github.io/NepDate/" target="_blank" rel="noopener">rajuprasai.github.io/NepDate</a> with full API reference, searchable docs, and runnable examples.</li>
             </ul>
 
             <h3>Fixed</h3>
             <ul>
+              <li><code>autoAdjust</code> on <code>NepaliDate</code> constructor and <code>TryParse</code> now correctly swaps month and day when month is in range <code>13–31</code> and day is <code>1–12</code>, matching the documented behavior. Previously inputs like <code>"2080/13/12"</code> threw instead of yielding <code>2080/12/13</code>.</li>
+              <li>Conversion accuracy at the upper end of the supported year range. Future dates near <code>2199 BS</code> now resolve correctly.</li>
+              <li><code>2082/03</code> and <code>2082/04</code> day-count drift corrected (issue <a href="https://github.com/rajuprasai/NepDate/issues/18" target="_blank" rel="noopener">#18</a>).</li>
+              <li>English <code>DateTime</code> round-trip preserves <code>DateTimeKind</code> where applicable.</li>
               <li>Corrected boundary handling at the start and end of the supported year range (<code>1901 BS</code> and <code>2199 BS</code>).</li>
               <li>Leap-day handling in <code>AddMonths</code> and <code>AddYears</code> now clamps correctly when the target month has fewer days than the source.</li>
               <li><code>TryParse</code> no longer throws on empty strings or whitespace; it returns <code>false</code> as documented.</li>
+            </ul>
+
+            <h3>Maintenance</h3>
+            <ul>
+              <li>Repository moved to <a href="https://github.com/rajuprasai/NepDate" target="_blank" rel="noopener">github.com/rajuprasai/NepDate</a>. Old links continue to redirect.</li>
+              <li>Package metadata refreshed (author, project URL, copyright through 2026).</li>
+              <li>Test suite expanded to 542 unit tests covering construction, parsing, formatting, conversion, fiscal year, ranges, calendar metadata, and serialization.</li>
+            </ul>
+          </article>
+
+          <!-- v2.0.4 -->
+          <article class="release">
+            <header class="release-head">
+              <h2>v2.0.4</h2>
+              <span class="date">2025</span>
+            </header>
+            <h3>Fixed</h3>
+            <ul>
+              <li>AI-driven optimization pass on hot paths in dictionary lookup and parsing.</li>
             </ul>
           </article>
 
