@@ -1,0 +1,125 @@
+name: Publish NepDate to NuGet
+
+# Triggered when a version tag is pushed (e.g. v2.0.5) or manually from the
+# Actions tab. The csproj <Version> is the source of truth; the tag (or
+# workflow_dispatch input) must match it exactly, otherwise publish fails.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish. Must equal <Version> in src/NepDate/NepDate.csproj. Leave blank to use the csproj value.'
+        required: false
+
+permissions:
+  contents: write   # needed to create the GitHub Release on tag pushes
+  id-token: write   # reserved for future trusted publishing; harmless today
+
+concurrency:
+  group: publish-nuget-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      PROJECT: src/NepDate/NepDate.csproj
+      ARTIFACTS: ${{ github.workspace }}/artifacts
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Read <Version> from csproj
+        id: csproj
+        shell: bash
+        run: |
+          set -euo pipefail
+          v=$(grep -oPm1 "(?<=<Version>)[^<]+" "$PROJECT" || true)
+          if [ -z "$v" ]; then
+            echo "Could not read <Version> from $PROJECT" >&2
+            exit 1
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "csproj version: $v"
+
+      - name: Resolve target version
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            ref="${GITHUB_REF#refs/tags/}"
+            v="${ref#v}"
+          else
+            v="${{ inputs.version }}"
+            [ -z "$v" ] && v="${{ steps.csproj.outputs.version }}"
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "target version: $v"
+
+      - name: Verify version matches csproj
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.target.outputs.version }}" != "${{ steps.csproj.outputs.version }}" ]; then
+            echo "Tag/input version (${{ steps.target.outputs.version }}) does not match csproj <Version> (${{ steps.csproj.outputs.version }})." >&2
+            echo "Bump <Version> in $PROJECT to match the tag, then re-tag." >&2
+            exit 1
+          fi
+
+      - name: Verify NUGET_API_KEY secret is configured
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "Repository secret NUGET_API_KEY is not set. Add it under Settings -> Secrets and variables -> Actions." >&2
+            exit 1
+          fi
+
+      - name: Restore (library)
+        run: dotnet restore "$PROJECT"
+
+        run: dotnet restore "$PROJECT"
+        run: dotnet pack "$PROJECT" -c Release --no-restore -o "$ARTIFACTS"
+
+      - name: List packed artifacts
+        run: ls -la "$ARTIFACTS"
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NepDate-${{ steps.target.outputs.version }}-nupkg
+          path: ${{ env.ARTIFACTS }}/*.*nupkg
+          if-no-files-found: error
+
+      - name: Push to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          dotnet nuget push "$ARTIFACTS/*.nupkg" \
+            --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: NepDate ${{ steps.target.outputs.version }}
+          generate_release_notes: true
+          files: ${{ env.ARTIFACTS }}/*.nupkg
