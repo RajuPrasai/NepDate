@@ -90,8 +90,11 @@ jobs:
             exit 1
           fi
 
+      - name: Build
+        run: dotnet build "$PROJECT" -c Release
+
       - name: Pack
-        run: dotnet pack "$PROJECT" -c Release -o "$ARTIFACTS"
+        run: dotnet pack "$PROJECT" -c Release --no-build -o "$ARTIFACTS"
 
       - name: List packed artifacts
         run: ls -la "$ARTIFACTS"
