@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ea580c" />
+  <title>Documentation - NepDate</title>
+  <meta name="description" content="Complete API reference for NepDate: conversion, parsing, formatting, fiscal year, calendar metadata, date ranges, bulk conversion, and serialization." />
+  <link rel="canonical" href="https://rajuprasai.github.io/NepDate/docs.html" />
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=2" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=2" />
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Inline theme bootstrap. Resolves stored preference (light/dark/system)
+       to a concrete data-theme so first paint matches the final state. -->
+  <script>
+    (function () {
+      try {
+        var p = localStorage.getItem('nepdate-theme');
+        if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'system';
+        var resolved = p === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : p;
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.setAttribute('data-theme-pref', p);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-theme-pref', 'system');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+        <span>NepDate</span>
+      </a>
+      <nav class="nav-main" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="docs.html" class="active">Documentation</a>
+        <a href="changelog.html">Changelog</a>
+      </nav>
+      <div class="header-right">
+                <a class="btn btn-momo btn-sm" href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener" aria-label="Buy me a momo">
+          <span class="momo-ico" aria-hidden="true"><svg class="momo-ico-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 14.2c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5c0 .9-.7 1.6-1.6 1.6H5.1c-.9 0-1.6-.7-1.6-1.6Z"/><path d="M9 6.6c.4-1.1 1.5-1.9 2.7-1.9.4 0 .8.1 1.2.3-.4.4-.7.9-.9 1.5l-.2.7c-.4-.1-.8-.3-1.2-.3-.6 0-1.1.2-1.6.5l-.5-.4c.2-.2.3-.3.5-.4Zm6 0 .5-.4c.2.1.3.2.5.4-.4-.3-1-.5-1.6-.5-.4 0-.8.2-1.2.3l-.2-.7c-.2-.6-.5-1.1-.9-1.5.4-.2.8-.3 1.2-.3 1.2 0 2.3.8 2.7 1.9-.3.3-.6.6-1 .8Z"/><path d="M12 4.5c0-.7.6-1.3 1.3-1.3.4 0 .7.1 1 .4-.3.6-.5 1.3-.5 2 0 .3 0 .7.1 1l-.7-.1c-.7 0-1.3-.6-1.3-1.3 0-.3.1-.5.1-.7Z"/><path d="M5.5 18h13l.4 1.4c.2.6-.3 1.2-.9 1.2H6c-.6 0-1.1-.6-.9-1.2L5.5 18Z"/></svg></span>
+          <span>Buy me a momo</span>
+        </a>
+        <a class="github-btn" href="https://github.com/RajuPrasai/NepDate" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <div class="theme-switch" role="group" aria-label="Theme">
+          <button type="button" data-theme-value="light" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          </button>
+          <button type="button" data-theme-value="dark" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </button>
+        </div>
+        <button class="icon-btn hamburger" aria-label="Open menu"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="overlay"></div>
+  <nav class="mobile-nav" aria-label="Mobile">
+    <a href="index.html">Home</a>
+    <a href="docs.html" class="active">Documentation</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://github.com/RajuPrasai/NepDate" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Buy me a momo</a>
+  </nav>
+
+  <button class="docs-menu-btn" aria-label="Open documentation menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <span>Menu</span>
+  </button>
+
+  <main id="main">
+    <div class="docs-layout">
+
+      <!-- Left sidebar -->
+      <aside class="docs-sidebar">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search documentation..." data-search aria-label="Search docs" />
+          <kbd>⌘ K</kbd>
+        </div>
+        <div class="search-empty">No results found.</div>
+
+        <div class="toc-group" data-group="getting-started">
+          <div class="toc-group-head">Getting Started</div>
+          <ul>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#creating-dates">Creating NepaliDate Instances</a></li>
+            <li><a href="#accessing-properties">Accessing Properties</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="date-ops">
+          <div class="toc-group-head">Date Operations</div>
+          <ul>
+            <li><a href="#add-days">Adding and Subtracting Days</a></li>
+            <li><a href="#add-months">Adding and Subtracting Months</a></li>
+            <li><a href="#add-years">Adding and Subtracting Years</a></li>
+            <li><a href="#fractional-months">Fractional Month Addition</a></li>
+            <li><a href="#away-from-month-end">Away From Month End</a></li>
+            <li><a href="#comparison">Comparison Operators</a></li>
+            <li><a href="#subtract">Date Difference (Subtract)</a></li>
+            <li><a href="#conversion">Conversion (BS ↔ AD)</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="bulk">
+          <div class="toc-group-head">Bulk Conversion</div>
+          <ul>
+            <li><a href="#bulk-to-nepali">ToNepaliDates</a></li>
+            <li><a href="#bulk-to-english">ToEnglishDates</a></li>
+            <li><a href="#batch-to-nepali">BatchProcessToNepaliDates</a></li>
+            <li><a href="#batch-to-english">BatchProcessToEnglishDates</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="range">
+          <div class="toc-group-head">Date Range</div>
+          <ul>
+            <li><a href="#range-create">Creating Ranges</a></li>
+            <li><a href="#range-factories">Factory Methods</a></li>
+            <li><a href="#range-contains">Properties and Containment</a></li>
+            <li><a href="#range-set-ops">Set Operations</a></li>
+            <li><a href="#range-split">Splitting</a></li>
+            <li><a href="#range-iterate">Iteration and Filtering</a></li>
+            <li><a href="#range-working-days">Working and Weekend Days</a></li>
+            <li><a href="#range-format">Range Formatting</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="format">
+          <div class="toc-group-head">Formatting</div>
+          <ul>
+            <li><a href="#format-default">Default Format</a></li>
+            <li><a href="#format-custom">Custom Format and Separator</a></li>
+            <li><a href="#format-long">Long Date String</a></li>
+            <li><a href="#format-unicode">Unicode String</a></li>
+            <li><a href="#format-long-unicode">Long Date Unicode String</a></li>
+            <li><a href="#format-iformattable">IFormattable Specifiers</a></li>
+            <li><a href="#format-tokens">Custom Format Tokens</a></li>
+            <li><a href="#format-span">ISpanFormattable</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="smart-parse">
+          <div class="toc-group-head">Smart Parsing</div>
+          <ul>
+            <li><a href="#smart-parse">SmartDateParser.Parse</a></li>
+            <li><a href="#smart-tryparse">SmartDateParser.TryParse</a></li>
+            <li><a href="#smart-extensions">String Extensions</a></li>
+            <li><a href="#smart-auto-adjust">Auto Adjust Parsing</a></li>
+            <li><a href="#smart-formats">Supported Formats</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="fiscal">
+          <div class="toc-group-head">Fiscal Year</div>
+          <ul>
+            <li><a href="#fy-instance">Instance Methods</a></li>
+            <li><a href="#fy-static">Static Methods</a></li>
+            <li><a href="#fy-quarters">Quarters</a></li>
+            <li><a href="#fy-offset">Year Offset</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="calendar">
+          <div class="toc-group-head">Calendar Data</div>
+          <ul>
+            <li><a href="#cal-tithi">Tithi</a></li>
+            <li><a href="#cal-holidays">Public Holidays</a></li>
+            <li><a href="#cal-events">Events</a></li>
+            <li><a href="#cal-info">GetCalendarInfo</a></li>
+            <li><a href="#cal-coverage">Data Coverage</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="serialization">
+          <div class="toc-group-head">Serialization</div>
+          <ul>
+            <li><a href="#ser-stj">System.Text.Json</a></li>
+            <li><a href="#ser-newtonsoft">Newtonsoft.Json</a></li>
+            <li><a href="#ser-xml">XML Serialization</a></li>
+            <li><a href="#ser-modes">String vs Object Format</a></li>
+            <li><a href="#ser-config">Configuration Extensions</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="types">
+          <div class="toc-group-head">Type System</div>
+          <ul>
+            <li><a href="#ts-icomparable">IComparable</a></li>
+            <li><a href="#ts-iequatable">IEquatable</a></li>
+            <li><a href="#ts-iformattable">IFormattable</a></li>
+            <li><a href="#ts-ispanformattable">ISpanFormattable</a></li>
+            <li><a href="#ts-iparsable">IParsable / ISpanParsable</a></li>
+            <li><a href="#ts-typeconverter">TypeConverter</a></li>
+            <li><a href="#ts-jsonconverter">JsonConverter Auto Registration</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="enums">
+          <div class="toc-group-head">Enums</div>
+          <ul>
+            <li><a href="#enum-months">NepaliMonths</a></li>
+            <li><a href="#enum-formats">DateFormats</a></li>
+            <li><a href="#enum-separators">Separators</a></li>
+            <li><a href="#enum-quarters">FiscalYearQuarters</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="exceptions">
+          <div class="toc-group-head">Exceptions</div>
+          <ul>
+            <li><a href="#exc-invalid-format">InvalidNepaliDateFormatException</a></li>
+            <li><a href="#exc-argument-out">ArgumentOutOfRangeException</a></li>
+            <li><a href="#exc-argument-null">ArgumentNullException</a></li>
+            <li><a href="#exc-format">FormatException</a></li>
+          </ul>
+        </div>
+
+        <div class="toc-group" data-group="advanced">
+          <div class="toc-group-head">Advanced</div>
+          <ul>
+            <li><a href="#adv-struct">Struct Design</a></li>
+            <li><a href="#adv-threadsafe">Thread Safety</a></li>
+            <li><a href="#adv-internalized">Internalized Dependencies</a></li>
+            <li><a href="#adv-range">Supported Range</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <article class="docs-content">
+        <h1>NepDate Documentation</h1>
+        <p class="docs-lede">Complete API reference for NepDate <strong>v2.0.5</strong>. Every public method, property, enum, and exception is documented with signatures and working code examples.</p>
+
+        <!-- ============= Getting Started ============= -->
+        <h2 id="getting-started">Getting Started</h2>
+
+        <h3 id="installation">Installation</h3>
+        <p>Install from NuGet using your preferred method:</p>
+        <div class="install-tabs" data-tabs>
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="cli" role="tab">.NET CLI</button>
+            <button class="tab" data-tab="pm" role="tab">Package Manager Console</button>
+            <button class="tab" data-tab="ref" role="tab">PackageReference</button>
+          </div>
+          <div class="tab-panel active" data-panel="cli">
+<pre><code class="language-bash">dotnet add package NepDate</code></pre>
+          </div>
+          <div class="tab-panel" data-panel="pm">
+<pre><code class="language-bash">Install-Package NepDate</code></pre>
+          </div>
+          <div class="tab-panel" data-panel="ref">
+<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.0.5" /&gt;</code></pre>
+          </div>
+        </div>
+        <p>NepDate has zero external runtime dependencies. Both <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> references are internalized using <code>PrivateAssets=all</code>.</p>
+
+        <h3 id="quick-start">Quick Start</h3>
+<pre><code class="language-csharp">using NepDate;
+
+// Create a NepaliDate from a string
+var date = new NepaliDate("2081/04/15");
+
+// Access components
+Console.WriteLine(date.Year);         // 2081
+Console.WriteLine(date.Month);        // 4
+Console.WriteLine(date.Day);          // 15
+Console.WriteLine(date.EnglishDate);  // 2024-07-30
+
+// Convert from DateTime
+var today = DateTime.Today.ToNepaliDate();
+Console.WriteLine(today);             // e.g. 2083/01/07
+
+// Arithmetic
+var nextMonth = date.AddMonths(1);
+var weekLater = date.AddDays(7);
+
+// Formatting
+Console.WriteLine(date.ToString("MMMM dd, yyyy"));   // Shrawan 15, 2081
+Console.WriteLine(date.ToLongDateUnicodeString());    // श्रावण १५, २०८१</code></pre>
+
+        <h3 id="creating-dates">Creating NepaliDate Instances</h3>
+<pre><code class="language-csharp">// From individual components
+var date1 = new NepaliDate(2081, 4, 15);
+
+// From YYYY/MM/DD string
+var date2 = new NepaliDate("2081/04/15");
+
+// From YYYYMMDD integer
+var date3 = new NepaliDate(20810415);
+
+// From DateTime
+var date4 = new NepaliDate(DateTime.Today);
+
+// Extension method
+var date5 = DateTime.Today.ToNepaliDate();
+
+// Current date
+var today = NepaliDate.Today;
+var now   = NepaliDate.Now;  // same as Today</code></pre>
+
+        <h3 id="accessing-properties">Accessing Properties</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>Year</code></td><td><code>int</code></td><td>Year component (1901 to 2199).</td></tr>
+            <tr><td><code>Month</code></td><td><code>int</code></td><td>Month component (1 = Baisakh through 12 = Chaitra).</td></tr>
+            <tr><td><code>Day</code></td><td><code>int</code></td><td>Day component (1 to <code>MonthEndDay</code>, range 29 to 32).</td></tr>
+            <tr><td><code>EnglishDate</code></td><td><code>DateTime</code></td><td>Gregorian equivalent. Time is always midnight. Throws on default instance.</td></tr>
+            <tr><td><code>DayOfWeek</code></td><td><code>DayOfWeek</code></td><td>Day of the week. Saturday is Nepal's official weekly holiday.</td></tr>
+            <tr><td><code>DayOfYear</code></td><td><code>int</code></td><td>1-based ordinal within the BS calendar year.</td></tr>
+            <tr><td><code>MonthEndDay</code></td><td><code>int</code></td><td>Number of days in this month/year (29 to 32).</td></tr>
+            <tr><td><code>MonthName</code></td><td><code>NepaliMonths</code></td><td>Enum for the month name.</td></tr>
+            <tr><td><code>IsDefault</code></td><td><code>bool</code></td><td>True when the instance is uninitialized (<code>default</code>).</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+<pre><code class="language-csharp">var date = new NepaliDate("2079/12/16");
+
+int year        = date.Year;            // 2079
+int month       = date.Month;           // 12
+int day         = date.Day;             // 16
+DateTime eng    = date.EnglishDate;     // 2023/03/30
+DayOfWeek dow   = date.DayOfWeek;       // Thursday
+int dayOfYear   = date.DayOfYear;       // 346
+int monthEndDay = date.MonthEndDay;     // 30
+NepaliDate end  = date.MonthEndDate();  // 2079/12/30
+NepaliMonths mn = date.MonthName;       // Chaitra
+bool isDefault  = date.IsDefault;       // false</code></pre>
+
+        <p><strong>Calendar properties:</strong></p>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari. Empty outside 2001–2089 BS.</td></tr>
+            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi transliterated to English. Empty outside 2001–2089 BS.</td></tr>
+            <tr><td><code>IsPublicHoliday</code></td><td><code>bool</code></td><td>Gazetted public holiday flag based on cross-verified calendar data.</td></tr>
+            <tr><td><code>EventsNp</code></td><td><code>string[]</code></td><td>Event names in Nepali. Empty array if none.</td></tr>
+            <tr><td><code>EventsEn</code></td><td><code>string[]</code></td><td>Event names in English. Empty array if none.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p><strong>Static properties:</strong></p>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>NepaliDate.Today</code></td><td><code>NepaliDate</code></td><td>Current date per local system clock.</td></tr>
+            <tr><td><code>NepaliDate.Now</code></td><td><code>NepaliDate</code></td><td>Same as <code>Today</code>. Parity with <code>DateTime.Now</code>.</td></tr>
+            <tr><td><code>NepaliDate.MinValue</code></td><td><code>NepaliDate</code></td><td>1 Baisakh 1901 BS (approx 1844-04-13 AD).</td></tr>
+            <tr><td><code>NepaliDate.MaxValue</code></td><td><code>NepaliDate</code></td><td>Last day of Chaitra 2199 BS (approx 2143-04-12 AD).</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ============= Date Operations ============= -->
+        <h2 id="date-operations">Date Operations</h2>
+
+        <h3 id="add-days">Adding and Subtracting Days</h3>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/32");
+
+var later   = date.AddDays(5);   // 2081/05/05
+var earlier = date.AddDays(-5);  // 2081/04/27</code></pre>
+        <p><strong>Signature:</strong> <code>NepaliDate AddDays(double days)</code>. Adds the specified number of days. Performed in the Gregorian domain then converted back. Negative values move backward.</p>
+
+        <h3 id="add-months">Adding and Subtracting Months</h3>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/32");
+
+var plus2  = date.AddMonths(2);   // 2081/06/30
+var minus2 = date.AddMonths(-2);  // 2081/02/32</code></pre>
+        <p><strong>Signature:</strong> <code>NepaliDate AddMonths(double months, bool awayFromMonthEnd = false)</code>. Adds whole or fractional months. Fractional months are converted to days using approximately 30.42 days per month. Negative values move backward.</p>
+
+        <h3 id="add-years">Adding and Subtracting Years</h3>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/15");
+var nextYear = date.AddYears(1);   // 2082/04/15
+var prevYear = date.AddYears(-1);  // 2080/04/15</code></pre>
+        <p><strong>Signature:</strong> <code>NepaliDate AddYears(int years, bool awayFromMonthEnd = false)</code>. Delegates to <code>AddMonths(years * 12)</code>.</p>
+
+        <h3 id="fractional-months">Fractional Month Addition</h3>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/32");
+var frac = date.AddMonths(2.5);  // 2081/07/15</code></pre>
+        <p>Fractional months are converted to days using the approximation of 30.42 days per month.</p>
+
+        <h3 id="away-from-month-end">Away From Month End</h3>
+        <p>When <code>awayFromMonthEnd</code> is <code>true</code>, the result is pulled away from the month-end boundary into the next month. Useful when you need a specific day rather than clamping.</p>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/32");
+
+// Default: clamps to month end
+var clamped = date.AddMonths(2);                           // 2081/06/30
+
+// Away from month end: overflows into next month
+var overflow = date.AddMonths(2, awayFromMonthEnd: true);  // 2081/07/02</code></pre>
+
+        <h3 id="comparison">Comparison Operators</h3>
+<pre><code class="language-csharp">var a = NepaliDate.Parse("2079/12/16");
+var b = NepaliDate.Parse("2080/01/01");
+
+bool eq = a == b;  // false
+bool ne = a != b;  // true
+bool lt = a < b;   // true
+bool le = a <= b;  // true
+bool gt = a > b;   // false
+bool ge = a >= b;  // false</code></pre>
+        <p>All standard comparison operators are supported through <code>IComparable&lt;NepaliDate&gt;</code> and operator overloads.</p>
+
+        <h3 id="subtract">Date Difference (Subtract)</h3>
+<pre><code class="language-csharp">var a = NepaliDate.Parse("2079/12/16");
+var b = NepaliDate.Parse("2080/06/01");
+
+TimeSpan diff1 = b - a;           // operator overload
+TimeSpan diff2 = b.Subtract(a);   // method equivalent</code></pre>
+        <p><strong>Signature:</strong> <code>TimeSpan Subtract(NepaliDate nepDateTo)</code>. Returns the elapsed time between this date and another.</p>
+
+        <h3 id="conversion">Conversion (BS ↔ AD)</h3>
+<pre><code class="language-csharp">// BS to AD
+DateTime eng = NepaliDate.Parse("2079/12/16").EnglishDate;
+
+// AD to BS
+NepaliDate nep = new NepaliDate(DateTime.Now);
+// or
+NepaliDate nep2 = DateTime.Now.ToNepaliDate();  // extension method
+
+string nepStr = nep.ToString();  // "2083/01/07"</code></pre>
+
+        <!-- ============= Bulk Conversion ============= -->
+        <h2 id="bulk">Bulk Conversion</h2>
+
+        <h3 id="bulk-to-nepali">ToNepaliDates</h3>
+<pre><code class="language-csharp">var engDates = new List&lt;DateTime&gt; { DateTime.Today, DateTime.Today.AddDays(1) };
+IEnumerable&lt;NepaliDate&gt; nepDates = NepaliDate.BulkConvert.ToNepaliDates(engDates);</code></pre>
+        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; ToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, bool useParallel = true)</code>. Converts a collection of <code>DateTime</code> values. Automatically uses parallel processing for collections exceeding 500 items.</p>
+
+        <h3 id="bulk-to-english">ToEnglishDates</h3>
+<pre><code class="language-csharp">// From NepaliDate collection
+IEnumerable&lt;DateTime&gt; eng1 = NepaliDate.BulkConvert.ToEnglishDates(nepDates);
+
+// From string collection
+var nepStrings = new List&lt;string&gt; { "2080/01/01", "2080/02/15" };
+IEnumerable&lt;DateTime&gt; eng2 = NepaliDate.BulkConvert.ToEnglishDates(nepStrings);</code></pre>
+        <p><strong>Signatures:</strong></p>
+        <ul>
+          <li><code>static IEnumerable&lt;DateTime&gt; ToEnglishDates(IEnumerable&lt;NepaliDate&gt; nepDates, bool useParallel = true)</code></li>
+          <li><code>static IEnumerable&lt;DateTime&gt; ToEnglishDates(IEnumerable&lt;string&gt; nepDates, bool useParallel = true)</code></li>
+        </ul>
+
+        <h3 id="batch-to-nepali">BatchProcessToNepaliDates</h3>
+<pre><code class="language-csharp">var largeDateList = Enumerable.Range(0, 10000).Select(i => DateTime.Today.AddDays(i));
+IEnumerable&lt;NepaliDate&gt; results =
+    NepaliDate.BulkConvert.BatchProcessToNepaliDates(largeDateList, batchSize: 2000);</code></pre>
+        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; BatchProcessToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, int batchSize = 1000)</code>. Processes in explicit batches. Throws <code>ArgumentOutOfRangeException</code> if <code>batchSize &lt; 1</code>.</p>
+
+        <h3 id="batch-to-english">BatchProcessToEnglishDates</h3>
+<pre><code class="language-csharp">IEnumerable&lt;DateTime&gt; results =
+    NepaliDate.BulkConvert.BatchProcessToEnglishDates(nepDates, batchSize: 2000);</code></pre>
+        <p><strong>Signature:</strong> <code>static IEnumerable&lt;DateTime&gt; BatchProcessToEnglishDates(IEnumerable&lt;NepaliDate&gt; nepDates, int batchSize = 1000)</code>.</p>
+
+        <!-- ============= Date Range ============= -->
+        <h2 id="date-range">Date Range Operations</h2>
+
+        <h3 id="range-create">Creating Ranges</h3>
+<pre><code class="language-csharp">var start = new NepaliDate(2080, 1, 1);
+var end   = new NepaliDate(2080, 3, 15);
+var range = new NepaliDateRange(start, end);</code></pre>
+        <p><strong>Constructor:</strong> <code>NepaliDateRange(NepaliDate start, NepaliDate end)</code>. Both inclusive. If <code>end &lt; start</code>, creates an empty range.</p>
+
+        <h3 id="range-factories">Factory Methods</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>SingleDay(NepaliDate date)</code></td><td><code>NepaliDateRange</code></td><td>Single day range.</td></tr>
+            <tr><td><code>FromDayCount(NepaliDate start, int days)</code></td><td><code>NepaliDateRange</code></td><td>Range spanning specified days. Throws if <code>days &lt; 1</code>.</td></tr>
+            <tr><td><code>ForMonth(int year, int month)</code></td><td><code>NepaliDateRange</code></td><td>Complete Nepali month.</td></tr>
+            <tr><td><code>ForFiscalYear(int fiscalYear)</code></td><td><code>NepaliDateRange</code></td><td>1 Shrawan to last day of Ashadh.</td></tr>
+            <tr><td><code>ForCalendarYear(int year)</code></td><td><code>NepaliDateRange</code></td><td>1 Baisakh to last day of Chaitra.</td></tr>
+            <tr><td><code>CurrentMonth()</code></td><td><code>NepaliDateRange</code></td><td>Current Nepali month.</td></tr>
+            <tr><td><code>CurrentFiscalYear()</code></td><td><code>NepaliDateRange</code></td><td>Current Nepali fiscal year.</td></tr>
+            <tr><td><code>CurrentCalendarYear()</code></td><td><code>NepaliDateRange</code></td><td>Current Nepali calendar year.</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">var single   = NepaliDateRange.SingleDay(start);
+var tenDays  = NepaliDateRange.FromDayCount(start, 10);
+var month    = NepaliDateRange.ForMonth(2080, 1);
+var fy       = NepaliDateRange.ForFiscalYear(2080);
+var calYear  = NepaliDateRange.ForCalendarYear(2080);
+var curMonth = NepaliDateRange.CurrentMonth();
+var curFY    = NepaliDateRange.CurrentFiscalYear();
+var curYear  = NepaliDateRange.CurrentCalendarYear();</code></pre>
+
+        <h3 id="range-contains">Properties and Containment</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Member</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>Start</code></td><td><code>NepaliDate</code></td><td>Start date (inclusive).</td></tr>
+            <tr><td><code>End</code></td><td><code>NepaliDate</code></td><td>End date (inclusive).</td></tr>
+            <tr><td><code>IsEmpty</code></td><td><code>bool</code></td><td>True when <code>Start &gt; End</code>.</td></tr>
+            <tr><td><code>Length</code></td><td><code>int</code></td><td>Number of days in the range. 0 if empty.</td></tr>
+            <tr><td><code>Contains(NepaliDate)</code></td><td><code>bool</code></td><td>Whether the range contains the date.</td></tr>
+            <tr><td><code>Contains(NepaliDateRange)</code></td><td><code>bool</code></td><td>Whether this range fully contains another.</td></tr>
+            <tr><td><code>Overlaps(NepaliDateRange)</code></td><td><code>bool</code></td><td>Whether ranges share at least one date.</td></tr>
+            <tr><td><code>IsAdjacentTo(NepaliDateRange)</code></td><td><code>bool</code></td><td>Whether ranges are adjacent (no overlap, 1 day gap).</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">var range = new NepaliDateRange(start, end);
+
+bool empty    = range.IsEmpty;           // false
+int  days     = range.Length;            // total days
+bool hasDate  = range.Contains(someDate);
+bool hasRange = range.Contains(otherRange);
+bool overlaps = range.Overlaps(otherRange);
+bool adjacent = range.IsAdjacentTo(otherRange);</code></pre>
+
+        <h3 id="range-set-ops">Set Operations (Intersect, Union, Except)</h3>
+<pre><code class="language-csharp">NepaliDateRange intersection = range.Intersect(otherRange);  // dates in both
+NepaliDateRange union        = range.Union(otherRange);       // all dates from both
+NepaliDateRange[] remaining  = range.Except(otherRange);      // 0, 1, or 2 ranges</code></pre>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>Intersect(NepaliDateRange)</code></td><td><code>NepaliDateRange</code></td><td>Dates present in both ranges. Empty if no overlap.</td></tr>
+            <tr><td><code>Union(NepaliDateRange)</code></td><td><code>NepaliDateRange</code></td><td>All dates from both ranges. May span the gap.</td></tr>
+            <tr><td><code>Except(NepaliDateRange)</code></td><td><code>NepaliDateRange[]</code></td><td>Remaining range(s) after excluding the other. Returns 0, 1, or 2 segments.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 id="range-split">Splitting (By Month, By Fiscal Quarter)</h3>
+<pre><code class="language-csharp">NepaliDateRange[] byMonth   = range.SplitByMonth();
+NepaliDateRange[] byQuarter = range.SplitByFiscalQuarter();</code></pre>
+
+        <h3 id="range-iterate">Iteration and Filtering</h3>
+<pre><code class="language-csharp">// Enumerate every date in the range
+foreach (NepaliDate date in range) { }
+
+// Dates at regular intervals
+IEnumerable&lt;NepaliDate&gt; weekly = range.DatesWithInterval(7);</code></pre>
+        <p><strong>Signature:</strong> <code>IEnumerable&lt;NepaliDate&gt; DatesWithInterval(int interval)</code>. Throws <code>ArgumentOutOfRangeException</code> if <code>interval &lt; 1</code>.</p>
+
+        <h3 id="range-working-days">Working and Weekend Days</h3>
+<pre><code class="language-csharp">// Working days (excludes Saturdays)
+IEnumerable&lt;NepaliDate&gt; working       = range.WorkingDays();
+
+// Working days (excludes Saturdays and Sundays)
+IEnumerable&lt;NepaliDate&gt; workingNoSun  = range.WorkingDays(excludeSunday: true);
+
+// Weekend days (Saturdays only)
+IEnumerable&lt;NepaliDate&gt; weekends      = range.WeekendDays();
+
+// Weekend days (Saturdays and Sundays)
+IEnumerable&lt;NepaliDate&gt; weekendsBoth  = range.WeekendDays(includeSunday: true);</code></pre>
+
+        <h3 id="range-format">Range Formatting</h3>
+<pre><code class="language-csharp">string basic     = range.ToString();
+// "2080/01/01 - 2080/03/15"
+
+string formatted = range.ToString(DateFormats.DayMonthYear, Separators.Dash);
+// "01-01-2080 - 15-03-2080"</code></pre>
+
+        <!-- ============= Formatting ============= -->
+        <h2 id="formatting">Formatting and Display</h2>
+
+        <h3 id="format-default">Default Format</h3>
+<pre><code class="language-csharp">var date = new NepaliDate("2079/02/06");
+date.ToString()   // "2079/02/06"</code></pre>
+        <p>Default format is <code>YYYY/MM/DD</code> with leading zeros.</p>
+
+        <h3 id="format-custom">Custom Format and Separator</h3>
+<pre><code class="language-csharp">date.ToString(DateFormats.DayMonthYear, Separators.Dash, leadingZeros: false)
+// "6-2-2079"</code></pre>
+        <p><strong>Signature:</strong> <code>string ToString(DateFormats dateFormat, Separators separator = ForwardSlash, bool leadingZeros = true)</code>.</p>
+
+        <h3 id="format-long">Long Date String</h3>
+<pre><code class="language-csharp">date.ToLongDateString()
+// "Jestha 06, 2079"
+
+date.ToLongDateString(leadingZeros: false, displayDayName: true, displayYear: false)
+// "Friday, Jestha 6"</code></pre>
+        <p><strong>Signature:</strong> <code>string ToLongDateString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)</code>.</p>
+
+        <h3 id="format-unicode">Unicode String</h3>
+<pre><code class="language-csharp">date.ToUnicodeString(DateFormats.DayMonthYear, Separators.Dot, leadingZeros: true)
+// "०६.०२.२०७९"</code></pre>
+        <p><strong>Signature:</strong> <code>string ToUnicodeString(DateFormats dateFormat = YearMonthDay, Separators separator = ForwardSlash, bool leadingZeros = true)</code>.</p>
+
+        <h3 id="format-long-unicode">Long Date Unicode String</h3>
+<pre><code class="language-csharp">date.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false)
+// "शुक्रबार, जेठ ६"</code></pre>
+        <p><strong>Signature:</strong> <code>string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)</code>.</p>
+
+        <h3 id="format-iformattable">IFormattable Format Specifiers</h3>
+        <p>NepaliDate implements <code>IFormattable</code> (and <code>ISpanFormattable</code> on .NET 6+). Format strings work in string interpolation, <code>string.Format</code>, and any <code>IFormattable</code> context.</p>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Specifier</th><th>Output</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>"d"</code> or <code>"G"</code></td><td><code>2079/02/06</code></td><td>Same as <code>ToString()</code>.</td></tr>
+            <tr><td><code>"D"</code></td><td><code>Jestha 06, 2079</code></td><td>Long date with leading zeros.</td></tr>
+            <tr><td><code>"s"</code></td><td><code>2079-02-06</code></td><td>Sortable, dash separated.</td></tr>
+            <tr><td>custom pattern</td><td>varies</td><td>See custom tokens below.</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">date.ToString("d")                     // 2079/02/06
+date.ToString("D")                     // Jestha 06, 2079
+date.ToString("s")                     // 2079-02-06
+date.ToString("dd-MM-yyyy")            // 06-02-2079
+date.ToString("MMMM dd, yyyy")         // Jestha 06, 2079
+date.ToString("MMM yyyy")              // Jes 2079
+date.ToString("dd 'of' MMMM")          // 06 of Jestha
+$"{date:s}"                            // 2079-02-06
+string.Format("{0:yyyy/MM/dd}", date)  // 2079/02/06</code></pre>
+
+        <h3 id="format-tokens">Custom Format Tokens</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Token</th><th>Description</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>yyyy</code></td><td>4 digit year</td><td>2079</td></tr>
+            <tr><td><code>yy</code></td><td>2 digit year</td><td>79</td></tr>
+            <tr><td><code>MMMM</code></td><td>Full month name</td><td>Jestha</td></tr>
+            <tr><td><code>MMM</code></td><td>3 letter abbreviation</td><td>Jes</td></tr>
+            <tr><td><code>MM</code></td><td>Zero padded month</td><td>02</td></tr>
+            <tr><td><code>M</code></td><td>Month number</td><td>2</td></tr>
+            <tr><td><code>dd</code></td><td>Zero padded day</td><td>06</td></tr>
+            <tr><td><code>d</code></td><td>Day number</td><td>6</td></tr>
+            <tr><td><code>'...'</code></td><td>Literal text</td><td><code>'of'</code> renders as "of"</td></tr>
+            <tr><td><code>\</code></td><td>Escape next character</td><td></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 id="format-span">ISpanFormattable</h3>
+        <p>On .NET 6+, NepaliDate implements <code>ISpanFormattable</code> for allocation-free formatting into <code>Span&lt;char&gt;</code>.</p>
+<pre><code class="language-csharp">Span&lt;char&gt; buffer = stackalloc char[32];
+bool success = date.TryFormat(buffer, out int charsWritten, "yyyy-MM-dd", null);</code></pre>
+
+        <!-- ============= Smart Parsing ============= -->
+        <h2 id="smart-parsing">Smart Date Parsing</h2>
+
+        <h3 id="smart-parse">SmartDateParser.Parse</h3>
+<pre><code class="language-csharp">NepaliDate d1 = SmartDateParser.Parse("15 Shrawan 2080");
+NepaliDate d2 = SmartDateParser.Parse("Shrawan 15, 2080");
+NepaliDate d3 = SmartDateParser.Parse("15 Saun 2080");        // alternate spelling
+NepaliDate d4 = SmartDateParser.Parse("२०८०/०४/१५");          // Nepali digits
+NepaliDate d5 = SmartDateParser.Parse("१५ श्रावण २०८०");      // full Nepali</code></pre>
+        <p><strong>Signature:</strong> <code>static NepaliDate Parse(string input)</code>. Parses using all strategies: standard numeric, Nepali Unicode digits, month name detection, ambiguous permutation. Throws <code>ArgumentNullException</code> for null input, <code>FormatException</code> for unparseable input.</p>
+
+        <h3 id="smart-tryparse">SmartDateParser.TryParse</h3>
+<pre><code class="language-csharp">if (SmartDateParser.TryParse("15 Shrawan 2080", out NepaliDate result))
+    Console.WriteLine(result);</code></pre>
+        <p><strong>Signature:</strong> <code>static bool TryParse(string input, out NepaliDate result)</code>. Same heuristics without throwing.</p>
+
+        <h3 id="smart-extensions">String Extension Methods</h3>
+<pre><code class="language-csharp">NepaliDate d1 = "15 Shrawan 2080".ToNepaliDate();
+
+if ("15 Shrawan 2080".TryToNepaliDate(out NepaliDate d2))
+    Console.WriteLine(d2);</code></pre>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>ToNepaliDate()</code></td><td><code>static NepaliDate ToNepaliDate(this string input)</code></td><td>Smart parses any supported format. Throws <code>FormatException</code>.</td></tr>
+            <tr><td><code>TryToNepaliDate()</code></td><td><code>static bool TryToNepaliDate(this string input, out NepaliDate result)</code></td><td>Non-throwing variant.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 id="smart-auto-adjust">Auto Adjust Parsing</h3>
+<pre><code class="language-csharp">NepaliDate p1 = NepaliDate.Parse("2077_05_25", autoAdjust: true);
+// 2077/05/25
+
+NepaliDate p2 = NepaliDate.Parse("25-05-077", autoAdjust: true);
+// 2077/05/25 (year < 1000 expanded, day > 32 swapped)
+
+NepaliDate p3 = NepaliDate.Parse("05/06/2077", autoAdjust: true);
+// 2077/06/05 (month in middle)
+
+NepaliDate p4 = NepaliDate.Parse("05/06/2077", autoAdjust: true, monthInMiddle: false);
+// 2077/05/06</code></pre>
+        <p><strong>Auto adjust rules (applied in order):</strong></p>
+        <ol>
+          <li><code>day &gt; 32</code>: swap year and day</li>
+          <li><code>monthInMiddle: false</code>: swap month and day first</li>
+          <li><code>month &gt; 12</code> and <code>day &lt; 13</code>: swap month and day</li>
+          <li><code>year &lt; 1000</code>: prepend current millennium (2000)</li>
+        </ol>
+<pre><code class="language-csharp">bool ok = NepaliDate.TryParse("05/06/2077", out NepaliDate result,
+                              autoAdjust: true, monthInMiddle: true);</code></pre>
+
+        <h3 id="smart-formats">Supported Formats and Spellings</h3>
+        <p>SmartDateParser recognizes:</p>
+        <ul>
+          <li><strong>Standard numeric:</strong> <code>2080/04/15</code>, <code>2080-04-15</code>, <code>2080.04.15</code>, etc.</li>
+          <li><strong>Nepali Unicode digits:</strong> <code>२०८०/०४/१५</code></li>
+          <li><strong>Month names (100+ spellings):</strong> Shrawan, Sawan, Saun, Srawan, श्रावण, साउन, etc. for all 12 months.</li>
+          <li><strong>Mixed formats:</strong> <code>15 Shrawan 2080</code>, <code>Shrawan 15, 2080</code>, <code>2080 Shrawan 15</code></li>
+          <li><strong>Optional suffixes:</strong> <code>B.S.</code>, <code>V.S.</code>, <code>गते</code>, <code>मिति</code> (stripped before parsing)</li>
+          <li><strong>2 digit year expansion:</strong> <code>80</code> becomes <code>2080</code></li>
+          <li><strong>Common separators:</strong> <code>/</code>, <code>-</code>, <code>.</code>, <code>_</code>, <code>\</code>, space, pipe, Nepali pipe</li>
+        </ul>
+
+        <!-- ============= Fiscal Year ============= -->
+        <h2 id="fiscal-year">Fiscal Year Operations</h2>
+        <p>Nepal's fiscal year runs from 1 Shrawan (month 4) to the last day of Ashadh (month 3) of the following year.</p>
+
+        <h3 id="fy-instance">Instance Methods</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>FiscalYearStartDate(int yearOffset = 0)</code></td><td><code>NepaliDate</code></td><td>Start date (1 Shrawan) of the containing fiscal year.</td></tr>
+            <tr><td><code>FiscalYearEndDate(int yearOffset = 0)</code></td><td><code>NepaliDate</code></td><td>End date (last day of Ashadh) of the containing fiscal year.</td></tr>
+            <tr><td><code>FiscalYearStartAndEndDate(int yearOffset = 0)</code></td><td><code>(NepaliDate, NepaliDate)</code></td><td>Both start and end dates.</td></tr>
+            <tr><td><code>FiscalYearQuarterStartDate(FiscalYearQuarters q = Current, int yearOffset = 0)</code></td><td><code>NepaliDate</code></td><td>Start of specified fiscal quarter.</td></tr>
+            <tr><td><code>FiscalYearQuarterEndDate(FiscalYearQuarters q = Current, int yearOffset = 0)</code></td><td><code>NepaliDate</code></td><td>End of specified fiscal quarter.</td></tr>
+            <tr><td><code>FiscalYearQuarterStartAndEndDate(FiscalYearQuarters q = Current, int yearOffset = 0)</code></td><td><code>(NepaliDate, NepaliDate)</code></td><td>Both quarter dates.</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/15");  // Q1 of FY 2081
+
+NepaliDate fyStart = date.FiscalYearStartDate();         // 2081/04/01
+NepaliDate fyEnd   = date.FiscalYearEndDate();           // 2082/03/last
+var (s, e)         = date.FiscalYearStartAndEndDate();
+
+NepaliDate qStart  = date.FiscalYearQuarterStartDate();  // 2081/04/01
+NepaliDate qEnd    = date.FiscalYearQuarterEndDate();    // 2081/06/30
+var (qs, qe)       = date.FiscalYearQuarterStartAndEndDate();
+
+// Next fiscal year
+NepaliDate nextFyStart = date.FiscalYearStartDate(yearOffset: 1);  // 2082/04/01</code></pre>
+
+        <h3 id="fy-static">Static Methods</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>GetFiscalYearStartDate(int fiscalYear)</code></td><td><code>NepaliDate</code></td><td>1 Shrawan of specified FY.</td></tr>
+            <tr><td><code>GetFiscalYearEndDate(int fiscalYear)</code></td><td><code>NepaliDate</code></td><td>Last day of Ashadh of FY+1.</td></tr>
+            <tr><td><code>GetFiscalYearStartAndEndDate(int fiscalYear)</code></td><td><code>(NepaliDate, NepaliDate)</code></td><td>Both dates.</td></tr>
+            <tr><td><code>GetFiscalYearQuarterStartDate(int fiscalYear, int month)</code></td><td><code>NepaliDate</code></td><td>Quarter start. Month determines which quarter.</td></tr>
+            <tr><td><code>GetFiscalYearQuarterEndDate(int fiscalYear, int month)</code></td><td><code>NepaliDate</code></td><td>Quarter end.</td></tr>
+            <tr><td><code>GetFiscalYearQuarterStartAndEndDate(int fiscalYear, int month)</code></td><td><code>(NepaliDate, NepaliDate)</code></td><td>Both quarter dates.</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">NepaliDate start = NepaliDate.GetFiscalYearStartDate(2080);  // 2080/04/01
+NepaliDate end   = NepaliDate.GetFiscalYearEndDate(2080);    // 2081/03/last
+var (s, e)       = NepaliDate.GetFiscalYearStartAndEndDate(2080);
+
+NepaliDate qS = NepaliDate.GetFiscalYearQuarterStartDate(2080, 4);  // 2080/04/01
+NepaliDate qE = NepaliDate.GetFiscalYearQuarterEndDate(2080, 4);    // 2080/06/30
+
+// Q4: month 1 of FY 2080 falls in calendar year 2081
+var (q4s, q4e) = NepaliDate.GetFiscalYearQuarterStartAndEndDate(2080, 1);
+// (2081/01/01, 2081/03/last)</code></pre>
+
+        <h3 id="fy-quarters">Quarters</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Quarter</th><th>Months</th><th>Month Range</th></tr></thead>
+          <tbody>
+            <tr><td>Q1 (First)</td><td>Shrawan to Ashoj</td><td>4 to 6</td></tr>
+            <tr><td>Q2 (Second)</td><td>Kartik to Poush</td><td>7 to 9</td></tr>
+            <tr><td>Q3 (Third)</td><td>Magh to Chaitra</td><td>10 to 12</td></tr>
+            <tr><td>Q4 (Fourth)</td><td>Baishakh to Ashadh</td><td>1 to 3</td></tr>
+          </tbody>
+        </table>
+        </div>
+<pre><code class="language-csharp">public enum FiscalYearQuarters
+{
+    Current = 0,    // resolved at runtime from the date's month
+    First   = 4,    // Shrawan to Ashoj
+    Second  = 7,    // Kartik to Poush
+    Third   = 10,   // Magh to Chaitra
+    Fourth  = 1,    // Baishakh to Ashadh
+}</code></pre>
+
+        <h3 id="fy-offset">Year Offset</h3>
+        <p>The <code>yearOffset</code> parameter shifts the result relative to the containing fiscal year. <code>0</code> means current, <code>1</code> means next FY, <code>-1</code> means previous FY.</p>
+<pre><code class="language-csharp">var date = new NepaliDate("2081/04/15");
+
+date.FiscalYearStartDate(yearOffset:  0);  // 2081/04/01 (current)
+date.FiscalYearStartDate(yearOffset:  1);  // 2082/04/01 (next)
+date.FiscalYearStartDate(yearOffset: -1);  // 2080/04/01 (previous)</code></pre>
+
+        <!-- ============= Calendar Data ============= -->
+        <h2 id="calendar-data">Calendar Data</h2>
+
+        <h3 id="cal-tithi">Tithi</h3>
+<pre><code class="language-csharp">var date = new NepaliDate(2081, 4, 15);
+string tithiNp = date.TithiNp;  // Nepali Devanagari tithi name
+string tithiEn = date.TithiEn;  // English transliterated tithi name</code></pre>
+        <p>Returns the lunar day (Tithi) for the date. Empty string for dates outside 2001–2089 BS.</p>
+
+        <h3 id="cal-holidays">Public Holidays</h3>
+<pre><code class="language-csharp">bool isHoliday = date.IsPublicHoliday;  // true if gazetted holiday</code></pre>
+        <p>Based on cross-verified Bikram Sambat calendar data. Returns <code>false</code> for dates outside the data range.</p>
+
+        <h3 id="cal-events">Events</h3>
+<pre><code class="language-csharp">string[] eventsNp = date.EventsNp;  // event names in Nepali
+string[] eventsEn = date.EventsEn;  // event names in English</code></pre>
+        <p>Returns an empty (non-null) array when there are no events.</p>
+
+        <h3 id="cal-info">GetCalendarInfo</h3>
+<pre><code class="language-csharp">CalendarInfo info = date.GetCalendarInfo();
+// info.TithiNp, info.TithiEn, info.IsPublicHoliday, info.EventsNp, info.EventsEn</code></pre>
+        <p><strong>Signature:</strong> <code>CalendarInfo GetCalendarInfo()</code>. Returns all calendar metadata in a single lookup. Prefer this over accessing individual properties when you need multiple pieces of calendar data.</p>
+
+        <p><strong>CalendarInfo struct:</strong></p>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari.</td></tr>
+            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi in English.</td></tr>
+            <tr><td><code>IsPublicHoliday</code></td><td><code>bool</code></td><td>Public holiday flag.</td></tr>
+            <tr><td><code>EventsNp</code></td><td><code>string[]</code></td><td>Event names in Nepali.</td></tr>
+            <tr><td><code>EventsEn</code></td><td><code>string[]</code></td><td>Event names in English.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 id="cal-coverage">Data Coverage</h3>
+        <p>Calendar data (Tithi, holidays, events) is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 to 2089 BS</strong>. All properties gracefully return empty or default values for dates outside this range without throwing exceptions.</p>
+
+        <!-- ============= Serialization ============= -->
+        <h2 id="serialization">Serialization</h2>
+
+        <h3 id="ser-stj">System.Text.Json</h3>
+        <p>On .NET 5+, a <code>[JsonConverter]</code> is auto-registered on <code>NepaliDate</code>, so basic serialization works without setup.</p>
+<pre><code class="language-csharp">using System.Text.Json;
+using NepDate.Serialization;
+
+// String format (default): "2080-04-15"
+var opts = new JsonSerializerOptions().ConfigureForNepaliDate();
+
+// Object format: {"Year":2080,"Month":4,"Day":15}
+var optsObj = new JsonSerializerOptions().ConfigureForNepaliDate(useObjectFormat: true);
+
+var date = new NepaliDate(2080, 4, 15);
+string json  = JsonSerializer.Serialize(date, opts);         // "2080-04-15"
+var restored = JsonSerializer.Deserialize&lt;NepaliDate&gt;(json, opts);</code></pre>
+
+        <h3 id="ser-newtonsoft">Newtonsoft.Json</h3>
+<pre><code class="language-csharp">using Newtonsoft.Json;
+using NepDate.Serialization;
+
+var settings    = new JsonSerializerSettings().ConfigureForNepaliDate();
+var settingsObj = new JsonSerializerSettings().ConfigureForNepaliDate(useObjectFormat: true);
+
+var date = new NepaliDate(2080, 4, 15);
+string json = JsonConvert.SerializeObject(date, settings);         // "2080-04-15"
+var back    = JsonConvert.DeserializeObject&lt;NepaliDate&gt;(json, settings);</code></pre>
+
+        <h3 id="ser-xml">XML Serialization</h3>
+<pre><code class="language-csharp">using System.Xml.Serialization;
+using NepDate.Serialization;
+
+public class PersonRecord
+{
+    public string Name { get; set; }
+    public NepaliDateXmlSerializer BirthDate { get; set; }
+
+    [XmlIgnore]
+    public NepaliDate ActualBirthDate
+    {
+        get =&gt; BirthDate?.Value ?? default;
+        set =&gt; BirthDate = new NepaliDateXmlSerializer(value);
+    }
+}
+
+var p = new PersonRecord
+{
+    Name = "Ram Sharma",
+    ActualBirthDate = new NepaliDate(2040, 2, 15)
+};
+var serializer = new XmlSerializer(typeof(PersonRecord));</code></pre>
+        <p><code>NepaliDateXmlSerializer</code> implements <code>IXmlSerializable</code>. Required because <code>NepaliDate</code> is a struct without a parameterless constructor.</p>
+
+        <h3 id="ser-modes">String vs Object Format</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Mode</th><th>JSON Output</th><th>When to Use</th></tr></thead>
+          <tbody>
+            <tr><td>String (default)</td><td><code>"2080-04-15"</code></td><td>APIs, compact payloads, human readable.</td></tr>
+            <tr><td>Object</td><td><code>{"Year":2080,"Month":4,"Day":15}</code></td><td>When consumers need individual components.</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Both modes accept either format on deserialization (string or object JSON), regardless of which mode was used for serialization.</p>
+
+        <h3 id="ser-config">Configuration Extensions</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Method</th><th>Target</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>ConfigureForNepaliDate(this JsonSerializerOptions, bool useObjectFormat = false)</code></td><td>System.Text.Json</td><td>Registers converter. Returns the options for chaining.</td></tr>
+            <tr><td><code>ConfigureForNepaliDate(this JsonSerializerSettings, bool useObjectFormat = false)</code></td><td>Newtonsoft.Json</td><td>Registers converter. Returns the settings for chaining.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ============= Type System ============= -->
+        <h2 id="type-system">Type System Integration</h2>
+
+        <h3 id="ts-icomparable">IComparable</h3>
+<pre><code class="language-csharp">int cmp = date1.CompareTo(date2);  // negative, zero, or positive</code></pre>
+        <p>Implements <code>IComparable&lt;NepaliDate&gt;</code> and <code>IComparable</code>. Compares using the internal integer representation (YYYYMMDD).</p>
+
+        <h3 id="ts-iequatable">IEquatable</h3>
+<pre><code class="language-csharp">bool eq = date1.Equals(date2);
+int hash = date1.GetHashCode();</code></pre>
+        <p>Implements <code>IEquatable&lt;NepaliDate&gt;</code>. Hash code is the internal YYYYMMDD integer.</p>
+
+        <h3 id="ts-iformattable">IFormattable</h3>
+<pre><code class="language-csharp">string s = string.Format("{0:yyyy-MM-dd}", date);
+string t = $"{date:MMMM dd, yyyy}";</code></pre>
+        <p>Enables format string support in interpolation, <code>string.Format</code>, and any <code>IFormattable</code> consumer.</p>
+
+        <h3 id="ts-ispanformattable">ISpanFormattable</h3>
+        <p>Available on .NET 6+. Enables allocation-free formatting.</p>
+<pre><code class="language-csharp">Span&lt;char&gt; buf = stackalloc char[32];
+date.TryFormat(buf, out int written, "yyyy-MM-dd", null);</code></pre>
+
+        <h3 id="ts-iparsable">IParsable and ISpanParsable</h3>
+        <p>Available on .NET 7+. Enables generic parsing in contexts that accept <code>IParsable&lt;T&gt;</code>.</p>
+<pre><code class="language-csharp">var d = NepaliDate.Parse("2080/04/15", null);  // IParsable&lt;NepaliDate&gt;.Parse
+bool ok = NepaliDate.TryParse("2080/04/15", null, out var result);</code></pre>
+
+        <h3 id="ts-typeconverter">TypeConverter</h3>
+        <p><code>NepaliDateTypeConverter</code> is auto-registered via the <code>[TypeConverter]</code> attribute. It enables:</p>
+        <ul>
+          <li>ASP.NET MVC / Web API model binding</li>
+          <li>WPF and WinForms data binding and property grids</li>
+          <li>Generic <code>TypeDescriptor.GetConverter()</code> usage</li>
+        </ul>
+        <p>Supports conversion to/from <code>string</code>, <code>int</code> (YYYYMMDD format), and <code>DateTime</code>.</p>
+
+        <h3 id="ts-jsonconverter">JsonConverter Auto Registration</h3>
+        <p>On .NET 5+, the <code>System.Text.Json</code> converter is registered via a <code>[JsonConverter]</code> attribute on the type, so basic <code>JsonSerializer.Serialize/Deserialize</code> calls work without any options configuration. Use <code>ConfigureForNepaliDate()</code> to opt into object-mode serialization or to support Newtonsoft.Json.</p>
+
+        <!-- ============= Enums ============= -->
+        <h2 id="enums">Enums</h2>
+
+        <h3 id="enum-months">NepaliMonths</h3>
+<pre><code class="language-csharp">public enum NepaliMonths
+{
+    Baisakh = 1,
+    Jestha  = 2,
+    Ashadh  = 3,
+    Shrawan = 4,
+    Bhadra  = 5,
+    Ashoj   = 6,
+    Kartik  = 7,
+    Mangsir = 8,
+    Poush   = 9,
+    Magh    = 10,
+    Falgun  = 11,
+    Chaitra = 12,
+}</code></pre>
+
+        <h3 id="enum-formats">DateFormats</h3>
+<pre><code class="language-csharp">public enum DateFormats
+{
+    YearMonthDay,
+    YearDayMonth,
+    MonthYearDay,
+    MonthDayYear,
+    DayYearMonth,
+    DayMonthYear,
+}</code></pre>
+
+        <h3 id="enum-separators">Separators</h3>
+<pre><code class="language-csharp">public enum Separators
+{
+    ForwardSlash,
+    BackwardSlash,
+    Dash,
+    Dot,
+    Underscore,
+    Space,
+}</code></pre>
+
+        <h3 id="enum-quarters">FiscalYearQuarters</h3>
+<pre><code class="language-csharp">public enum FiscalYearQuarters
+{
+    Current = 0,    // resolved at runtime from the date's month
+    First   = 4,    // Shrawan to Ashoj
+    Second  = 7,    // Kartik to Poush
+    Third   = 10,   // Magh to Chaitra
+    Fourth  = 1,    // Baishakh to Ashadh
+}</code></pre>
+
+        <!-- ============= Exceptions ============= -->
+        <h2 id="exceptions">Exceptions</h2>
+
+        <h3 id="exc-invalid-format">InvalidNepaliDateFormatException</h3>
+        <p>Thrown by constructors and <code>Parse</code> when input cannot be interpreted as a valid NepaliDate. Derives from <code>FormatException</code>. Contains the offending input string for diagnostics.</p>
+<pre><code class="language-csharp">try
+{
+    var bad = new NepaliDate("2080/13/45");
+}
+catch (InvalidNepaliDateFormatException ex)
+{
+    Console.WriteLine(ex.Message);
+}</code></pre>
+
+        <h3 id="exc-argument-out">ArgumentOutOfRangeException</h3>
+        <p>Thrown when numeric arguments fall outside valid ranges: day not in <code>1..MonthEndDay</code>, month not in <code>1..12</code>, year not in <code>1901..2199</code>, <code>batchSize &lt; 1</code> in bulk operations, <code>interval &lt; 1</code> in <code>DatesWithInterval</code>, <code>days &lt; 1</code> in <code>FromDayCount</code>.</p>
+
+        <h3 id="exc-argument-null">ArgumentNullException</h3>
+        <p>Thrown by <code>SmartDateParser.Parse</code> and string-based constructors when input is <code>null</code>. Use <code>TryParse</code> or <code>TryToNepaliDate</code> variants to avoid throws.</p>
+
+        <h3 id="exc-format">FormatException</h3>
+        <p>Thrown by <code>SmartDateParser.Parse</code> when input is non-null but unparseable. <code>InvalidNepaliDateFormatException</code> derives from this type, so a single <code>catch (FormatException)</code> handles both.</p>
+
+        <!-- ============= Advanced ============= -->
+        <h2 id="advanced">Advanced</h2>
+
+        <h3 id="adv-struct">Struct Design</h3>
+        <p><code>NepaliDate</code> is a <code>readonly partial struct</code> with a single integer backing field encoding the date as YYYYMMDD. This means:</p>
+        <ul>
+          <li>Zero heap allocations when values are passed around locally.</li>
+          <li>Inherently immutable and thread-safe.</li>
+          <li>Trivial to store in arrays, spans, and high-density collections.</li>
+          <li><code>GetHashCode</code> returns the encoded integer directly for extremely cheap dictionary keys.</li>
+        </ul>
+
+        <h3 id="adv-threadsafe">Thread Safety</h3>
+        <p>All public types are immutable. <code>NepaliDate</code>, <code>NepaliDateRange</code>, and <code>CalendarInfo</code> are readonly structs. <code>BulkConvert</code> operations are safe to invoke concurrently and use thread-safe parallel processing internally.</p>
+
+        <h3 id="adv-internalized">Internalized Dependencies</h3>
+        <p>NepDate depends on <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> at build time only. Both are referenced with <code>PrivateAssets=all</code> so they never surface in your consuming project's dependency graph. NepDate has zero external runtime dependencies from the consumer's perspective.</p>
+
+        <h3 id="adv-range">Supported Range</h3>
+        <div class="api-table-wrap">
+        <table class="data-table api-table">
+          <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
+          <tbody>
+            <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (approx 1844-04-13 AD) through 2199/12/last BS (approx 2143-04-12 AD).</td></tr>
+            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>2001 BS through 2089 BS. Outside this range, properties return empty defaults without throwing.</td></tr>
+            <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div style="margin-top: 64px; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-alt); text-align: center;">
+          <h3 style="margin-top:0;">Something missing?</h3>
+          <p style="color: var(--text-muted);">Spot a typo, unclear section, or want a new example? Open an issue or PR on GitHub.</p>
+          <a class="btn btn-primary" href="https://github.com/RajuPrasai/NepDate/issues/new" target="_blank" rel="noopener">Open an issue on GitHub</a>
+        </div>
+      </article>
+
+      <!-- Right TOC (auto populated by JS) -->
+      <aside class="docs-toc">
+        <div class="toc-title">On this page</div>
+        <ul></ul>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" style="margin-bottom:12px;">
+            <img class="logo-img" src="assets/logo.png?v=2" alt="NepDate logo" width="30" height="30" />
+            <span>NepDate</span>
+          </a>
+          <p>The fastest Bikram Sambat library for .NET. Open source, MIT licensed.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="changelog.html">Changelog</a></li>
+            <li><a href="https://www.nuget.org/packages/NepDate/" target="_blank" rel="noopener">NuGet</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="https://github.com/RajuPrasai/NepDate" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/RajuPrasai/NepDate/issues" target="_blank" rel="noopener">Issues</a></li>
+            <li><a href="https://github.com/RajuPrasai/NepDate/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="https://buymemomo.com/rajuprasai" target="_blank" rel="noopener">Sponsor</a></li>
+            <li><a href="https://github.com/RajuPrasai/NepDate/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2023–2026 NepDate · MIT License</div>
+        <div>Made with care for the Nepali developer community.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+

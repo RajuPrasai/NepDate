@@ -137,12 +137,17 @@
                 fiscalYearQuarters = FiscalYearQuarter();
             }
 
+            // When this date is in Q4 (months 1-3), Year is already one calendar year ahead of
+            // the fiscal year start, so subtract 1 to normalise to the fiscal year base year.
+            var baseYear = Month <= 3 ? Year - 1 : Year;
+
+            // Q4 spans into the calendar year following the fiscal year start.
             if (fiscalYearQuarters == FiscalYearQuarters.Fourth)
             {
-                yearOffset++;
+                baseYear++;
             }
 
-            return new NepaliDate(Year + yearOffset, (int)fiscalYearQuarters, 1);
+            return new NepaliDate(baseYear + yearOffset, (int)fiscalYearQuarters, 1);
         }
 
 
@@ -174,11 +179,17 @@
                 fiscalYearQuarters = FiscalYearQuarter();
             }
 
+            // When this date is in Q4 (months 1-3), Year is already one calendar year ahead of
+            // the fiscal year start, so subtract 1 to normalise to the fiscal year base year.
+            var baseYear = Month <= 3 ? Year - 1 : Year;
+
+            // Q4 spans into the calendar year following the fiscal year start.
             if (fiscalYearQuarters == FiscalYearQuarters.Fourth)
             {
-                yearOffset++;
+                baseYear++;
             }
-            return new NepaliDate(Year + yearOffset, (int)fiscalYearQuarters + 2, 1).MonthEndDate();
+
+            return new NepaliDate(baseYear + yearOffset, (int)fiscalYearQuarters + 2, 1).MonthEndDate();
         }
 
 

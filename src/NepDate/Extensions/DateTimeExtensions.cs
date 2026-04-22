@@ -3,35 +3,25 @@
 namespace NepDate
 {
     /// <summary>
-    /// Provides extension methods for common date conversion operations between calendar systems.
+    /// Extension methods for converting <see cref="DateTime"/> values to <see cref="NepaliDate"/>.
     /// </summary>
-    /// <remarks>
-    /// These extension methods make it easy to convert between DateTime (Gregorian calendar)
-    /// and NepaliDate (Bikram Sambat calendar) objects using a fluent, natural syntax.
-    /// </remarks>
     public static class DateTimeExtensions
     {
         /// <summary>
-        /// Converts a DateTime object (Gregorian calendar) to its equivalent NepaliDate (Bikram Sambat calendar).
+        /// Converts a Gregorian <see cref="DateTime"/> to its Bikram Sambat equivalent.
         /// </summary>
-        /// <param name="englishDate">The DateTime object to convert.</param>
-        /// <returns>A NepaliDate object representing the equivalent date in the Bikram Sambat calendar.</returns>
-        /// <remarks>
-        /// This extension method allows for natural and readable syntax when converting dates:
-        /// <code>
-        /// DateTime today = DateTime.Now;
-        /// NepaliDate nepaliToday = today.ToNepaliDate();
-        /// </code>
-        /// 
-        /// Only the date portion (year, month, day) of the DateTime is used in the conversion.
-        /// The time portion is ignored, as NepaliDate only represents date values, not time.
-        /// 
-        /// For converting multiple dates efficiently, consider using the BulkConvert class instead.
-        /// </remarks>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// Thrown if the input date is outside the supported range (equivalent to 1901-04-13 to 2143-04-12).
-        /// This includes DateTime.MinValue, DateTime.MaxValue, and dates before 1901 or after 2143.
+        /// <param name="englishDate">The Gregorian date to convert. Only the date portion is used; the time component is ignored.</param>
+        /// <returns>A <see cref="NepaliDate"/> representing the same calendar day in the Bikram Sambat system.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="englishDate"/> falls before 1901-04-13 or after 2143-04-12
+        /// (the Gregorian bounds of the supported BS range).
         /// </exception>
+        /// <example>
+        /// <code>
+        /// NepaliDate today = DateTime.Today.ToNepaliDate();
+        /// NepaliDate specific = new DateTime(2023, 7, 31).ToNepaliDate();  // 2080/04/15
+        /// </code>
+        /// </example>
         public static NepaliDate ToNepaliDate(this DateTime englishDate)
         {
             return new NepaliDate(englishDate);

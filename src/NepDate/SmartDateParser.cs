@@ -4,9 +4,26 @@ using System.Collections.Generic;
 namespace NepDate
 {
     /// <summary>
-    /// Provides intelligent date parsing for Nepali dates with support for
-    /// various formats, fuzzy matching, and ambiguity resolution.
+    /// Provides intelligent parsing of Nepali date strings across a wide variety of formats,
+    /// month name spellings, scripts, and separator styles.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Unlike <see cref="NepaliDate.Parse(string)"/>, which requires a strict numeric
+    /// <c>YYYY/MM/DD</c> input, <see cref="SmartDateParser"/> accepts:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item><description>Over 100 English and Nepali transliteration spellings of month names (e.g. <c>Shrawan</c>, <c>Saun</c>, <c>साउन</c>).</description></item>
+    ///   <item><description>Nepali Devanagari digit strings (<c>२०८०/०८/१५</c>).</description></item>
+    ///   <item><description>Optional locale suffixes such as <c>B.S.</c>, <c>V.S.</c>, <c>गते</c>, and <c>मिति</c>.</description></item>
+    ///   <item><description>2-digit year abbreviations expanded to the current millennium.</description></item>
+    ///   <item><description>Ambiguous component ordering resolved by heuristic permutation.</description></item>
+    /// </list>
+    /// <para>
+    /// For strict numeric parsing without heuristics, use <see cref="NepaliDate.Parse(string)"/>
+    /// or its <c>autoAdjust</c> overload instead.
+    /// </para>
+    /// </remarks>
     public static class SmartDateParser
     {
         // Month name mappings (English, Nepali transliteration, and Unicode)
@@ -118,11 +135,25 @@ namespace NepDate
         private static readonly char[] DateSeparators = { '/', '-', '.', ' ', ',', '_', '|', '।' };
 
         /// <summary>
-        /// Parses a string representation of a Nepali date in various formats and returns a NepaliDate.
+        /// Parses a Nepali date string that may use any supported format, script, or month name spelling.
         /// </summary>
-        /// <param name="input">The string to parse.</param>
-        /// <returns>A NepaliDate representing the parsed date.</returns>
-        /// <exception cref="FormatException">Thrown when the input string cannot be parsed as a Nepali date.</exception>
+        /// <param name="input">
+        /// The date string to parse. Accepts numeric formats (<c>YYYY/MM/DD</c>), month-name formats
+        /// (<c>"15 Shrawan 2080"</c>, <c>"Shrawan 15, 2080"</c>), Nepali Unicode digits and month names,
+        /// and strings with optional locale suffixes (<c>B.S.</c>, <c>गते</c>).
+        /// </param>
+        /// <returns>A <see cref="NepaliDate"/> representing the parsed date.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="input"/> is <see langword="null"/> or whitespace.</exception>
+        /// <exception cref="FormatException">Thrown when the string cannot be interpreted as a valid Nepali date by any parsing strategy.</exception>
+        /// <example>
+        /// <code>
+        /// NepaliDate d1 = SmartDateParser.Parse("15 Shrawan 2080");   // DD Month YYYY
+        /// NepaliDate d2 = SmartDateParser.Parse("Shrawan 15, 2080");   // Month DD, YYYY
+        /// NepaliDate d3 = SmartDateParser.Parse("15 Saun 2080");       // alternate spelling
+        /// NepaliDate d4 = SmartDateParser.Parse("२०८०/०८/१५");        // Nepali digits
+        /// NepaliDate d5 = SmartDateParser.Parse("१५ श्रावण २०८०");     // full Nepali
+        /// </code>
+        /// </example>
         public static NepaliDate Parse(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -153,11 +184,15 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string representation of a Nepali date in various formats.
+        /// Attempts to parse a Nepali date string using the same heuristics as <see cref="Parse(string)"/>,
+        /// without throwing an exception on failure.
         /// </summary>
         /// <param name="input">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed NepaliDate if successful, or default if not.</param>
-        /// <returns>true if the parsing was successful; otherwise, false.</returns>
+        /// <param name="result">
+        /// When this method returns <see langword="true"/>, contains the parsed <see cref="NepaliDate"/>;
+        /// otherwise contains the default value.
+        /// </param>
+        /// <returns><see langword="true"/> if parsing succeeded; otherwise <see langword="false"/>.</returns>
         public static bool TryParse(string input, out NepaliDate result)
         {
             result = default;
@@ -165,19 +200,37 @@ namespace NepDate
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
+            if (NepaliDate.TryParse(input, out result))
+                return true;
+
             try
             {
-                result = Parse(input);
-                return true;
+                string normalizedInput = NormalizeInput(input);
+
+                if (TryParseStandardFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseNepaliUnicodeFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseMonthNameFormat(normalizedInput, out result))
+                    return true;
+
+                if (TryParseAmbiguousFormat(normalizedInput, out result))
+                    return true;
             }
-            catch (Exception)
+            catch
             {
-                return false;
+                result = default;
             }
+
+            return false;
         }
 
         /// <summary>
-        /// Normalizes the input string by trimming, replacing separators, and handling common aliases.
+        /// Applies pre-processing to the raw input string: trims whitespace, strips locale suffixes
+        /// (<c>B.S.</c>, <c>V.S.</c>, <c>गते</c>, <c>मिति</c>), and collapses repeated whitespace
+        /// to a single space.
         /// </summary>
         private static string NormalizeInput(string input)
         {
@@ -190,6 +243,10 @@ namespace NepDate
             return result.Trim();
         }
 
+        /// <summary>
+        /// Removes <c>B.S.</c>, <c>BS</c>, <c>V.S.</c>, and <c>VS</c> calendar-era markers
+        /// (case-insensitive) from <paramref name="input"/>, preserving all other content.
+        /// </summary>
         private static string RemoveIndicators(string input)
         {
             // Remove BS, B.S., VS, V.S. (case-insensitive, word boundaries)
@@ -245,6 +302,9 @@ namespace NepDate
             return new string(chars, 0, len);
         }
 
+        /// <summary>
+        /// Normalises all whitespace runs (space, tab, CR, LF) in <paramref name="input"/> to a single space character.
+        /// </summary>
         private static string CollapseSpaces(string input)
         {
             var chars = new char[input.Length];
@@ -273,6 +333,10 @@ namespace NepDate
             return new string(chars, 0, len);
         }
 
+        /// <summary>
+        /// Removes the Nepali date-suffix keywords <c>गते</c> (gate) and <c>मिति</c> (miti)
+        /// from <paramref name="input"/> wherever they appear.
+        /// </summary>
         private static string RemoveNepaliKeywords(string input)
         {
             // Remove गते and मिति
@@ -285,7 +349,8 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string in standard numeric formats like YYYY/MM/DD, DD/MM/YYYY, etc.
+        /// Tries to parse a fully numeric date string by splitting on each recognised separator
+        /// and testing the three most common component orderings: YMD, DMY, and MDY.
         /// </summary>
         private static bool TryParseStandardFormat(string input, out NepaliDate result)
         {
@@ -315,7 +380,9 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string containing month names like "15 Jestha 2080" or "Jestha 15, 2080".
+        /// Tries to parse a date string that contains at least one month name from
+        /// <see cref="MonthNameMappings"/>. Extracts the remaining numeric tokens and
+        /// attempts to identify year and day by magnitude (year &gt; 1900).
         /// </summary>
         private static bool TryParseMonthNameFormat(string input, out NepaliDate result)
         {
@@ -402,7 +469,9 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse a string containing Nepali unicode digits and month names.
+        /// Converts any Devanagari digits (०–९) in <paramref name="input"/> to their ASCII equivalents
+        /// and then delegates to <see cref="TryParse(string, out NepaliDate)"/>.
+        /// Returns <see langword="false"/> without further processing when no Devanagari digits are present.
         /// </summary>
         private static bool TryParseNepaliUnicodeFormat(string input, out NepaliDate result)
         {
@@ -419,7 +488,8 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Tries to parse ambiguous date formats by making educated guesses about the intended date.
+        /// Last-resort parser that extracts all numeric tokens from <paramref name="input"/> and
+        /// exhaustively tries all six YMD component permutations until one produces a valid date.
         /// </summary>
         private static bool TryParseAmbiguousFormat(string input, out NepaliDate result)
         {
@@ -476,7 +546,9 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Attempts to parse year, month, and day components and create a valid NepaliDate.
+        /// Validates and constructs a <see cref="NepaliDate"/> from three string tokens expected to represent
+        /// year, month, and day in that order. Accepts 2- or 3-digit year abbreviations and expands them to
+        /// the current millennium.
         /// </summary>
         private static bool TryParseYearMonthDay(string yearStr, string monthStr, string dayStr, out NepaliDate result)
         {
@@ -512,7 +584,10 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Converts Nepali unicode digits to English digits.
+        /// Converts Devanagari digits (०–९, Unicode code points U+0966–U+096F) in
+        /// <paramref name="input"/> to their ASCII equivalents (0–9). Non-digit characters
+        /// are passed through unchanged. Returns the original string reference when no
+        /// Devanagari digits are found, avoiding an unnecessary allocation.
         /// </summary>
         private static string ConvertNepaliDigitsToEnglish(string input)
         {
@@ -577,6 +652,11 @@ namespace NepDate
             return result.ToString();
         }
 
+        /// <summary>
+        /// Extracts all contiguous sequences of ASCII digit characters from <paramref name="input"/>
+        /// and returns their integer values in order of appearance.
+        /// Non-digit characters act as delimiters; at most four values are pre-allocated.
+        /// </summary>
         private static List<int> ExtractNumbers(string input)
         {
             var numbers = new List<int>(4);

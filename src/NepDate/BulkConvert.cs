@@ -50,9 +50,12 @@ namespace NepDate
             {
                 if (engDates == null) throw new ArgumentNullException(nameof(engDates));
 
+                if (!useParallel)
+                    return engDates.Select(item => new NepaliDate(item));
+
                 var datesList = engDates.ToList();
 
-                if (useParallel && datesList.Count > ParallelThreshold)
+                if (datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => new NepaliDate(item)).ToList();
                 }
@@ -89,9 +92,12 @@ namespace NepDate
             {
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
+                if (!useParallel)
+                    return nepDates.Select(item => Parse(item).EnglishDate);
+
                 var datesList = nepDates.ToList();
 
-                if (useParallel && datesList.Count > ParallelThreshold)
+                if (datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => Parse(item).EnglishDate).ToList();
                 }
@@ -120,7 +126,7 @@ namespace NepDate
             /// </remarks>
             /// <example>
             /// <code>
-            /// var nepaliDates = new List&lt;NepaliDate&gt; { NepaliDate.Now, NepaliDate.Now.AddDays(5) };
+            /// var nepaliDates = new List&lt;NepaliDate&gt; { NepaliDate.Today, NepaliDate.Today.AddDays(5) };
             /// var englishDates = NepaliDate.BulkConvert.ToEnglishDates(nepaliDates);
             /// </code>
             /// </example>
@@ -128,9 +134,12 @@ namespace NepDate
             {
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
+                if (!useParallel)
+                    return nepDates.Select(item => item.EnglishDate);
+
                 var datesList = nepDates.ToList();
 
-                if (useParallel && datesList.Count > ParallelThreshold)
+                if (datesList.Count > ParallelThreshold)
                 {
                     return datesList.AsParallel().Select(item => item.EnglishDate).ToList();
                 }
@@ -216,7 +225,7 @@ namespace NepDate
             /// <code>
             /// // Generate a large number of Nepali dates
             /// var largeNepaliDateCollection = Enumerable.Range(0, 50000)
-            ///     .Select(i => NepaliDate.Now.AddDays(i));
+            ///     .Select(i => NepaliDate.Today.AddDays(i));
             /// 
             /// // Process in batches of 1500
             /// var englishDates = NepaliDate.BulkConvert.BatchProcessToEnglishDates(largeNepaliDateCollection, 1500);

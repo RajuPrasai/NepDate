@@ -1,25 +1,39 @@
 namespace NepDate.Core.Calendar
 {
     /// <summary>
-    /// Calendar metadata for a specific Nepali date, populated from scraped HamroPatro data (2001-2089 BS).
-    /// All string properties return empty string when data is not available.
-    /// Events arrays are empty (not null) when there are no events for the day.
+    /// Immutable snapshot of calendar metadata for a specific Nepali date, compiled from
+    /// authoritative Bikram Sambat calendar references covering 2001–2089 BS. All members
+    /// return empty or default values when the date falls outside that range.
     /// </summary>
     public readonly struct CalendarInfo
     {
-        /// <summary>Tithi name in Nepali. Empty when not available.</summary>
+        /// <summary>
+        /// Tithi (lunar day) name in Nepali Devanagari script.
+        /// <see cref="string.Empty"/> when no Tithi data is recorded for this date.
+        /// </summary>
         public string TithiNp { get; }
 
-        /// <summary>Tithi name in English. Empty when not available.</summary>
+        /// <summary>
+        /// Tithi (lunar day) name transliterated to English.
+        /// <see cref="string.Empty"/> when no Tithi data is recorded for this date.
+        /// </summary>
         public string TithiEn { get; }
 
-        /// <summary>Whether this day is a public holiday.</summary>
+        /// <summary>
+        /// <see langword="true"/> when this day is a gazetted public holiday in Nepal; otherwise <see langword="false"/>.
+        /// </summary>
         public bool IsPublicHoliday { get; }
 
-        /// <summary>Event names in Nepali. Empty array when there are no events.</summary>
+        /// <summary>
+        /// Names of events and observances for this day in Nepali Devanagari.
+        /// An empty (non-null) array when no events are recorded.
+        /// </summary>
         public string[] EventsNp { get; }
 
-        /// <summary>Event names in English. Empty array when there are no events.</summary>
+        /// <summary>
+        /// Names of events and observances for this day transliterated to English.
+        /// An empty (non-null) array when no events are recorded.
+        /// </summary>
         public string[] EventsEn { get; }
 
         internal CalendarInfo(

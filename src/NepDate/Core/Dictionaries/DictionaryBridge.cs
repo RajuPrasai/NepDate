@@ -76,6 +76,19 @@ namespace NepDate.Core.Dictionaries
 
                 return NepaliToEnglish.data[index].NepMonthEndDay;
             }
+
+            internal static bool TryGetNepaliMonthEndDay(int nepYear, int nepMonth, out int monthEndDay)
+            {
+                var index = (nepYear - NepaliToEnglish.MinYear) * 12 + (nepMonth - 1);
+                if ((uint)index >= (uint)NepaliToEnglish.data.Length)
+                {
+                    monthEndDay = 0;
+                    return false;
+                }
+
+                monthEndDay = NepaliToEnglish.data[index].NepMonthEndDay;
+                return true;
+            }
         }
 
         /// <summary>

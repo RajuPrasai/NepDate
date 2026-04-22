@@ -344,4 +344,92 @@ public class FiscalYearInstanceMethodTests
         var start = date.FiscalYearStartDate();
         Assert.Equal(new NepaliDate(2079, 4, 1), start);
     }
+
+    // ---- FiscalYearQuarterStartDate / EndDate from a Q4 base date (regression) ----
+    // Base date: 2081/02/10 (Jestha 10, Q4 of FY 2080).
+    // All explicit quarter requests must resolve against FY 2080, not FY 2081.
+
+    [Fact]
+    public void FiscalYearQuarterStartDate_FromQ4Date_ExplicitFirst_ReturnsFY2080Q1Start()
+    {
+        // From a Q4 date, Q1 of the current fiscal year (FY2080) starts on 2080/04/01.
+        var date = new NepaliDate(2081, 2, 10);
+        var start = date.FiscalYearQuarterStartDate(FiscalYearQuarters.First);
+        Assert.Equal(new NepaliDate(2080, 4, 1), start);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterStartDate_FromQ4Date_ExplicitSecond_ReturnsFY2080Q2Start()
+    {
+        var date = new NepaliDate(2081, 2, 10);
+        var start = date.FiscalYearQuarterStartDate(FiscalYearQuarters.Second);
+        Assert.Equal(new NepaliDate(2080, 7, 1), start);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterStartDate_FromQ4Date_ExplicitThird_ReturnsFY2080Q3Start()
+    {
+        var date = new NepaliDate(2081, 2, 10);
+        var start = date.FiscalYearQuarterStartDate(FiscalYearQuarters.Third);
+        Assert.Equal(new NepaliDate(2080, 10, 1), start);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterStartDate_FromQ4Date_ExplicitFourth_ReturnsFY2080Q4Start()
+    {
+        // Q4 of FY2080 starts on 2081/01/01.
+        var date = new NepaliDate(2081, 2, 10);
+        var start = date.FiscalYearQuarterStartDate(FiscalYearQuarters.Fourth);
+        Assert.Equal(new NepaliDate(2081, 1, 1), start);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterStartDate_FromQ4Date_Current_ReturnsFY2080Q4Start()
+    {
+        // Current quarter of 2081/02/10 is Q4; its start is 2081/01/01.
+        var date = new NepaliDate(2081, 2, 10);
+        var start = date.FiscalYearQuarterStartDate(FiscalYearQuarters.Current);
+        Assert.Equal(new NepaliDate(2081, 1, 1), start);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterEndDate_FromQ4Date_ExplicitFirst_ReturnsFY2080Q1End()
+    {
+        var date = new NepaliDate(2081, 2, 10);
+        var end = date.FiscalYearQuarterEndDate(FiscalYearQuarters.First);
+        Assert.Equal(2080, end.Year);
+        Assert.Equal(6, end.Month);
+        Assert.Equal(new NepaliDate(2080, 6, 1).MonthEndDay, end.Day);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterEndDate_FromQ4Date_ExplicitThird_ReturnsFY2080Q3End()
+    {
+        var date = new NepaliDate(2081, 2, 10);
+        var end = date.FiscalYearQuarterEndDate(FiscalYearQuarters.Third);
+        Assert.Equal(2080, end.Year);
+        Assert.Equal(12, end.Month);
+        Assert.Equal(new NepaliDate(2080, 12, 1).MonthEndDay, end.Day);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterEndDate_FromQ4Date_ExplicitFourth_ReturnsFY2080Q4End()
+    {
+        // Q4 of FY2080 ends on last day of 2081/03.
+        var date = new NepaliDate(2081, 2, 10);
+        var end = date.FiscalYearQuarterEndDate(FiscalYearQuarters.Fourth);
+        Assert.Equal(2081, end.Year);
+        Assert.Equal(3, end.Month);
+        Assert.Equal(new NepaliDate(2081, 3, 1).MonthEndDay, end.Day);
+    }
+
+    [Fact]
+    public void FiscalYearQuarterEndDate_FromQ4Date_Current_ReturnsFY2080Q4End()
+    {
+        var date = new NepaliDate(2081, 2, 10);
+        var end = date.FiscalYearQuarterEndDate(FiscalYearQuarters.Current);
+        Assert.Equal(2081, end.Year);
+        Assert.Equal(3, end.Month);
+        Assert.Equal(new NepaliDate(2081, 3, 1).MonthEndDay, end.Day);
+    }
 }

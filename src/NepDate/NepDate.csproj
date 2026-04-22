@@ -1,20 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>NepDate</Title>
-    <Authors>TheCrossLegCoder</Authors>
+    <Authors>rajuprasai</Authors>
     <Description>Super-fast and memory-efficient Nepali Date struct with built in nepali date converter and additional powerful features</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/TheCrossLegCoder/NepDate</RepositoryUrl>
+    <RepositoryUrl>https://github.com/rajuprasai/NepDate</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Nepali Date Converter;Nepali Date;Nepali Calendar;NepDate;Date Converter;Patro;Hamro Patro;Nepali Patro;Nepal;Nepali-Date-Converter;NepaliDateConverter;Nepali;Date;Converter;Miti</PackageTags>
-    <PackageProjectUrl>https://github.com/TheCrossLegCoder/NepDate</PackageProjectUrl>
+    <PackageTags>Nepali Date Converter;Nepali Date;Nepali Calendar;NepDate;Date Converter;Patro;Nepali Patro;Nepal;Nepali-Date-Converter;NepaliDateConverter;Nepali;Date;Converter;Miti</PackageTags>
+    <PackageProjectUrl>https://github.com/rajuprasai/NepDate</PackageProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
     <Version>2.0.5</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Copyright>Copyright © 2023 NepDate</Copyright>
+    <Copyright>Copyright © 2023-2026 NepDate</Copyright>
     <ApplicationIcon>Assets\nuget-icon.ico</ApplicationIcon>
   </PropertyGroup>
 

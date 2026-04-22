@@ -45,28 +45,33 @@ public class NepaliDatePropertiesTests
     }
 
     [Fact]
-    public void Now_ReturnsCurrentNepaliDate()
+    public void Today_ReturnsCurrentNepaliDate()
     {
         var today = DateTime.Today;
         var expectedNepaliDate = new NepaliDate(today);
 
-        var nowNepaliDate = NepaliDate.Now;
+        var todayNepaliDate = NepaliDate.Today;
 
-        Assert.Equal(expectedNepaliDate, nowNepaliDate);
+        Assert.Equal(expectedNepaliDate, todayNepaliDate);
     }
 
     [Fact]
-    public void DayOfYear_MatchesEnglishDateDayOfYear()
+    public void DayOfYear_FirstDayOfYear_Returns1()
     {
+        // Baisakh 1 is the first day of the Nepali calendar year.
         var date = new NepaliDate(2080, 1, 1);
-        Assert.Equal(date.EnglishDate.DayOfYear, date.DayOfYear);
+        Assert.Equal(1, date.DayOfYear);
     }
 
     [Fact]
-    public void DayOfYear_KnownDate_ReturnsCorrectValue()
+    public void DayOfYear_FirstDayOfMonth4_EqualsSum_Of_Months1To3_Plus1()
     {
-        // 2080/1/1 = April 14, 2023 = day 104 of 2023
-        Assert.Equal(104, new NepaliDate(2080, 1, 1).DayOfYear);
+        // DayOfYear for the first day of month 4 should equal (m1 + m2 + m3) + 1.
+        var m1 = new NepaliDate(2080, 1, 1).MonthEndDay;
+        var m2 = new NepaliDate(2080, 2, 1).MonthEndDay;
+        var m3 = new NepaliDate(2080, 3, 1).MonthEndDay;
+        int expected = m1 + m2 + m3 + 1;
+        Assert.Equal(expected, new NepaliDate(2080, 4, 1).DayOfYear);
     }
 
     [Fact]
