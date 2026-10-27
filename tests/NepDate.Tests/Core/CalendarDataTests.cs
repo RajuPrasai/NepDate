@@ -195,6 +195,16 @@ public class CalendarDataTests
         Assert.Contains("New Year", info.EventsEn);
     }
 
+    [Theory]
+    [InlineData(2083, "नयाँ वर्ष २०८३", "New Year 2083")]
+    [InlineData(2084, "नयाँ वर्ष २०८४", "New Year 2084")]
+    public void NepaliDate_NewYear_EventNamesItsOwnYear(int year, string np, string en)
+    {
+        var info = new NepaliDate(year, 1, 1).GetCalendarInfo();
+        Assert.Contains(np, info.EventsNp);
+        Assert.Contains(en, info.EventsEn);
+    }
+
     [Fact]
     public void NepaliDate_2081_01_02_Tithi_IsShashthi()
     {

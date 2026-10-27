@@ -3,7 +3,7 @@ namespace NepDate.Core.Dictionaries
 {
     internal static class CalendarStrings
     {
-        // 755 entries: Tithi first, then Events.
+        // 756 entries: Tithi first, then Events.
         internal static readonly (string Np, string En)[] Pool = new (string, string)[]
         {
             ("तृतिया", "Tritiya"), // [0]
@@ -761,6 +761,7 @@ namespace NepDate.Core.Dictionaries
             ("सरस्वती पूजा", "Saraswati Puja"), // [752]
             ("घोडेजात्रा (काठमाडौं उपत्यका बिदा)", "Ghode Jatra (Kathmandu Valley Holiday)"), // [753]
             ("विश्व ज्योतिष स्थापना दिवस", "World Astrology Day"), // [754]
+            ("नयाँ वर्ष २०८४", "New Year 2084"), // [755]
         };
     }
 }
