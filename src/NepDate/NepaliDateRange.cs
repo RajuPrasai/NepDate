@@ -222,8 +222,9 @@ namespace NepDate
                 return false;
             }
 
-            // This end + 1 day = other start OR other end + 1 day = this start
-            return End.AddDays(1) == other.Start || other.End.AddDays(1) == Start;
+            // This end + 1 day = other start OR this start - 1 day = other end
+            return (End < NepaliDate.MaxValue && End.AddDays(1) == other.Start)
+                || (Start > NepaliDate.MinValue && Start.AddDays(-1) == other.End);
         }
 
         /// <summary>
@@ -239,6 +240,12 @@ namespace NepDate
         {
             if (IsEmpty || other.IsEmpty || !Overlaps(other))
             {
+                // The usual Start..Start-1 empty range is not representable at the minimum date.
+                if (Start == NepaliDate.MinValue)
+                {
+                    return new NepaliDateRange(NepaliDate.MaxValue, NepaliDate.MinValue);
+                }
+
                 return new NepaliDateRange(Start, Start.AddDays(-1)); // Empty range
             }
 
@@ -348,6 +355,12 @@ namespace NepDate
                 // Add this month's range
                 result.Add(new NepaliDateRange(current, monthEnd));
 
+                // Stop at the range end; the next month would be past the maximum date.
+                if (monthEnd == End)
+                {
+                    break;
+                }
+
                 // Move to the first day of the next month
                 if (current.Month == 12)
                 {
@@ -416,6 +429,12 @@ namespace NepDate
                 // Add this quarter's range
                 result.Add(new NepaliDateRange(current, quarterEnd));
 
+                // Stop at the range end; the next quarter would be past the maximum date.
+                if (quarterEnd == End)
+                {
+                    break;
+                }
+
                 // Move to the first day of the next quarter
                 if (endQuarterMonth == 12)
                 {
@@ -456,6 +475,10 @@ namespace NepDate
             while (current <= End)
             {
                 yield return current;
+                if ((End - current).Days < interval)
+                {
+                    yield break;
+                }
                 current = current.AddDays(interval);
             }
         }
@@ -484,6 +507,10 @@ namespace NepDate
                 if (dayOfWeek != DayOfWeek.Saturday && (!excludeSunday || dayOfWeek != DayOfWeek.Sunday))
                 {
                     yield return current;
+                }
+                if (current == End)
+                {
+                    yield break;
                 }
                 current = current.AddDays(1);
             }
@@ -514,6 +541,10 @@ namespace NepDate
                 {
                     yield return current;
                 }
+                if (current == End)
+                {
+                    yield break;
+                }
                 current = current.AddDays(1);
             }
         }
@@ -538,6 +569,10 @@ namespace NepDate
             while (current <= End)
             {
                 yield return current;
+                if (current == End)
+                {
+                    yield break;
+                }
                 current = current.AddDays(1);
             }
         }
