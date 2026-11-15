@@ -730,7 +730,8 @@ namespace NepDate
                 uint m0 = (uint)(rawNepaliDate[5] - '0'), m1 = (uint)(rawNepaliDate[6] - '0');
                 uint d0 = (uint)(rawNepaliDate[8] - '0'), d1 = (uint)(rawNepaliDate[9] - '0');
 
-                if ((y0 | y1 | y2 | y3 | m0 | m1 | d0 | d1) <= 9u)
+                // A non-digit gives a value above 9 (it wraps when the character is below '0').
+                if (y0 <= 9u && y1 <= 9u && y2 <= 9u && y3 <= 9u && m0 <= 9u && m1 <= 9u && d0 <= 9u && d1 <= 9u)
                 {
                     year = (int)(y0 * 1000 + y1 * 100 + y2 * 10 + y3);
                     month = (int)(m0 * 10 + m1);
