@@ -1,4 +1,4 @@
-#if NET7_0_OR_GREATER
+﻿#if NET7_0_OR_GREATER
 using System;
 
 namespace NepDate
@@ -33,7 +33,14 @@ namespace NepDate
         /// <returns>A <see cref="NepaliDate"/> parsed from <paramref name="s"/>.</returns>
         /// <exception cref="InvalidNepaliDateFormatException">Thrown when <paramref name="s"/> is not a valid Nepali date string.</exception>
         static NepaliDate ISpanParsable<NepaliDate>.Parse(ReadOnlySpan<char> s, IFormatProvider provider)
-            => Parse(new string(s));
+        {
+            if (!TrySplitNepaliDate(s, out var year, out var month, out var day))
+            {
+                throw new InvalidNepaliDateFormatException();
+            }
+
+            return Create(year, month, day);
+        }
 
         /// <summary>
         /// Attempts to parse a span of characters into a <see cref="NepaliDate"/>, implementing <see cref="ISpanParsable{T}"/> (.NET 7+).
@@ -43,7 +50,15 @@ namespace NepDate
         /// <param name="result">When this method returns <see langword="true"/>, contains the parsed date; otherwise the default value.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise <see langword="false"/>.</returns>
         static bool ISpanParsable<NepaliDate>.TryParse(ReadOnlySpan<char> s, IFormatProvider provider, out NepaliDate result)
-            => TryParse(new string(s), out result);
+        {
+            if (!TrySplitNepaliDate(s, out var year, out var month, out var day))
+            {
+                result = default;
+                return false;
+            }
+
+            return TryCreate(year, month, day, out result);
+        }
     }
 }
 #endif

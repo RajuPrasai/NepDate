@@ -10,43 +10,48 @@ namespace NepDate
         /// </summary>
         public static TimeSpan operator -(NepaliDate d1, NepaliDate d2)
         {
-            return d1.EnglishDate.Date.Subtract(d2.EnglishDate.Date);
+            if (d1._dayNumber == 0 || d2._dayNumber == 0)
+            {
+                ThrowDefaultInstance();
+            }
+
+            return new TimeSpan((d1._dayNumber - d2._dayNumber) * _ticksPerDay);
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="d1"/> and <paramref name="d2"/> represent the same Nepali date.</summary>
         public static bool operator ==(NepaliDate d1, NepaliDate d2)
         {
-            return d1.AsInteger == d2.AsInteger;
+            return d1._dayNumber == d2._dayNumber;
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="d1"/> and <paramref name="d2"/> represent different Nepali dates.</summary>
         public static bool operator !=(NepaliDate d1, NepaliDate d2)
         {
-            return d1.AsInteger != d2.AsInteger;
+            return d1._dayNumber != d2._dayNumber;
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="t1"/> is earlier than <paramref name="t2"/>.</summary>
         public static bool operator <(NepaliDate t1, NepaliDate t2)
         {
-            return t1.AsInteger < t2.AsInteger;
+            return t1._dayNumber < t2._dayNumber;
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="t1"/> is earlier than or the same as <paramref name="t2"/>.</summary>
         public static bool operator <=(NepaliDate t1, NepaliDate t2)
         {
-            return t1.AsInteger <= t2.AsInteger;
+            return t1._dayNumber <= t2._dayNumber;
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="t1"/> is later than <paramref name="t2"/>.</summary>
         public static bool operator >(NepaliDate t1, NepaliDate t2)
         {
-            return t1.AsInteger > t2.AsInteger;
+            return t1._dayNumber > t2._dayNumber;
         }
 
         /// <summary>Returns <see langword="true"/> when <paramref name="t1"/> is later than or the same as <paramref name="t2"/>.</summary>
         public static bool operator >=(NepaliDate t1, NepaliDate t2)
         {
-            return t1.AsInteger >= t2.AsInteger;
+            return t1._dayNumber >= t2._dayNumber;
         }
     }
 }

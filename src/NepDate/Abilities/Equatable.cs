@@ -21,7 +21,7 @@ namespace NepDate
         /// <returns>true if the specified NepaliDate has the same value as the current instance; otherwise, false.</returns>
         public bool Equals(NepaliDate other)
         {
-            return AsInteger == other.AsInteger;
+            return _dayNumber == other._dayNumber;
         }
 
         /// <summary>

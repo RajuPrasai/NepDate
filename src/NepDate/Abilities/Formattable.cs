@@ -1,4 +1,5 @@
 ﻿using NepDate.Core.Dictionaries;
+using NepDate.Core.Text;
 using System;
 using System.Text;
 
@@ -12,93 +13,129 @@ namespace NepDate
     {
         #region Private Methods
         /// <summary>
+        /// Room for the longest formatted date, with space to spare:
+        /// "Wednesday, Baishakh 05, 2080" is 28 characters.
+        /// </summary>
+        private const int _formatBufferSize = 48;
+
+        /// <summary>
         /// Core long-date formatter used by both <see cref="ToLongDateString(bool, bool, bool)"/>
         /// and <see cref="ToLongDateUnicodeString(bool, bool, bool)"/>.
         /// </summary>
-        /// <param name="leadingZeros">When <see langword="true"/>, pads day and month numbers with a leading zero.</param>
+        /// <param name="leadingZeros">When <see langword="true"/>, pads the day number with a leading zero.</param>
         /// <param name="displayDayName">When <see langword="true"/>, prepends the weekday name.</param>
         /// <param name="displayYear">When <see langword="true"/>, appends the year after the month and day.</param>
         /// <param name="isUnicode">When <see langword="true"/>, returns all text in Devanagari (month name, weekday name, and digits).</param>
         /// <returns>A formatted long-form date string.</returns>
-        private string ToLongDateString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true, bool isUnicode = false)
+        private string ToLongDateString(bool leadingZeros, bool displayDayName, bool displayYear, bool isUnicode)
         {
-            (var yearStr, var monthStr, var dayStr) = (GetLeadedString(Year, leadingZeros, true, true, isUnicode), GetLeadedString(Month, leadingZeros, true, false, true, isUnicode), GetLeadedString(Day, leadingZeros, true, isUnicode: isUnicode));
-
-            var longDate = $"{monthStr} {dayStr}";
-
-            if (displayYear)
-            {
-                longDate += $", {yearStr}";
-            }
+#if NETSTANDARD2_0
+            var buffer = new CharBuffer(new char[_formatBufferSize]);
+#else
+            var buffer = new CharBuffer(stackalloc char[_formatBufferSize]);
+#endif
+            var zero = isUnicode ? CharBuffer.NepaliZero : '0';
 
             if (displayDayName)
             {
-                var weekDayName = DayOfWeek.ToString();
-                if (isUnicode)
+                buffer.Append(CalendarNames.Weekday(DayOfWeek, isUnicode));
+                buffer.Append(',');
+                buffer.Append(' ');
+            }
+
+            var monthName = CalendarNames.Month(_month, isUnicode);
+            if (monthName is null)
+            {
+                // Only a default instance has no month name; its month number is written as is.
+                buffer.AppendNumber(_month, 1, zero);
+            }
+            else
+            {
+                buffer.Append(monthName);
+            }
+
+            buffer.Append(' ');
+            buffer.AppendNumber(_day, leadingZeros ? 2 : 1, zero);
+
+            if (displayYear)
+            {
+                buffer.Append(',');
+                buffer.Append(' ');
+                // The Devanagari form never pads the year. Real years have four digits either way.
+                buffer.AppendNumber(_year, leadingZeros && !isUnicode ? 4 : 1, zero);
+            }
+
+            return buffer.ToString();
+        }
+
+        /// <summary>
+        /// Core numeric formatter used by <see cref="ToString(DateFormats, Separators, bool)"/>
+        /// and <see cref="ToUnicodeString(DateFormats, Separators, bool)"/>.
+        /// </summary>
+        /// <param name="dateFormat">The order of the year, month and day.</param>
+        /// <param name="separator">The separator between the components.</param>
+        /// <param name="leadingZeros">When <see langword="true"/>, pads the year to four digits and the month and day to two.</param>
+        /// <param name="zero">The character of digit zero: <c>'0'</c> or the Devanagari zero.</param>
+        private string ToNumericString(DateFormats dateFormat, Separators separator, bool leadingZeros, char zero)
+        {
+            char separatorChar;
+            switch (separator)
+            {
+                case Separators.ForwardSlash: separatorChar = '/'; break;
+                case Separators.BackwardSlash: separatorChar = '\\'; break;
+                case Separators.Dash: separatorChar = '-'; break;
+                case Separators.Dot: separatorChar = '.'; break;
+                case Separators.Underscore: separatorChar = '_'; break;
+                case Separators.Space: separatorChar = ' '; break;
+                default:
+                    throw new InvalidNepaliDateFormatException("Invalid separator value");
+            }
+
+            // Each letter names the component written at that position.
+            string order;
+            switch (dateFormat)
+            {
+                case DateFormats.YearMonthDay: order = "YMD"; break;
+                case DateFormats.YearDayMonth: order = "YDM"; break;
+                case DateFormats.MonthDayYear: order = "MDY"; break;
+                case DateFormats.MonthYearDay: order = "MYD"; break;
+                case DateFormats.DayMonthYear: order = "DMY"; break;
+                case DateFormats.DayYearMonth: order = "DYM"; break;
+                default:
+                    throw new InvalidNepaliDateFormatException();
+            }
+
+#if NETSTANDARD2_0
+            var buffer = new CharBuffer(new char[_formatBufferSize]);
+#else
+            var buffer = new CharBuffer(stackalloc char[_formatBufferSize]);
+#endif
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (i != 0)
                 {
-                    weekDayName = ConvertWordsToNepaliUnicode(weekDayName);
+                    buffer.Append(separatorChar);
                 }
 
-                longDate = $"{weekDayName}, {longDate}";
-            }
-            return longDate;
-        }
-        /// <summary>
-        /// Converts a single date component (year, month, or day) to its display string,
-        /// applying zero-padding or month-name substitution as configured.
-        /// </summary>
-        private string GetLeadedString(int datePart, bool leadingZeros, bool displayMonthName = false, bool isYear = false, bool isMonth = false, bool isUnicode = false)
-        {
-            if (isMonth && displayMonthName)
-            {
-                if (isUnicode)
+                switch (order[i])
                 {
-                    return ConvertWordsToNepaliUnicode(((NepaliMonths)datePart).ToString());
-                }
-                else
-                {
-                    return ((NepaliMonths)datePart).ToString();
+                    case 'Y': buffer.AppendNumber(_year, leadingZeros ? 4 : 1, zero); break;
+                    case 'M': buffer.AppendNumber(_month, leadingZeros ? 2 : 1, zero); break;
+                    default: buffer.AppendNumber(_day, leadingZeros ? 2 : 1, zero); break;
                 }
             }
 
-            return leadingZeros ? (isYear ? $"{datePart:D4}" : $"{datePart:D2}") : $"{datePart}";
-        }
-        /// <summary>
-        /// Replaces every ASCII digit (0–9) in <paramref name="date"/> with its Devanagari
-        /// equivalent (०–९). Non-digit characters such as separators are preserved unchanged.
-        /// </summary>
-        private string ConvertDigitsToNepaliUnicode(string date)
-        {
-            var chars = new char[date.Length];
-            for (int i = 0; i < date.Length; i++)
-            {
-                char c = date[i];
-                chars[i] = (c >= '0' && c <= '9') ? (char)('\u0966' + (c - '0')) : c;
-            }
-            return new string(chars);
+            return buffer.ToString();
         }
 
         /// <summary>
-        /// Looks up the Devanagari translation of an English word (month name or weekday name)
-        /// in the Unicode mapping table. Returns the original value unchanged if no mapping exists.
+        /// Returns the English month name used by custom format strings. A default instance,
+        /// which has no month, yields its month number.
         /// </summary>
-        private string ConvertWordsToNepaliUnicode(string value)
+        private string EnglishMonthName()
         {
-            var converted = Unicode.data.TryGetValue(value, out var nepaliUnicode);
-
-            return converted ? nepaliUnicode : value;
-        }
-        /// <summary>
-        /// Writes a non-negative integer into a pre-allocated character buffer using a fixed-width,
-        /// zero-padded representation. Used by <see cref="ToString()"/> for allocation-free formatting.
-        /// </summary>
-        private static void WriteDigits(char[] buffer, int offset, int value, int width)
-        {
-            for (int i = width - 1; i >= 0; i--)
-            {
-                buffer[offset + i] = (char)('0' + (value % 10));
-                value /= 10;
-            }
+            return CalendarNames.Month(_month, nepali: false) ?? ((int)_month).ToString();
         }
         #endregion
 
@@ -109,13 +146,7 @@ namespace NepDate
         /// <returns>A string that represents the current NepaliDate object in the format "yyyy/MM/dd".</returns>
         public override string ToString()
         {
-            var chars = new char[10];
-            WriteDigits(chars, 0, Year, 4);
-            chars[4] = '/';
-            WriteDigits(chars, 5, Month, 2);
-            chars[7] = '/';
-            WriteDigits(chars, 8, Day, 2);
-            return new string(chars);
+            return ToNumericString(DateFormats.YearMonthDay, Separators.ForwardSlash, leadingZeros: true, zero: '0');
         }
 
         /// <summary>
@@ -129,43 +160,7 @@ namespace NepDate
         /// <exception cref="InvalidNepaliDateFormatException">Thrown when <paramref name="separator"/> is not a defined enum value.</exception>
         public string ToString(DateFormats dateFormat, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)
         {
-            (var yearStr, var monthStr, var dayStr) = (GetLeadedString(Year, leadingZeros, isYear: true), GetLeadedString(Month, leadingZeros, isMonth: true), GetLeadedString(Day, leadingZeros));
-
-            var separatorStr = GetSeparatorStr();
-
-
-            switch (dateFormat)
-            {
-                case DateFormats.YearMonthDay: return AddSeparators(yearStr, monthStr, dayStr);
-                case DateFormats.YearDayMonth: return AddSeparators(yearStr, dayStr, monthStr);
-                case DateFormats.MonthDayYear: return AddSeparators(monthStr, dayStr, yearStr);
-                case DateFormats.MonthYearDay: return AddSeparators(monthStr, yearStr, dayStr);
-                case DateFormats.DayMonthYear: return AddSeparators(dayStr, monthStr, yearStr);
-                case DateFormats.DayYearMonth: return AddSeparators(dayStr, yearStr, monthStr);
-                default:
-                    throw new InvalidNepaliDateFormatException();
-            }
-
-
-            string GetSeparatorStr()
-            {
-                switch (separator)
-                {
-                    case Separators.ForwardSlash: return "/";
-                    case Separators.BackwardSlash: return "\\";
-                    case Separators.Dash: return "-";
-                    case Separators.Dot: return ".";
-                    case Separators.Underscore: return "_";
-                    case Separators.Space: return " ";
-                    default:
-                        throw new InvalidNepaliDateFormatException("Invalid separator value");
-                }
-            }
-
-            string AddSeparators(string firstPart, string secondPart, string thirdPart)
-            {
-                return $"{firstPart}{separatorStr}{secondPart}{separatorStr}{thirdPart}";
-            }
+            return ToNumericString(dateFormat, separator, leadingZeros, '0');
         }
 
         /// <summary>
@@ -189,7 +184,7 @@ namespace NepDate
         /// <returns>A date string with all digits converted to Nepali Unicode.</returns>
         public string ToUnicodeString(DateFormats dateFormat = DateFormats.YearMonthDay, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)
         {
-            return ConvertDigitsToNepaliUnicode(ToString(dateFormat, separator, leadingZeros));
+            return ToNumericString(dateFormat, separator, leadingZeros, CharBuffer.NepaliZero);
         }
 
         /// <summary>
@@ -202,7 +197,7 @@ namespace NepDate
         /// <returns>A long-form date string fully rendered in Nepali Unicode.</returns>
         public string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)
         {
-            return ConvertDigitsToNepaliUnicode(ToLongDateString(leadingZeros, displayDayName, displayYear, true));
+            return ToLongDateString(leadingZeros, displayDayName, displayYear, true);
         }
 
         /// <summary>
@@ -313,8 +308,8 @@ namespace NepDate
                 if (c == 'M')
                 {
                     int run = CountRepeat(format, i, 'M');
-                    if (run >= 4) sb.Append(((NepaliMonths)Month).ToString());
-                    else if (run == 3) sb.Append(((NepaliMonths)Month).ToString().Substring(0, 3));
+                    if (run >= 4) sb.Append(EnglishMonthName());
+                    else if (run == 3) sb.Append(EnglishMonthName(), 0, 3);
                     else if (run == 2) sb.Append($"{Month:D2}");
                     else sb.Append(Month);
                     i += run;

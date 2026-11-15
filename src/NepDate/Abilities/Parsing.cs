@@ -17,11 +17,7 @@ namespace NepDate
             if (!TrySplitNepaliDate(rawNepDate, out var year, out var month, out var day))
                 return false;
 
-            if (!IsValidDate(year, month, day))
-                return false;
-
-            result = new NepaliDate(year, month, day);
-            return true;
+            return TryCreate(year, month, day, out result);
         }
 
         /// <summary>
@@ -63,11 +59,7 @@ namespace NepDate
                     year = currentMillennium * 1000 + year;
             }
 
-            if (!IsValidDate(year, month, day))
-                return false;
-
-            result = new NepaliDate(year, month, day);
-            return true;
+            return TryCreate(year, month, day, out result);
         }
 
         /// <summary>
