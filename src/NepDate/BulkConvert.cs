@@ -1,45 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NepDate
 {
     public readonly partial struct NepaliDate
     {
         /// <summary>
-        /// Provides methods for bulk conversion between English (Gregorian) and Nepali (Bikram Sambat) dates.
-        /// Includes optimized methods for handling large collections efficiently with parallel processing options.
+        /// Converts whole collections between English (Gregorian) and Nepali (Bikram Sambat) dates.
         /// </summary>
         /// <remarks>
-        /// This class offers methods to convert collections of dates between calendar systems.
-        /// For large collections, it automatically uses parallel processing to improve performance,
-        /// and provides batch processing options to handle very large datasets efficiently.
+        /// Every method converts the input in one sequential pass and returns a filled collection.
+        /// One conversion takes a few nanoseconds, so splitting the work across threads costs more
+        /// than it saves, whatever the size of the collection. The <c>useParallel</c> and
+        /// <c>batchSize</c> parameters remain for source compatibility and do not change the result.
         /// </remarks>
         public class BulkConvert
         {
             /// <summary>
-            /// The minimum number of items in a collection before parallel processing is automatically used.
-            /// Collections smaller than this threshold are processed sequentially for better performance.
-            /// </summary>
-            private const int ParallelThreshold = 500;
-
-            /// <summary>
             /// Converts a collection of English (Gregorian) dates to Nepali dates.
             /// </summary>
             /// <param name="engDates">The collection of English DateTime objects to convert.</param>
-            /// <param name="useParallel">
-            /// Whether to use parallel processing. If true, collections larger than 
-            /// the ParallelThreshold will be processed in parallel. Default is true.
-            /// </param>
+            /// <param name="useParallel">Kept for source compatibility. The conversion is always sequential.</param>
             /// <returns>
-            /// An IEnumerable of NepaliDate objects corresponding to the input English dates.
+            /// The Nepali dates, in the order of the input.
             /// </returns>
-            /// <remarks>
-            /// For small collections (fewer than 500 items), sequential processing is used even if useParallel is true.
-            /// For large collections, parallel processing can significantly improve performance on multi-core systems.
-            /// 
-            /// This method materializes the input collection to determine its size for optimizing the processing approach.
-            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="engDates"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown when a date is outside the supported range.</exception>
             /// <example>
             /// <code>
             /// var englishDates = new List&lt;DateTime&gt; { DateTime.Today, DateTime.Today.AddDays(1) };
@@ -50,38 +36,22 @@ namespace NepDate
             {
                 if (engDates == null) throw new ArgumentNullException(nameof(engDates));
 
-                if (!useParallel)
-                    return engDates.Select(item => new NepaliDate(item));
-
-                var datesList = engDates.ToList();
-
-                if (datesList.Count > ParallelThreshold)
-                {
-                    return datesList.AsParallel().Select(item => new NepaliDate(item)).ToList();
-                }
-
-                return datesList.Select(item => new NepaliDate(item));
+                return ConvertAll(engDates, item => new NepaliDate(item));
             }
 
             /// <summary>
             /// Converts a collection of Nepali dates represented as strings to English (Gregorian) dates.
             /// </summary>
             /// <param name="nepDates">The collection of Nepali date strings to convert.</param>
-            /// <param name="useParallel">
-            /// Whether to use parallel processing. If true, collections larger than 
-            /// the ParallelThreshold will be processed in parallel. Default is true.
-            /// </param>
+            /// <param name="useParallel">Kept for source compatibility. The conversion is always sequential.</param>
             /// <returns>
-            /// An IEnumerable of DateTime objects representing the English dates 
-            /// corresponding to the input Nepali dates.
+            /// The English dates, in the order of the input.
             /// </returns>
             /// <remarks>
             /// The input strings must be in a format that can be parsed by the NepaliDate constructor.
             /// Valid formats include: "YYYY/MM/DD", "YYYY-MM-DD", and other formats with various separators.
-            /// 
-            /// For large collections, parallel processing is used to improve performance.
-            /// This method materializes the input collection to determine its size for optimizing the processing approach.
             /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="nepDates"/> is <see langword="null"/>.</exception>
             /// <example>
             /// <code>
             /// var nepaliDateStrings = new List&lt;string&gt; { "2080/01/15", "2080-02-20" };
@@ -92,38 +62,18 @@ namespace NepDate
             {
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
-                if (!useParallel)
-                    return nepDates.Select(item => Parse(item).EnglishDate);
-
-                var datesList = nepDates.ToList();
-
-                if (datesList.Count > ParallelThreshold)
-                {
-                    return datesList.AsParallel().Select(item => Parse(item).EnglishDate).ToList();
-                }
-
-                return datesList.Select(item => Parse(item).EnglishDate);
+                return ConvertAll(nepDates, item => Parse(item).EnglishDate);
             }
 
             /// <summary>
             /// Converts a collection of NepaliDate objects to English (Gregorian) dates.
             /// </summary>
             /// <param name="nepDates">The collection of NepaliDate objects to convert.</param>
-            /// <param name="useParallel">
-            /// Whether to use parallel processing. If true, collections larger than 
-            /// the ParallelThreshold will be processed in parallel. Default is true.
-            /// </param>
+            /// <param name="useParallel">Kept for source compatibility. The conversion is always sequential.</param>
             /// <returns>
-            /// An IEnumerable of DateTime objects representing the English dates 
-            /// corresponding to the input Nepali dates.
+            /// The English dates, in the order of the input.
             /// </returns>
-            /// <remarks>
-            /// This method performs conversions from Nepali dates to English dates in bulk.
-            /// It's more efficient than converting dates individually when dealing with large collections.
-            /// 
-            /// For large collections, parallel processing is used to improve performance.
-            /// This method materializes the input collection to determine its size for optimizing the processing approach.
-            /// </remarks>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="nepDates"/> is <see langword="null"/>.</exception>
             /// <example>
             /// <code>
             /// var nepaliDates = new List&lt;NepaliDate&gt; { NepaliDate.Today, NepaliDate.Today.AddDays(5) };
@@ -134,125 +84,71 @@ namespace NepDate
             {
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
 
-                if (!useParallel)
-                    return nepDates.Select(item => item.EnglishDate);
-
-                var datesList = nepDates.ToList();
-
-                if (datesList.Count > ParallelThreshold)
-                {
-                    return datesList.AsParallel().Select(item => item.EnglishDate).ToList();
-                }
-
-                return datesList.Select(item => item.EnglishDate);
+                return ConvertAll(nepDates, item => item.EnglishDate);
             }
 
             /// <summary>
-            /// Batch processes a large collection of English dates for conversion to Nepali dates,
-            /// handling memory more efficiently by processing in smaller batches.
+            /// Converts a collection of English dates to Nepali dates.
+            /// Equivalent to <see cref="ToNepaliDates(IEnumerable{DateTime}, bool)"/>.
             /// </summary>
             /// <param name="engDates">The collection of English dates to convert.</param>
-            /// <param name="batchSize">The size of each batch to process. Default is 1000.</param>
+            /// <param name="batchSize">Kept for source compatibility. Must be at least 1.</param>
             /// <returns>
-            /// An IEnumerable of NepaliDate objects corresponding to the input English dates.
+            /// The Nepali dates, in the order of the input.
             /// </returns>
-            /// <remarks>
-            /// This method is designed for very large collections that might cause memory pressure
-            /// if processed all at once. It processes the dates in batches of the specified size,
-            /// using parallel processing within each batch for optimal performance.
-            /// 
-            /// Unlike the ToNepaliDates method, this method does not materialize the entire
-            /// input collection at once, making it suitable for streaming scenarios or very large datasets.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// // Generate a large number of dates
-            /// var largeDateCollection = Enumerable.Range(0, 100000)
-            ///     .Select(i => DateTime.Today.AddDays(i));
-            /// 
-            /// // Process in batches of 2000
-            /// var nepaliDates = NepaliDate.BulkConvert.BatchProcessToNepaliDates(largeDateCollection, 2000);
-            /// </code>
-            /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="engDates"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="batchSize"/> is less than 1.</exception>
             public static IEnumerable<NepaliDate> BatchProcessToNepaliDates(IEnumerable<DateTime> engDates, int batchSize = 1000)
             {
                 if (engDates == null) throw new ArgumentNullException(nameof(engDates));
                 if (batchSize < 1) throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be at least 1.");
 
-                var result = new List<NepaliDate>();
-                var batch = new List<DateTime>(batchSize);
-
-                foreach (var date in engDates)
-                {
-                    batch.Add(date);
-
-                    if (batch.Count >= batchSize)
-                    {
-                        result.AddRange(ToNepaliDates(batch, true));
-                        batch.Clear();
-                    }
-                }
-
-                if (batch.Count > 0)
-                {
-                    result.AddRange(ToNepaliDates(batch, true));
-                }
-
-                return result;
+                return ConvertAll(engDates, item => new NepaliDate(item));
             }
 
             /// <summary>
-            /// Batch processes a large collection of Nepali dates for conversion to English dates,
-            /// handling memory more efficiently by processing in smaller batches.
+            /// Converts a collection of Nepali dates to English dates.
+            /// Equivalent to <see cref="ToEnglishDates(IEnumerable{NepaliDate}, bool)"/>.
             /// </summary>
             /// <param name="nepDates">The collection of Nepali dates to convert.</param>
-            /// <param name="batchSize">The size of each batch to process. Default is 1000.</param>
+            /// <param name="batchSize">Kept for source compatibility. Must be at least 1.</param>
             /// <returns>
-            /// An IEnumerable of DateTime objects corresponding to the input Nepali dates.
+            /// The English dates, in the order of the input.
             /// </returns>
-            /// <remarks>
-            /// This method is designed for very large collections that might cause memory pressure
-            /// if processed all at once. It processes the dates in batches of the specified size,
-            /// using parallel processing within each batch for optimal performance.
-            /// 
-            /// Unlike the ToEnglishDates method, this method does not materialize the entire
-            /// input collection at once, making it suitable for streaming scenarios or very large datasets.
-            /// 
-            /// It's particularly useful for applications that need to convert large historical datasets
-            /// or generate reports spanning long time periods.
-            /// </remarks>
-            /// <example>
-            /// <code>
-            /// // Generate a large number of Nepali dates
-            /// var largeNepaliDateCollection = Enumerable.Range(0, 50000)
-            ///     .Select(i => NepaliDate.Today.AddDays(i));
-            /// 
-            /// // Process in batches of 1500
-            /// var englishDates = NepaliDate.BulkConvert.BatchProcessToEnglishDates(largeNepaliDateCollection, 1500);
-            /// </code>
-            /// </example>
+            /// <exception cref="ArgumentNullException">Thrown when <paramref name="nepDates"/> is <see langword="null"/>.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="batchSize"/> is less than 1.</exception>
             public static IEnumerable<DateTime> BatchProcessToEnglishDates(IEnumerable<NepaliDate> nepDates, int batchSize = 1000)
             {
                 if (nepDates == null) throw new ArgumentNullException(nameof(nepDates));
                 if (batchSize < 1) throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be at least 1.");
 
-                var result = new List<DateTime>();
-                var batch = new List<NepaliDate>(batchSize);
+                return ConvertAll(nepDates, item => item.EnglishDate);
+            }
 
-                foreach (var date in nepDates)
+            /// <summary>
+            /// Converts every item in one pass. When the source knows its size the result is an
+            /// array of exactly that size; otherwise it is a list that grows as needed.
+            /// </summary>
+            private static IEnumerable<TResult> ConvertAll<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> convert)
+            {
+                if (source is ICollection<TSource> collection)
                 {
-                    batch.Add(date);
+                    var converted = new TResult[collection.Count];
+                    var index = 0;
 
-                    if (batch.Count >= batchSize)
+                    foreach (var item in collection)
                     {
-                        result.AddRange(ToEnglishDates(batch, true));
-                        batch.Clear();
+                        converted[index++] = convert(item);
                     }
+
+                    return converted;
                 }
 
-                if (batch.Count > 0)
+                var result = new List<TResult>();
+
+                foreach (var item in source)
                 {
-                    result.AddRange(ToEnglishDates(batch, true));
+                    result.Add(convert(item));
                 }
 
                 return result;
