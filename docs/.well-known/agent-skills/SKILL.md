@@ -215,7 +215,7 @@ IEnumerable<NepaliDate> bsDates = BulkConvert.ToNepaliDates(adDates);
 IEnumerable<NepaliDate> bsDates2 = ...;
 IEnumerable<DateTime> adDates2 = BulkConvert.ToEnglishDates(bsDates2);
 
-// Auto-parallelizes for large collections (>= threshold)
+// Converts in one pass on the calling thread
 // Returns results preserving input order
 ```
 

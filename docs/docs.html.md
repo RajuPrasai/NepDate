@@ -174,7 +174,7 @@ static IEnumerable<NepaliDate> ToNepaliDates(IEnumerable<DateTime> englishDates)
 static IEnumerable<DateTime>   ToEnglishDates(IEnumerable<NepaliDate> nepaliDates)
 ```
 
-Auto-parallelizes for large inputs. Thread-safe. Results preserve input order.
+Converts in one pass on the calling thread. Thread-safe. Results preserve input order.
 
 ---
 

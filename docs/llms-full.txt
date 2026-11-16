@@ -219,10 +219,10 @@ bool inQ1 = range.Contains(new NepaliDate(2080, 5, 15)); // true
 `static class BulkConvert`
 
 ```csharp
-// Convert many AD dates to BS (auto-parallelizes for large inputs)
+// Convert many AD dates to BS (one pass, input order kept)
 static IEnumerable<NepaliDate> ToNepaliDates(IEnumerable<DateTime> englishDates)
 
-// Convert many BS dates to AD (auto-parallelizes for large inputs)
+// Convert many BS dates to AD (one pass, input order kept)
 static IEnumerable<DateTime> ToEnglishDates(IEnumerable<NepaliDate> nepaliDates)
 ```
 
@@ -386,7 +386,7 @@ enum FiscalYearQuarters
 
 ### Thread safety
 
-All instance methods and static methods are thread-safe. The struct is immutable by design. `BulkConvert` uses `Parallel.ForEach` internally and is safe for concurrent invocation.
+All instance methods and static methods are thread-safe. The struct is immutable by design. `BulkConvert` converts on the calling thread and is safe for concurrent invocation.
 
 ### Internalized dependencies
 
