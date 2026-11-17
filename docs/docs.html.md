@@ -271,9 +271,9 @@ public IActionResult Get(NepaliDate date) { ... }
 
 ## Supported Range
 
-| BS | AD (approximate) |
+| BS | AD |
 |---|---|
-| 1901/01/01 | 1844-04-13 |
-| 2199/12/last | 2143-04-12 |
+| 1901/01/01 | 1844-04-11 |
+| 2199/12/last | 2143-04-15 |
 
 Calendar metadata available: 2001-2089 BS.

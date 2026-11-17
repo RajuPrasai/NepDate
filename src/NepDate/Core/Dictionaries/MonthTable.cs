@@ -1,4 +1,6 @@
-// AUTO-GENERATED from the Bikram Sambat month lengths. Do not edit.
+// Generated once from the month end dates in NepaliToEnglish.cs of NepDate 2.0.7, which this table
+// replaces; every one of its 3,588 months matches. Each entry is the previous one plus the length of
+// that month, so a corrected month length shifts every later entry by the same amount.
 namespace NepDate.Core.Dictionaries
 {
     /// <summary>

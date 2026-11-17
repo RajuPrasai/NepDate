@@ -212,13 +212,13 @@ namespace NepDate
         public static NepaliDate Now => DateTime.Now.ToNepaliDate();
         /// <summary>
         /// Represents the smallest possible value of a <see cref="NepaliDate"/> in the supported range:
-        /// 1 Baisakh 1901 BS (approximately 1844-04-13 AD).
+        /// 1 Baisakh 1901 BS (1844-04-11 AD).
         /// </summary>
         public static readonly NepaliDate MinValue = new NepaliDate(_minYear, 1, 1);
 
         /// <summary>
         /// Represents the largest possible value of a <see cref="NepaliDate"/> in the supported range:
-        /// the last day of Chaitra 2199 BS (approximately 2143-04-12 AD).
+        /// the last day of Chaitra 2199 BS (2143-04-15 AD).
         /// </summary>
         public static readonly NepaliDate MaxValue = FromSerial(MonthTable.TotalDays - 1);
 

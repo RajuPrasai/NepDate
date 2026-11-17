@@ -13,7 +13,7 @@ namespace NepDate
         /// <param name="englishDate">The Gregorian date to convert. Only the date portion is used; the time component is ignored.</param>
         /// <returns>A <see cref="NepaliDate"/> representing the same calendar day in the Bikram Sambat system.</returns>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="englishDate"/> falls before 1901-04-13 or after 2143-04-12
+        /// Thrown when <paramref name="englishDate"/> falls before 1844-04-11 or after 2143-04-15
         /// (the Gregorian bounds of the supported BS range).
         /// </exception>
         /// <example>

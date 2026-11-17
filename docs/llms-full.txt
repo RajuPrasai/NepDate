@@ -396,8 +396,8 @@ Newtonsoft.Json and System.Text.Json support are compiled into the NepDate assem
 
 | BS | AD (approximate) |
 |---|---|
-| 1901/01/01 BS | 1844-04-13 AD |
-| 2199/12/30 BS | 2143-04-12 AD |
+| 1901/01/01 BS | 1844-04-11 AD |
+| 2199/12/30 BS | 2143-04-15 AD |
 
 Calendar metadata: 2001-2089 BS. Outside this range: TithiNp/TithiEn return empty string, IsPublicHoliday returns false, EventsNp/EventsEn return empty arrays. No exception is thrown.
 

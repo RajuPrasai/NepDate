@@ -323,12 +323,12 @@ namespace NepDate
         /// <param name="engDate">
         /// The Gregorian date to convert. Only the date portion is used; the time component and the
         /// <see cref="DateTime.Kind"/> are ignored.
-        /// The date must fall on or after 1901-04-13 and on or before 2143-04-12 (the Gregorian equivalents
+        /// The date must fall on or after 1844-04-11 and on or before 2143-04-15 (the Gregorian equivalents
         /// of <see cref="MinValue"/> and <see cref="MaxValue"/>).
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="engDate"/> falls before the Gregorian equivalent of
-        /// <see cref="MinValue"/> (1901-04-13) or after that of <see cref="MaxValue"/> (2143-04-12).
+        /// <see cref="MinValue"/> (1844-04-11) or after that of <see cref="MaxValue"/> (2143-04-15).
         /// </exception>
         /// <remarks>
         /// The conversion uses one precomputed table of month start days, with no heap allocation.

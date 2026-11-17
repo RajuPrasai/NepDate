@@ -448,8 +448,8 @@ bool isDefault  = date.IsDefault;       // false</code></pre>
           <tbody>
             <tr><td><code>NepaliDate.Today</code></td><td><code>NepaliDate</code></td><td>Current date per local system clock.</td></tr>
             <tr><td><code>NepaliDate.Now</code></td><td><code>NepaliDate</code></td><td>Same as <code>Today</code>. Parity with <code>DateTime.Now</code>.</td></tr>
-            <tr><td><code>NepaliDate.MinValue</code></td><td><code>NepaliDate</code></td><td>1 Baisakh 1901 BS (approx 1844-04-13 AD).</td></tr>
-            <tr><td><code>NepaliDate.MaxValue</code></td><td><code>NepaliDate</code></td><td>Last day of Chaitra 2199 BS (approx 2143-04-12 AD).</td></tr>
+            <tr><td><code>NepaliDate.MinValue</code></td><td><code>NepaliDate</code></td><td>1 Baisakh 1901 BS (1844-04-11 AD).</td></tr>
+            <tr><td><code>NepaliDate.MaxValue</code></td><td><code>NepaliDate</code></td><td>Last day of Chaitra 2199 BS (2143-04-15 AD).</td></tr>
           </tbody>
         </table>
         </div>
@@ -1143,7 +1143,7 @@ catch (InvalidNepaliDateFormatException ex)
         <table class="data-table api-table">
           <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
           <tbody>
-            <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (approx 1844-04-13 AD) through 2199/12/last BS (approx 2143-04-12 AD).</td></tr>
+            <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (1844-04-11 AD) through 2199/12/last BS (2143-04-15 AD).</td></tr>
             <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>2001 BS through 2089 BS. Outside this range, properties return empty defaults without throwing.</td></tr>
             <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
           </tbody>
