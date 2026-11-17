@@ -104,6 +104,29 @@ public class SerialCoreTests
     }
 
     [Fact]
+    public void Range_RunsFrom11April1844To15April2143()
+    {
+        Assert.Equal(new DateTime(1844, 4, 11), NepaliDate.MinValue.EnglishDate);
+        Assert.Equal(new DateTime(2143, 4, 15), NepaliDate.MaxValue.EnglishDate);
+    }
+
+    [Fact]
+    public void ToString_MatchesTheGeneralNumericFormatForEveryDay()
+    {
+        for (var date = NepaliDate.MinValue; ; date = date.AddDays(1))
+        {
+            Assert.Equal(date.ToString(DateFormats.YearMonthDay, Separators.ForwardSlash), date.ToString());
+
+            if (date == NepaliDate.MaxValue)
+            {
+                break;
+            }
+        }
+
+        Assert.Equal("0000/00/00", default(NepaliDate).ToString());
+    }
+
+    [Fact]
     public void NepaliDate_IsEightBytes()
     {
         Assert.Equal(8, Unsafe.SizeOf<NepaliDate>());

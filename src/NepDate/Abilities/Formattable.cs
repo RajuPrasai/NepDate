@@ -91,42 +91,78 @@ namespace NepDate
                     throw new InvalidNepaliDateFormatException("Invalid separator value");
             }
 
-            // Each letter names the component written at that position.
-            string order;
+            int year = _year, month = _month, day = _day;
+            var yearWidth = leadingZeros ? 4 : DigitCount(year);
+            var monthWidth = leadingZeros || month > 9 ? 2 : 1;
+            var dayWidth = leadingZeros || day > 9 ? 2 : 1;
+
+            // Pack each component as value * 8 + width, in the order they are written.
+            int first, second, third;
             switch (dateFormat)
             {
-                case DateFormats.YearMonthDay: order = "YMD"; break;
-                case DateFormats.YearDayMonth: order = "YDM"; break;
-                case DateFormats.MonthDayYear: order = "MDY"; break;
-                case DateFormats.MonthYearDay: order = "MYD"; break;
-                case DateFormats.DayMonthYear: order = "DMY"; break;
-                case DateFormats.DayYearMonth: order = "DYM"; break;
+                case DateFormats.YearMonthDay: first = year * 8 + yearWidth; second = month * 8 + monthWidth; third = day * 8 + dayWidth; break;
+                case DateFormats.YearDayMonth: first = year * 8 + yearWidth; second = day * 8 + dayWidth; third = month * 8 + monthWidth; break;
+                case DateFormats.MonthDayYear: first = month * 8 + monthWidth; second = day * 8 + dayWidth; third = year * 8 + yearWidth; break;
+                case DateFormats.MonthYearDay: first = month * 8 + monthWidth; second = year * 8 + yearWidth; third = day * 8 + dayWidth; break;
+                case DateFormats.DayMonthYear: first = day * 8 + dayWidth; second = month * 8 + monthWidth; third = year * 8 + yearWidth; break;
+                case DateFormats.DayYearMonth: first = day * 8 + dayWidth; second = year * 8 + yearWidth; third = month * 8 + monthWidth; break;
                 default:
                     throw new InvalidNepaliDateFormatException();
             }
 
+            // The exact length is known, so the digits go straight into the final string.
+            var length = (first & 7) + (second & 7) + (third & 7) + 2;
 #if NETSTANDARD2_0
-            var buffer = new CharBuffer(new char[_formatBufferSize]);
+            var chars = new char[length];
+            WriteNumeric(chars, first, second, third, separatorChar, zero);
+            return new string(chars);
 #else
-            var buffer = new CharBuffer(stackalloc char[_formatBufferSize]);
+            return string.Create(length, (first, second, third, separatorChar, zero), static (chars, state) =>
+                WriteNumeric(chars, state.first, state.second, state.third, state.separatorChar, state.zero));
 #endif
+        }
 
-            for (int i = 0; i < 3; i++)
+        /// <summary>
+        /// Writes three packed components (value * 8 + width) with a separator between them.
+        /// </summary>
+#if NETSTANDARD2_0
+        private static void WriteNumeric(char[] chars, int first, int second, int third, char separator, char zero)
+#else
+        private static void WriteNumeric(Span<char> chars, int first, int second, int third, char separator, char zero)
+#endif
+        {
+            var position = WritePacked(chars, 0, first, zero);
+            chars[position++] = separator;
+            position = WritePacked(chars, position, second, zero);
+            chars[position++] = separator;
+            WritePacked(chars, position, third, zero);
+        }
+
+        /// <summary>
+        /// Writes one packed component at <paramref name="start"/> and returns the position after it.
+        /// </summary>
+#if NETSTANDARD2_0
+        private static int WritePacked(char[] chars, int start, int packed, char zero)
+#else
+        private static int WritePacked(Span<char> chars, int start, int packed, char zero)
+#endif
+        {
+            var value = packed >> 3;
+            var end = start + (packed & 7);
+
+            for (var i = end - 1; i >= start; i--)
             {
-                if (i != 0)
-                {
-                    buffer.Append(separatorChar);
-                }
-
-                switch (order[i])
-                {
-                    case 'Y': buffer.AppendNumber(_year, leadingZeros ? 4 : 1, zero); break;
-                    case 'M': buffer.AppendNumber(_month, leadingZeros ? 2 : 1, zero); break;
-                    default: buffer.AppendNumber(_day, leadingZeros ? 2 : 1, zero); break;
-                }
+                chars[i] = (char)(zero + value % 10);
+                value /= 10;
             }
 
-            return buffer.ToString();
+            return end;
+        }
+
+        /// <summary>The number of decimal digits in a year from 0 to 9999.</summary>
+        private static int DigitCount(int value)
+        {
+            return value > 999 ? 4 : value > 99 ? 3 : value > 9 ? 2 : 1;
         }
 
         /// <summary>
@@ -146,7 +182,36 @@ namespace NepDate
         /// <returns>A string that represents the current NepaliDate object in the format "yyyy/MM/dd".</returns>
         public override string ToString()
         {
-            return ToNumericString(DateFormats.YearMonthDay, Separators.ForwardSlash, leadingZeros: true, zero: '0');
+            // The most used format gets a fixed layout: no width counting, one allocation.
+#if NETSTANDARD2_0
+            var chars = new char[10];
+            WriteCanonical(chars, _year, _month, _day);
+            return new string(chars);
+#else
+            return string.Create(10, AsInteger, static (chars, value) =>
+                WriteCanonical(chars, value / 10000, value / 100 % 100, value % 100));
+#endif
+        }
+
+        /// <summary>
+        /// Writes "yyyy/MM/dd" into the first 10 characters of <paramref name="chars"/>.
+        /// </summary>
+#if NETSTANDARD2_0
+        private static void WriteCanonical(char[] chars, int year, int month, int day)
+#else
+        private static void WriteCanonical(Span<char> chars, int year, int month, int day)
+#endif
+        {
+            chars[0] = (char)('0' + year / 1000 % 10);
+            chars[1] = (char)('0' + year / 100 % 10);
+            chars[2] = (char)('0' + year / 10 % 10);
+            chars[3] = (char)('0' + year % 10);
+            chars[4] = '/';
+            chars[5] = (char)('0' + month / 10);
+            chars[6] = (char)('0' + month % 10);
+            chars[7] = '/';
+            chars[8] = (char)('0' + day / 10);
+            chars[9] = (char)('0' + day % 10);
         }
 
         /// <summary>
