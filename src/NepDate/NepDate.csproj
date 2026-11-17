@@ -64,9 +64,11 @@
   </ItemGroup>
 
   <!-- net8.0 uses the System.Text.Json that ships with the runtime. Referencing the package there
-       would bind the assembly to a newer version than a .NET 8 application has. -->
+       would bind the assembly to a newer version than a .NET 8 application has. netstandard2.0
+       references the oldest patched 8.0 release, so .NET Framework applications on 8.0.5 or later
+       can call ConfigureForNepaliDate. -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Text.Json" Version="10.0.6">
+    <PackageReference Include="System.Text.Json" Version="8.0.5">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
