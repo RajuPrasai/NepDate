@@ -84,7 +84,7 @@
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
-        "featureList": "BS to AD date conversion, AD to BS date conversion, smart date parsing with 100+ spellings, custom format strings, Nepali Unicode output, fiscal year operations, fiscal quarter detection, NepaliDateRange with set operations, calendar metadata (tithi, public holidays, events), bulk conversion with auto-parallelization, System.Text.Json serialization, Newtonsoft.Json serialization, XML serialization, TypeConverter for ASP.NET model binding, IFormattable, ISpanFormattable, IParsable, IComparable, IEquatable",
+        "featureList": "BS to AD date conversion, AD to BS date conversion, smart date parsing with 100+ spellings, custom format strings, Nepali Unicode output, fiscal year operations, fiscal quarter detection, NepaliDateRange with set operations, calendar metadata (tithi, public holidays, events), bulk conversion, System.Text.Json serialization, Newtonsoft.Json serialization, XML serialization, TypeConverter for ASP.NET model binding, IFormattable, ISpanFormattable, IParsable, IComparable, IEquatable",
         "softwareRequirements": ".NET Standard 2.0 or higher",
         "screenshot": "https://nepdate.rajuprasai.com.np/assets/full-logo.png",
         "mainEntityOfPage": "https://nepdate.rajuprasai.com.np/"
@@ -338,7 +338,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L12 3 4 7l8 4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg></div>
             <h3>Bulk Conversion</h3>
-            <p>Auto parallel processing for 500+ items. Explicit batch-size control for very large datasets.</p>
+            <p>Converts whole collections in one pass, in input order, at a few nanoseconds per date.</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
@@ -528,7 +528,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the supported date range?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (approximately 1844-04-13 AD) to the last day of <strong>2199/12 BS</strong> (approximately 2143-04-12 AD). Calendar metadata (Tithi, holidays, events) is available for <strong>2001 through 2089 BS</strong>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Calendar metadata (Tithi, holidays, events) is available for <strong>2001 through 2089 BS</strong>.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Does NepDate have any external dependencies?</button>
@@ -536,7 +536,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">Is NepDate thread-safe?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Yes. <code>NepaliDate</code> is a <code>readonly struct</code>, making it inherently immutable and safe for concurrent access. <code>BulkConvert</code> operations use thread-safe parallel processing.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>Yes. <code>NepaliDate</code> is a <code>readonly struct</code>, making it inherently immutable and safe for concurrent access. <code>BulkConvert</code> operations are safe to call from several threads.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">How does NepDate handle invalid dates?</button>

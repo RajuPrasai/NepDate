@@ -2,6 +2,12 @@
 using NepDate.TypeConversion;
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+#if NETSTANDARD2_0
+using CharSequence = System.String;
+#else
+using CharSequence = System.ReadOnlySpan<char>;
+#endif
 
 namespace NepDate
 {
@@ -22,55 +28,161 @@ namespace NepDate
     {
         #region Ctor
         /// <summary>
-        /// Validates the date components and throws an exception for any that are out of range.
+        /// Stores components that the caller has already validated.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <see cref="Year"/> is outside 1901–2199, <see cref="Month"/> is outside 1–12,
-        /// or <see cref="Day"/> exceeds the number of days in the given month.
-        /// </exception>
-        private void ValidateAndThrow()
+        /// <param name="year">The Bikram Sambat year (1901-2199).</param>
+        /// <param name="month">The month (1-12).</param>
+        /// <param name="day">The day within the month.</param>
+        /// <param name="serial">Days from 1 Baisakh 1901 BS to this date.</param>
+        private NepaliDate(int year, int month, int day, int serial)
         {
-            if (Year < _minYear || Year > _maxYear)
-            {
-                throw new ArgumentOutOfRangeException(nameof(Year),
-                    $"Year must be between {_minYear} and {_maxYear}. Got: {Year}.");
-            }
-
-            if (Month < 1 || Month > 12)
-            {
-                throw new ArgumentOutOfRangeException(nameof(Month),
-                    $"Month must be between 1 and 12. Got: {Month}.");
-            }
-
-            if (Day < 1 || Day > MonthEndDay)
-            {
-                throw new ArgumentOutOfRangeException(nameof(Day),
-                    $"Day must be between 1 and {MonthEndDay} for {Year}/{Month:D2}. Got: {Day}.");
-            }
+            _dayNumber = serial + 1;
+            _year = (ushort)year;
+            _month = (byte)month;
+            _day = (byte)day;
         }
 
         /// <summary>
-        /// Determines whether the given Nepali date components form a valid, in-range date
-        /// without throwing an exception.
+        /// Validates the components and builds the date with one table lookup.
         /// </summary>
-        /// <param name="year">The Nepali year to validate.</param>
-        /// <param name="month">The Nepali month to validate (1–12).</param>
-        /// <param name="day">The Nepali day to validate.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the year is outside 1901-2199, the month is outside 1-12,
+        /// or the day exceeds the number of days in the given month.
+        /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static NepaliDate Create(int year, int month, int day)
+        {
+            if ((uint)(year - _minYear) > (uint)(_maxYear - _minYear) || (uint)(month - 1) > 11u)
+            {
+                ThrowYearOrMonthOutOfRange(year, month);
+            }
+
+            var starts = MonthTable.Start;
+            var monthIndex = (year - _minYear) * 12 + (month - 1);
+            var start = starts[monthIndex];
+            var monthEndDay = starts[monthIndex + 1] - start;
+
+            if ((uint)(day - 1) >= (uint)monthEndDay)
+            {
+                ThrowDayOutOfRange(year, month, day, monthEndDay);
+            }
+
+            return new NepaliDate(year, month, day, start + day - 1);
+        }
+
+        /// <summary>
+        /// Builds the date from valid-looking components without throwing.
+        /// </summary>
         /// <returns>
         /// <see langword="true"/> if the combination is a real date within the supported
-        /// 1901–2199 BS range; otherwise <see langword="false"/>.
+        /// 1901-2199 BS range; otherwise <see langword="false"/>.
         /// </returns>
-        private static bool IsValidDate(int year, int month, int day)
+        private static bool TryCreate(int year, int month, int day, out NepaliDate result)
+        {
+            if ((uint)(year - _minYear) > (uint)(_maxYear - _minYear) || (uint)(month - 1) > 11u)
+            {
+                result = default;
+                return false;
+            }
+
+            var starts = MonthTable.Start;
+            var monthIndex = (year - _minYear) * 12 + (month - 1);
+            var start = starts[monthIndex];
+
+            if ((uint)(day - 1) >= (uint)(starts[monthIndex + 1] - start))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new NepaliDate(year, month, day, start + day - 1);
+            return true;
+        }
+
+        /// <summary>
+        /// Builds the date that lies <paramref name="serial"/> days after 1 Baisakh 1901 BS.
+        /// The caller guarantees that the serial is inside the supported range.
+        /// </summary>
+        /// <remarks>
+        /// A Bikram Sambat month is 30.44 days long on average, so the month index is first
+        /// estimated by proportion and then corrected by at most a step or two.
+        /// </remarks>
+        private static NepaliDate FromSerial(int serial)
+        {
+            var starts = MonthTable.Start;
+            var monthIndex = (int)((uint)serial * (uint)MonthTable.MonthCount / (uint)MonthTable.TotalDays);
+
+            if (serial < starts[monthIndex])
+            {
+                do
+                {
+                    monthIndex--;
+                }
+                while (serial < starts[monthIndex]);
+            }
+            else
+            {
+                while (serial >= starts[monthIndex + 1])
+                {
+                    monthIndex++;
+                }
+            }
+
+            var yearIndex = monthIndex / 12;
+            return new NepaliDate(
+                _minYear + yearIndex,
+                monthIndex - yearIndex * 12 + 1,
+                serial - starts[monthIndex] + 1,
+                serial);
+        }
+
+        /// <summary>
+        /// Builds the date for a serial that may lie outside the supported range.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the serial is outside the supported range.</exception>
+        private static NepaliDate FromSerialChecked(int serial)
+        {
+            if ((uint)serial >= (uint)MonthTable.TotalDays)
+            {
+                ThrowEnglishDateOutOfRange(serial < 0);
+            }
+
+            return FromSerial(serial);
+        }
+
+        private static void ThrowYearOrMonthOutOfRange(int year, int month)
         {
             if (year < _minYear || year > _maxYear)
-                return false;
-            if (month < 1 || month > 12)
-                return false;
-            if (!DictionaryBridge.NepToEng.TryGetNepaliMonthEndDay(year, month, out var monthEndDay))
-                return false;
-            if (day < 1 || day > monthEndDay)
-                return false;
-            return true;
+            {
+                throw new ArgumentOutOfRangeException(nameof(Year),
+                    $"Year must be between {_minYear} and {_maxYear}. Got: {year}.");
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(Month),
+                $"Month must be between 1 and 12. Got: {month}.");
+        }
+
+        private static void ThrowDayOutOfRange(int year, int month, int day, int monthEndDay)
+        {
+            throw new ArgumentOutOfRangeException(nameof(Day),
+                $"Day must be between 1 and {monthEndDay} for {year}/{month:D2}. Got: {day}.");
+        }
+
+        private static void ThrowEnglishDateOutOfRange(bool beforeMinimum)
+        {
+            if (beforeMinimum)
+            {
+                throw new ArgumentOutOfRangeException("engDate",
+                    $"The date is before the minimum supported date ({MinValue.EnglishDate.Date}).");
+            }
+
+            throw new ArgumentOutOfRangeException("engDate",
+                $"The date is after the maximum supported date ({MaxValue.EnglishDate.Date}).");
+        }
+
+        private static void ThrowDefaultInstance()
+        {
+            throw new InvalidNepaliDateFormatException();
         }
 
         /// <summary>
@@ -99,10 +211,7 @@ namespace NepDate
         /// </example>
         public NepaliDate(int yearBs, int monthBs, int dayBs)
         {
-            (Year, Month, Day) = (yearBs, monthBs, dayBs);
-            _englishDate = null;
-            ValidateAndThrow();
-            _englishDate = DictionaryBridge.NepToEng.GetEnglishDate(yearBs, monthBs, dayBs);
+            this = Create(yearBs, monthBs, dayBs);
         }
 
         /// <summary>
@@ -132,10 +241,12 @@ namespace NepDate
         /// </example>
         public NepaliDate(string rawNepaliDate)
         {
-            (Year, Month, Day) = SplitNepaliDate(rawNepaliDate);
-            _englishDate = null;
-            ValidateAndThrow();
-            _englishDate = DictionaryBridge.NepToEng.GetEnglishDate(Year, Month, Day);
+            if (!TrySplitNepaliDate(rawNepaliDate, out var year, out var month, out var day))
+            {
+                throw new InvalidNepaliDateFormatException();
+            }
+
+            this = Create(year, month, day);
         }
 
         /// <summary>
@@ -174,33 +285,35 @@ namespace NepDate
         {
             const int currentMillennium = 2;
 
-            (Year, Month, Day) = SplitNepaliDate(rawNepaliDate);
+            if (!TrySplitNepaliDate(rawNepaliDate, out var year, out var month, out var day))
+            {
+                throw new InvalidNepaliDateFormatException();
+            }
 
             if (autoAdjust)
             {
-                if (Day > 32)
+                if (day > 32)
                 {
-                    (Year, Day) = (Day, Year);
+                    (year, day) = (day, year);
                 }
 
                 if (!monthInMiddle)
                 {
-                    (Month, Day) = (Day, Month);
+                    (month, day) = (day, month);
                 }
 
-                if (Month > 12 && Day < 13)
+                if (month > 12 && day < 13)
                 {
-                    (Month, Day) = (Day, Month);
+                    (month, day) = (day, month);
                 }
 
-                if (Year < 1000)
+                if (year < 1000)
                 {
-                    Year = currentMillennium * 1000 + Year;
+                    year = currentMillennium * 1000 + year;
                 }
             }
-            _englishDate = null;
-            ValidateAndThrow();
-            _englishDate = DictionaryBridge.NepToEng.GetEnglishDate(Year, Month, Day);
+
+            this = Create(year, month, day);
         }
 
         /// <summary>
@@ -208,16 +321,17 @@ namespace NepDate
         /// <see cref="DateTime"/> to its Bikram Sambat equivalent.
         /// </summary>
         /// <param name="engDate">
-        /// The Gregorian date to convert. Only the date portion is used; any time component is ignored.
-        /// The date must fall on or after 1901-04-13 and on or before 2143-04-12 (the Gregorian equivalents
+        /// The Gregorian date to convert. Only the date portion is used; the time component and the
+        /// <see cref="DateTime.Kind"/> are ignored.
+        /// The date must fall on or after 1844-04-11 and on or before 2143-04-15 (the Gregorian equivalents
         /// of <see cref="MinValue"/> and <see cref="MaxValue"/>).
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="engDate"/> falls before the Gregorian equivalent of
-        /// <see cref="MinValue"/> (1901-04-13) or after that of <see cref="MaxValue"/> (2143-04-12).
+        /// <see cref="MinValue"/> (1844-04-11) or after that of <see cref="MaxValue"/> (2143-04-15).
         /// </exception>
         /// <remarks>
-        /// The conversion uses precomputed mapping tables for O(1) performance with zero heap allocation.
+        /// The conversion uses one precomputed table of month start days, with no heap allocation.
         /// For converting many dates at once, prefer <see cref="BulkConvert.ToNepaliDates"/> to amortize
         /// overhead across the collection.
         /// </remarks>
@@ -232,23 +346,7 @@ namespace NepDate
         /// </example>
         public NepaliDate(DateTime engDate)
         {
-            // Check if date is before minimum supported date (1901-04-13)
-            if (engDate.Date < MinValue.EnglishDate.Date)
-            {
-                throw new ArgumentOutOfRangeException(nameof(engDate),
-                    $"The date is before the minimum supported date ({MinValue.EnglishDate.Date}).");
-            }
-
-            // Check if date is after maximum supported date (2143-04-12)
-            if (engDate.Date > MaxValue.EnglishDate.Date)
-            {
-                throw new ArgumentOutOfRangeException(nameof(engDate),
-                    $"The date is after the maximum supported date ({MaxValue.EnglishDate.Date}).");
-            }
-
-            (Year, Month, Day) = DictionaryBridge.EngToNep.GetNepaliDate(engDate.Year, engDate.Month, engDate.Day);
-            _englishDate = engDate.Date;
-            ValidateAndThrow();
+            this = FromSerialChecked((int)(engDate.Ticks / _ticksPerDay) - _epochDayNumber);
         }
         #endregion
 
@@ -272,7 +370,13 @@ namespace NepDate
         /// </example>
         public NepaliDate MonthEndDate()
         {
-            return new NepaliDate(Year, Month, MonthEndDay);
+            if (_dayNumber == 0)
+            {
+                ThrowDefaultInstance();
+            }
+
+            var monthEndDay = MonthEndDay;
+            return new NepaliDate(_year, _month, monthEndDay, _dayNumber - 1 + monthEndDay - _day);
         }
 
         /// <summary>
@@ -315,121 +419,109 @@ namespace NepDate
         /// </example>
         public NepaliDate AddMonths(double months, bool awayFromMonthEnd = false)
         {
-            if (months < 0)
+            // The usual call passes a small whole number: skip the rounding and go straight to
+            // month arithmetic. Everything else takes the general path below.
+            if (months > -_wholeMonthsFastLimit && months < _wholeMonthsFastLimit)
             {
-                return SubtractMonths(Math.Abs(months), awayFromMonthEnd);
-            }
+                var wholeMonths = (int)months;
 
-            var roundedMonths = (int)Math.Round(months, 0, MidpointRounding.AwayFromZero);
-
-            if (months != roundedMonths)
-            {
-                return AddDays(Math.Round(months * _approxDaysPerMonth, 0, MidpointRounding.AwayFromZero));
-            }
-
-            var nextYear = Year;
-            var nextMonth = Month + roundedMonths;
-            var nextMonthDay = 1;
-
-            while (nextMonth > 12)
-            {
-                nextYear++;
-                nextMonth -= 12;
-            }
-
-            var nextMonthNepDate = new NepaliDate(nextYear, nextMonth, nextMonthDay);
-
-            if (awayFromMonthEnd)
-            {
-                if (Day > nextMonthNepDate.MonthEndDay)
+                if (wholeMonths == months)
                 {
-                    nextMonthDay = Day - nextMonthNepDate.MonthEndDay;
-                    nextMonth++;
-
-                    if (nextMonth > 12)
-                    {
-                        nextYear++;
-                        nextMonth = 1;
-                    }
-                }
-                else
-                {
-                    nextMonthDay = Day;
+                    return AddWholeMonths(wholeMonths, awayFromMonthEnd);
                 }
             }
-            else
-            {
-                nextMonthDay = Math.Min(nextMonthNepDate.MonthEndDay, Day);
-            }
 
-            return new NepaliDate(nextYear, nextMonth, nextMonthDay);
+            return AddMonthsGeneral(months, awayFromMonthEnd);
         }
 
         /// <summary>
-        /// Subtracts the specified number of months from this NepaliDate and returns a new NepaliDate.
+        /// Whole-number month counts below this magnitude take the fast path of
+        /// <see cref="AddMonths(double, bool)"/>. The supported range spans 3,588 months.
         /// </summary>
-        /// <param name="months">The number of months to subtract. Can be positive, negative, or fractional.</param>
-        /// <param name="awayFromMonthEnd">
-        /// Determines behavior when subtracting months would put the day beyond the end of the resulting month.
-        /// If false (default), the day is capped at the last day of the resulting month.
-        /// If true, the excess days are added to the first day of the following month.
-        /// </param>
-        /// <returns>A new NepaliDate that is the specified number of months before this instance.</returns>
+        private const double _wholeMonthsFastLimit = 100000;
+
+        /// <summary>
+        /// Whole-number day counts up to this magnitude take the fast path of
+        /// <see cref="AddDays(double)"/>. The supported range spans 109,212 days.
+        /// </summary>
+        private const double _wholeDaysFastLimit = 200000;
+
+        /// <summary>
+        /// Handles fractional, very large and non-finite month counts.
+        /// </summary>
         /// <remarks>
-        /// For fractional months, the value is rounded to the nearest whole number of days (approx. 30.42 days per month).
-        /// If months is negative, this method calls AddMonths with the absolute value.
-        /// This is an internal method used by AddMonths with a negative value.
+        /// A fractional value is converted to days (approx. 30.42 days per month) and added with
+        /// <see cref="AddDays(double)"/>. A whole value is added in month space.
         /// </remarks>
-        private NepaliDate SubtractMonths(double months, bool awayFromMonthEnd = false)
+        private NepaliDate AddMonthsGeneral(double months, bool awayFromMonthEnd)
         {
-            if (months < 0)
+            var magnitude = Math.Abs(months);
+            var roundedMonths = (int)Math.Round(magnitude, 0, MidpointRounding.AwayFromZero);
+
+            if (magnitude != roundedMonths)
             {
-                return AddMonths(Math.Abs(months), awayFromMonthEnd);
+                var days = Math.Round(magnitude * _approxDaysPerMonth, 0, MidpointRounding.AwayFromZero);
+                return AddDays(months < 0 ? -days : days);
             }
 
-            var roundedMonths = (int)Math.Round(months, 0, MidpointRounding.AwayFromZero);
+            return AddWholeMonths(months < 0 ? -roundedMonths : roundedMonths, awayFromMonthEnd);
+        }
 
-            if (months != roundedMonths)
+        /// <summary>
+        /// Moves this date by a whole number of months, forward or backward.
+        /// </summary>
+        /// <param name="months">The number of months to move. Negative values move backward.</param>
+        /// <param name="awayFromMonthEnd">
+        /// When the target month is shorter than the current day: <see langword="false"/> clamps the day
+        /// to the last day of the target month, <see langword="true"/> carries the extra days into the
+        /// following month.
+        /// </param>
+        private NepaliDate AddWholeMonths(int months, bool awayFromMonthEnd)
+        {
+            var target = (long)(_year - _minYear) * 12 + (_month - 1) + months;
+
+            if ((ulong)target >= (ulong)MonthTable.MonthCount)
             {
-                return AddDays(-Math.Round(months * _approxDaysPerMonth, 0, MidpointRounding.AwayFromZero));
+                // Floor division, so that the reported year is right for negative targets too.
+                var yearOffset = target >= 0 ? target / 12 : -((11 - target) / 12);
+                ThrowYearOrMonthOutOfRange((int)(_minYear + yearOffset), 1);
             }
 
-            var previousYear = Year;
-            var previousMonth = Month - roundedMonths;
-            var previousMonthDay = 1;
+            var starts = MonthTable.Start;
+            var monthIndex = (int)target;
+            var monthEndDay = starts[monthIndex + 1] - starts[monthIndex];
+            int day = _day;
 
-            while (previousMonth < 1)
+            if (day > monthEndDay)
             {
-                previousYear--;
-                previousMonth = previousMonth + 12;
-            }
-
-            var previousMonthNepDate = new NepaliDate(previousYear, previousMonth, previousMonthDay);
-
-            if (awayFromMonthEnd)
-            {
-                if (Day > previousMonthNepDate.MonthEndDay)
+                if (awayFromMonthEnd)
                 {
-                    previousMonthDay = Day - previousMonthNepDate.MonthEndDay;
-                    previousMonth++;
+                    day -= monthEndDay;
+                    monthIndex++;
 
-                    if (previousMonth > 12)
+                    if (monthIndex >= MonthTable.MonthCount)
                     {
-                        previousYear++;
-                        previousMonth = 1;
+                        ThrowYearOrMonthOutOfRange(_maxYear + 1, 1);
                     }
+
+                    monthEndDay = starts[monthIndex + 1] - starts[monthIndex];
                 }
                 else
                 {
-                    previousMonthDay = Day;
+                    day = monthEndDay;
                 }
             }
-            else
+
+            var yearIndex = monthIndex / 12;
+            var year = _minYear + yearIndex;
+            var month = monthIndex - yearIndex * 12 + 1;
+
+            if ((uint)(day - 1) >= (uint)monthEndDay)
             {
-                previousMonthDay = Math.Min(previousMonthNepDate.MonthEndDay, Day);
+                ThrowDayOutOfRange(year, month, day, monthEndDay);
             }
 
-            return new NepaliDate(previousYear, previousMonth, previousMonthDay);
+            return new NepaliDate(year, month, day, starts[monthIndex] + day - 1);
         }
 
         /// <summary>
@@ -442,9 +534,9 @@ namespace NepDate
         /// </param>
         /// <returns>A new <see cref="NepaliDate"/> offset by the requested number of days.</returns>
         /// <remarks>
-        /// The addition is performed in the Gregorian domain: the date is converted to a
-        /// <see cref="DateTime"/>, the days are added, and the result is converted back.
-        /// This guarantees correct handling of all month and year boundaries.
+        /// A whole number of days is added to the internal day count directly, which handles every
+        /// month and year boundary. A fractional value is added in the Gregorian domain
+        /// (<see cref="DateTime.AddDays(double)"/>) and the result is converted back.
         /// </remarks>
         /// <example>
         /// <code>
@@ -455,7 +547,22 @@ namespace NepDate
         /// </example>
         public NepaliDate AddDays(double days)
         {
-            return EnglishDate.AddDays(days).ToNepaliDate();
+            if (days >= -_wholeDaysFastLimit && days <= _wholeDaysFastLimit)
+            {
+                var wholeDays = (int)days;
+
+                if (wholeDays == days)
+                {
+                    if (_dayNumber == 0)
+                    {
+                        ThrowDefaultInstance();
+                    }
+
+                    return FromSerialChecked(_dayNumber - 1 + wholeDays);
+                }
+            }
+
+            return new NepaliDate(EnglishDate.AddDays(days));
         }
 
         /// <summary>
@@ -591,73 +698,6 @@ namespace NepDate
         }
 
         /// <summary>
-        /// Parses a string representation of a Nepali date into year, month, and day components.
-        /// </summary>
-        /// <param name="rawNepaliDate">The string containing a Nepali date to parse.</param>
-        /// <returns>A tuple containing the year, month, and day components.</returns>
-        /// <exception cref="InvalidNepaliDateFormatException">Thrown when the input string is null or empty.</exception>
-        /// <exception cref="InvalidNepaliDateFormatException">Thrown when the string cannot be parsed as a valid Nepali date.</exception>
-        /// <remarks>
-        /// This method supports various separator characters including slashes, dashes, dots, underscores, and spaces.
-        /// The components must be in the order: year, month, day.
-        /// This is an optimized implementation that avoids unnecessary string allocations.
-        /// </remarks>
-        private static (int year, int month, int day) SplitNepaliDate(string rawNepaliDate)
-        {
-            if (string.IsNullOrEmpty(rawNepaliDate))
-            {
-                throw new InvalidNepaliDateFormatException();
-            }
-
-            int part0 = 0, part1 = 0, part2 = 0;
-            var currentIndex = 0;
-            var hasDigits = false;
-            var length = rawNepaliDate.Length;
-
-            for (int i = 0; i < length; i++)
-            {
-                char c = rawNepaliDate[i];
-
-                if (c >= '0' && c <= '9')
-                {
-                    int digit = c - '0';
-                    switch (currentIndex)
-                    {
-                        case 0: part0 = part0 * 10 + digit; break;
-                        case 1: part1 = part1 * 10 + digit; break;
-                        case 2: part2 = part2 * 10 + digit; break;
-                        default: throw new InvalidNepaliDateFormatException();
-                    }
-                    hasDigits = true;
-                }
-                else if (c == '-' || c == '/' || c == '.' || c == '_' || c == '\\' || c == ' ' || c == '।' || c == '|')
-                {
-                    if (hasDigits)
-                    {
-                        currentIndex++;
-                        hasDigits = false;
-                    }
-                }
-                else
-                {
-                    throw new InvalidNepaliDateFormatException();
-                }
-            }
-
-            if (hasDigits)
-            {
-                currentIndex++;
-            }
-
-            if (currentIndex != 3)
-            {
-                throw new InvalidNepaliDateFormatException();
-            }
-
-            return (part0, part1, part2);
-        }
-
-        /// <summary>
         /// Attempts to parse a Nepali date string into its numeric year, month, and day components
         /// without throwing an exception on failure.
         /// </summary>
@@ -672,19 +712,39 @@ namespace NepDate
         /// <remarks>
         /// Only extracts raw integer values. Range and calendar validity are checked separately by the caller.
         /// </remarks>
-        private static bool TrySplitNepaliDate(string rawNepaliDate, out int year, out int month, out int day)
+        private static bool TrySplitNepaliDate(CharSequence rawNepaliDate, out int year, out int month, out int day)
         {
             year = month = day = 0;
 
-            if (string.IsNullOrEmpty(rawNepaliDate))
+#if NETSTANDARD2_0
+            if (rawNepaliDate is null)
                 return false;
+#endif
+
+            // Fast path for the canonical shape, four digits, two digits, two digits with single
+            // separators ("2080/04/15"). The general loop below gives the same answer for it.
+            if (rawNepaliDate.Length == 10 && IsSeparator(rawNepaliDate[4]) && IsSeparator(rawNepaliDate[7]))
+            {
+                uint y0 = (uint)(rawNepaliDate[0] - '0'), y1 = (uint)(rawNepaliDate[1] - '0');
+                uint y2 = (uint)(rawNepaliDate[2] - '0'), y3 = (uint)(rawNepaliDate[3] - '0');
+                uint m0 = (uint)(rawNepaliDate[5] - '0'), m1 = (uint)(rawNepaliDate[6] - '0');
+                uint d0 = (uint)(rawNepaliDate[8] - '0'), d1 = (uint)(rawNepaliDate[9] - '0');
+
+                // A non-digit gives a value above 9 (it wraps when the character is below '0').
+                if (y0 <= 9u && y1 <= 9u && y2 <= 9u && y3 <= 9u && m0 <= 9u && m1 <= 9u && d0 <= 9u && d1 <= 9u)
+                {
+                    year = (int)(y0 * 1000 + y1 * 100 + y2 * 10 + y3);
+                    month = (int)(m0 * 10 + m1);
+                    day = (int)(d0 * 10 + d1);
+                    return true;
+                }
+            }
 
             int part0 = 0, part1 = 0, part2 = 0;
             var currentIndex = 0;
             var hasDigits = false;
-            var length = rawNepaliDate.Length;
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < rawNepaliDate.Length; i++)
             {
                 char c = rawNepaliDate[i];
 
@@ -700,7 +760,7 @@ namespace NepDate
                     }
                     hasDigits = true;
                 }
-                else if (c == '-' || c == '/' || c == '.' || c == '_' || c == '\\' || c == ' ' || c == '।' || c == '|')
+                else if (IsSeparator(c))
                 {
                     if (hasDigits)
                     {
@@ -724,6 +784,14 @@ namespace NepDate
 
             (year, month, day) = (part0, part1, part2);
             return true;
+        }
+
+        /// <summary>
+        /// Returns whether <paramref name="c"/> is one of the accepted component separators.
+        /// </summary>
+        private static bool IsSeparator(char c)
+        {
+            return c == '-' || c == '/' || c == '.' || c == '_' || c == '\\' || c == ' ' || c == '।' || c == '|';
         }
     }
 }

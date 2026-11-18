@@ -448,8 +448,8 @@ bool isDefault  = date.IsDefault;       // false</code></pre>
           <tbody>
             <tr><td><code>NepaliDate.Today</code></td><td><code>NepaliDate</code></td><td>Current date per local system clock.</td></tr>
             <tr><td><code>NepaliDate.Now</code></td><td><code>NepaliDate</code></td><td>Same as <code>Today</code>. Parity with <code>DateTime.Now</code>.</td></tr>
-            <tr><td><code>NepaliDate.MinValue</code></td><td><code>NepaliDate</code></td><td>1 Baisakh 1901 BS (approx 1844-04-13 AD).</td></tr>
-            <tr><td><code>NepaliDate.MaxValue</code></td><td><code>NepaliDate</code></td><td>Last day of Chaitra 2199 BS (approx 2143-04-12 AD).</td></tr>
+            <tr><td><code>NepaliDate.MinValue</code></td><td><code>NepaliDate</code></td><td>1 Baisakh 1901 BS (1844-04-11 AD).</td></tr>
+            <tr><td><code>NepaliDate.MaxValue</code></td><td><code>NepaliDate</code></td><td>Last day of Chaitra 2199 BS (2143-04-15 AD).</td></tr>
           </tbody>
         </table>
         </div>
@@ -529,7 +529,7 @@ string nepStr = nep.ToString();  // "2083/01/07"</code></pre>
         <h3 id="bulk-to-nepali">ToNepaliDates</h3>
 <pre><code class="language-csharp">var engDates = new List&lt;DateTime&gt; { DateTime.Today, DateTime.Today.AddDays(1) };
 IEnumerable&lt;NepaliDate&gt; nepDates = NepaliDate.BulkConvert.ToNepaliDates(engDates);</code></pre>
-        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; ToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, bool useParallel = true)</code>. Converts a collection of <code>DateTime</code> values. Automatically uses parallel processing for collections exceeding 500 items.</p>
+        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; ToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, bool useParallel = true)</code>. Converts a collection of <code>DateTime</code> values in one pass, in input order. <code>useParallel</code> is kept for source compatibility and has no effect.</p>
 
         <h3 id="bulk-to-english">ToEnglishDates</h3>
 <pre><code class="language-csharp">// From NepaliDate collection
@@ -548,7 +548,7 @@ IEnumerable&lt;DateTime&gt; eng2 = NepaliDate.BulkConvert.ToEnglishDates(nepStri
 <pre><code class="language-csharp">var largeDateList = Enumerable.Range(0, 10000).Select(i => DateTime.Today.AddDays(i));
 IEnumerable&lt;NepaliDate&gt; results =
     NepaliDate.BulkConvert.BatchProcessToNepaliDates(largeDateList, batchSize: 2000);</code></pre>
-        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; BatchProcessToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, int batchSize = 1000)</code>. Processes in explicit batches. Throws <code>ArgumentOutOfRangeException</code> if <code>batchSize &lt; 1</code>.</p>
+        <p><strong>Signature:</strong> <code>static IEnumerable&lt;NepaliDate&gt; BatchProcessToNepaliDates(IEnumerable&lt;DateTime&gt; engDates, int batchSize = 1000)</code>. Same result as <code>ToNepaliDates</code>; <code>batchSize</code> is kept for source compatibility. Throws <code>ArgumentOutOfRangeException</code> if <code>batchSize &lt; 1</code>.</p>
 
         <h3 id="batch-to-english">BatchProcessToEnglishDates</h3>
 <pre><code class="language-csharp">IEnumerable&lt;DateTime&gt; results =
@@ -1133,7 +1133,7 @@ catch (InvalidNepaliDateFormatException ex)
         </ul>
 
         <h3 id="adv-threadsafe">Thread Safety</h3>
-        <p>All public types are immutable. <code>NepaliDate</code>, <code>NepaliDateRange</code>, and <code>CalendarInfo</code> are readonly structs. <code>BulkConvert</code> operations are safe to invoke concurrently and use thread-safe parallel processing internally.</p>
+        <p>All public types are immutable. <code>NepaliDate</code>, <code>NepaliDateRange</code>, and <code>CalendarInfo</code> are readonly structs. <code>BulkConvert</code> operations are safe to invoke concurrently; each call runs on the calling thread.</p>
 
         <h3 id="adv-internalized">Internalized Dependencies</h3>
         <p>NepDate depends on <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> at build time only. Both are referenced with <code>PrivateAssets=all</code> so they never surface in your consuming project's dependency graph. NepDate has zero external runtime dependencies from the consumer's perspective.</p>
@@ -1143,7 +1143,7 @@ catch (InvalidNepaliDateFormatException ex)
         <table class="data-table api-table">
           <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
           <tbody>
-            <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (approx 1844-04-13 AD) through 2199/12/last BS (approx 2143-04-12 AD).</td></tr>
+            <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (1844-04-11 AD) through 2199/12/last BS (2143-04-15 AD).</td></tr>
             <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>2001 BS through 2089 BS. Outside this range, properties return empty defaults without throwing.</td></tr>
             <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
           </tbody>

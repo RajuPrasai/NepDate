@@ -9,12 +9,42 @@ namespace NepDate
         /// <summary>
         /// The minimum supported year value for Nepali dates (1901 BS).
         /// </summary>
-        private const ushort _minYear = 1901;
+        private const int _minYear = MonthTable.MinYear;
 
         /// <summary>
         /// The maximum supported year value for Nepali dates (2199 BS).
         /// </summary>
-        private const ushort _maxYear = 2199;
+        private const int _maxYear = MonthTable.MaxYear;
+
+        /// <summary>
+        /// Number of 100-nanosecond ticks in one day, as used by <see cref="DateTime.Ticks"/>.
+        /// </summary>
+        private const long _ticksPerDay = 864000000000L;
+
+        /// <summary>
+        /// Days from 0001-01-01 AD to 1844-04-11 AD, the Gregorian date of 1 Baisakh 1901 BS.
+        /// </summary>
+        private const int _epochDayNumber = 673242;
+
+        /// <summary>
+        /// Day of the week of 1844-04-11 AD (a Thursday).
+        /// </summary>
+        private const int _epochDayOfWeek = (int)System.DayOfWeek.Thursday;
+
+        /// <summary>
+        /// Day number of 1 Baisakh 2001 BS, the first day covered by the bundled calendar data.
+        /// </summary>
+        private const int _calendarDataStart = 36526;
+
+        /// <summary>
+        /// One plus the number of days from 1 Baisakh 1901 BS to this date. Zero marks the default
+        /// (uninitialized) value, so a default instance sorts before every real date.
+        /// </summary>
+        private readonly int _dayNumber;
+
+        private readonly ushort _year;
+        private readonly byte _month;
+        private readonly byte _day;
 
         /// <summary>
         /// Approximate number of days per Nepali month (365 ÷ 12), used to convert fractional
@@ -29,7 +59,7 @@ namespace NepDate
         /// <example>
         /// For the date 2080/05/15, the result would be 20800515.
         /// </example>
-        internal int AsInteger => Year * 10000 + Month * 100 + Day;
+        internal int AsInteger => _year * 10000 + _month * 100 + _day;
 
         /// <summary>
         /// Gets a value indicating whether this instance is the default (uninitialized) value.
@@ -39,13 +69,13 @@ namespace NepDate
         /// which occurs when a <see cref="NepaliDate"/> is declared but not assigned.
         /// A default instance does not represent a valid date; accessing <see cref="EnglishDate"/> on it will throw.
         /// </value>
-        public bool IsDefault => Year == 0 && Month == 0 && Day == 0;
+        public bool IsDefault => _dayNumber == 0;
 
         /// <summary>
         /// Gets the year component of this Nepali date (Bikram Sambat).
         /// </summary>
         /// <value>An integer between 1901 and 2199 inclusive.</value>
-        public int Year { get; }
+        public int Year => _year;
 
         /// <summary>
         /// Gets the month component of this Nepali date.
@@ -54,7 +84,7 @@ namespace NepDate
         /// An integer from 1 (Baisakh) through 12 (Chaitra).
         /// Use <see cref="MonthName"/> to obtain the corresponding <see cref="NepaliMonths"/> enum value.
         /// </value>
-        public int Month { get; }
+        public int Month => _month;
 
         /// <summary>
         /// Gets the day component of this Nepali date.
@@ -63,12 +93,7 @@ namespace NepDate
         /// An integer from 1 to <see cref="MonthEndDay"/>. The upper bound varies by month and year,
         /// ranging from 29 to 32.
         /// </value>
-        public int Day { get; }
-
-        /// <summary>
-        /// Cached Gregorian equivalent of this date, populated during construction to avoid repeated conversions.
-        /// </summary>
-        private readonly DateTime? _englishDate;
+        public int Day => _day;
 
         /// <summary>
         /// Gets the Gregorian <see cref="DateTime"/> that corresponds to this Nepali date.
@@ -78,9 +103,22 @@ namespace NepDate
         /// Thrown when accessed on a default (uninitialized) <see cref="NepaliDate"/> instance.
         /// Check <see cref="IsDefault"/> before accessing this property if the instance may be uninitialized.
         /// </exception>
-        public DateTime EnglishDate => _englishDate ?? throw new InvalidNepaliDateFormatException();
+        /// <remarks>
+        /// The returned value always has <see cref="DateTimeKind.Unspecified"/>, because a Nepali date
+        /// carries no time zone.
+        /// </remarks>
+        public DateTime EnglishDate
+        {
+            get
+            {
+                if (_dayNumber == 0)
+                {
+                    ThrowDefaultInstance();
+                }
 
-
+                return new DateTime((_epochDayNumber - 1L + _dayNumber) * _ticksPerDay);
+            }
+        }
 
         /// <summary>
         /// Gets the day of the week for this Nepali date.
@@ -90,7 +128,18 @@ namespace NepDate
         /// through <see cref="System.DayOfWeek.Saturday"/> = 6.
         /// In Nepal, Saturday is the official weekly holiday.
         /// </value>
-        public DayOfWeek DayOfWeek => EnglishDate.DayOfWeek;
+        public DayOfWeek DayOfWeek
+        {
+            get
+            {
+                if (_dayNumber == 0)
+                {
+                    ThrowDefaultInstance();
+                }
+
+                return (DayOfWeek)((uint)(_dayNumber - 1 + _epochDayOfWeek) % 7);
+            }
+        }
 
         /// <summary>
         /// Gets the 1-based ordinal position of this date within the Bikram Sambat calendar year.
@@ -104,12 +153,12 @@ namespace NepDate
         {
             get
             {
-                int total = 0;
-                for (int m = 1; m < Month; m++)
+                if (_dayNumber == 0)
                 {
-                    total += DictionaryBridge.NepToEng.GetNepaliMonthEndDay(Year, m);
+                    return 0;
                 }
-                return total + Day;
+
+                return _dayNumber - MonthTable.Start[(_year - _minYear) * 12];
             }
         }
 
@@ -120,7 +169,19 @@ namespace NepDate
         /// An integer in the range 29–32. Nepali months do not have a fixed length; the value varies per month per year.
         /// </value>
         public int MonthEndDay
-            => DictionaryBridge.NepToEng.GetNepaliMonthEndDay(Year, Month);
+        {
+            get
+            {
+                if (_dayNumber == 0)
+                {
+                    ThrowDefaultInstance();
+                }
+
+                var starts = MonthTable.Start;
+                var monthIndex = (_year - _minYear) * 12 + (_month - 1);
+                return starts[monthIndex + 1] - starts[monthIndex];
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="NepaliMonths"/> enumeration value corresponding to this date's month.
@@ -129,7 +190,7 @@ namespace NepDate
         /// One of the twelve Nepali month names (Baisakh through Chaitra),
         /// cast directly from the numeric <see cref="Month"/> property.
         /// </value>
-        public NepaliMonths MonthName => (NepaliMonths)Month;
+        public NepaliMonths MonthName => (NepaliMonths)_month;
 
         /// <summary>
         /// Gets today's Nepali date according to the local system clock.
@@ -151,15 +212,15 @@ namespace NepDate
         public static NepaliDate Now => DateTime.Now.ToNepaliDate();
         /// <summary>
         /// Represents the smallest possible value of a <see cref="NepaliDate"/> in the supported range:
-        /// 1 Baisakh 1901 BS (approximately 1844-04-13 AD).
+        /// 1 Baisakh 1901 BS (1844-04-11 AD).
         /// </summary>
         public static readonly NepaliDate MinValue = new NepaliDate(_minYear, 1, 1);
 
         /// <summary>
         /// Represents the largest possible value of a <see cref="NepaliDate"/> in the supported range:
-        /// the last day of Chaitra 2199 BS (approximately 2143-04-12 AD).
+        /// the last day of Chaitra 2199 BS (2143-04-15 AD).
         /// </summary>
-        public static readonly NepaliDate MaxValue = new NepaliDate(_maxYear, 12, 1).MonthEndDate();
+        public static readonly NepaliDate MaxValue = FromSerial(MonthTable.TotalDays - 1);
 
         /// <summary>
         /// Gets the Tithi (lunar day) name in Nepali for this date.
@@ -168,7 +229,7 @@ namespace NepDate
         /// A Devanagari string such as <c>"एकादशी"</c>, or <see cref="string.Empty"/> when the
         /// date falls outside the 2001–2089 BS data range or no Tithi is recorded for this day.
         /// </value>
-        public string TithiNp => CalendarBridge.GetTithiNp(Year, Month, Day);
+        public string TithiNp => CalendarBridge.GetTithiNp(CalendarOffset);
 
         /// <summary>
         /// Gets the Tithi (lunar day) name in English for this date.
@@ -177,7 +238,7 @@ namespace NepDate
         /// A transliterated string such as <c>"Ekadashi"</c>, or <see cref="string.Empty"/> when the
         /// date falls outside the 2001–2089 BS data range or no Tithi is recorded for this day.
         /// </value>
-        public string TithiEn => CalendarBridge.GetTithiEn(Year, Month, Day);
+        public string TithiEn => CalendarBridge.GetTithiEn(CalendarOffset);
 
         /// <summary>
         /// Gets a value indicating whether this date is a public holiday in Nepal.
@@ -187,7 +248,7 @@ namespace NepDate
         /// Bikram Sambat calendar data;
         /// <see langword="false"/> when it is not a holiday or falls outside the 2001–2089 BS data range.
         /// </value>
-        public bool IsPublicHoliday => CalendarBridge.IsHoliday(Year, Month, Day);
+        public bool IsPublicHoliday => CalendarBridge.IsHoliday(CalendarOffset);
 
         /// <summary>
         /// Gets the names of events and observances recorded for this date, in Nepali.
@@ -196,7 +257,7 @@ namespace NepDate
         /// An array of Devanagari event-name strings. Returns an empty (non-null) array when no events
         /// are recorded or when this date falls outside the 2001–2089 BS data range.
         /// </value>
-        public string[] EventsNp => CalendarBridge.GetEventsNp(Year, Month, Day);
+        public string[] EventsNp => CalendarBridge.GetEventsNp(CalendarOffset);
 
         /// <summary>
         /// Gets the names of events and observances recorded for this date, in English.
@@ -205,7 +266,7 @@ namespace NepDate
         /// An array of transliterated event-name strings. Returns an empty (non-null) array when no events
         /// are recorded or when this date falls outside the 2001–2089 BS data range.
         /// </value>
-        public string[] EventsEn => CalendarBridge.GetEventsEn(Year, Month, Day);
+        public string[] EventsEn => CalendarBridge.GetEventsEn(CalendarOffset);
 
         /// <summary>
         /// Retrieves all calendar metadata for this date in a single lookup, including Tithi,
@@ -232,6 +293,12 @@ namespace NepDate
         ///     Console.WriteLine(ev);
         /// </code>
         /// </example>
-        public CalendarInfo GetCalendarInfo() => CalendarBridge.GetCalendarInfo(Year, Month, Day);
+        public CalendarInfo GetCalendarInfo() => CalendarBridge.GetCalendarInfo(CalendarOffset);
+
+        /// <summary>
+        /// Day offset of this date inside the bundled calendar data, counted from 1 Baisakh 2001 BS.
+        /// Negative for earlier dates and for the default value; the caller checks the upper bound.
+        /// </summary>
+        private int CalendarOffset => _dayNumber - 1 - _calendarDataStart;
     }
 }

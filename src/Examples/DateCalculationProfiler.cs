@@ -232,7 +232,7 @@ public static class DateCalculationProfiler
     {
         Console.WriteLine("=== Batch Operation Performance ===");
 
-        // Prepare test data - use valid date range (after 1901-04-13)
+        // Prepare test data - use valid date range (after 1844-04-11)
         int count = 20000;
         var englishDates = new List<DateTime>(count);
         var startDate = new DateTime(1950, 1, 1);
@@ -253,20 +253,12 @@ public static class DateCalculationProfiler
             Console.WriteLine($"Individual conversions ({count:N0} dates): {sw.ElapsedMilliseconds}ms ({sw.ElapsedMilliseconds / (float)count:F6}ms per date)");
         }
 
-        // Sequential bulk conversion
+        // Bulk conversion
         {
             var sw = Stopwatch.StartNew();
-            var result = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: false).ToList();
+            var result = NepaliDate.BulkConvert.ToNepaliDates(englishDates).ToList();
             sw.Stop();
-            Console.WriteLine($"Sequential bulk conversion ({count:N0} dates): {sw.ElapsedMilliseconds}ms ({sw.ElapsedMilliseconds / (float)count:F6}ms per date)");
-        }
-
-        // Parallel bulk conversion
-        {
-            var sw = Stopwatch.StartNew();
-            var result = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: true).ToList();
-            sw.Stop();
-            Console.WriteLine($"Parallel bulk conversion ({count:N0} dates): {sw.ElapsedMilliseconds}ms ({sw.ElapsedMilliseconds / (float)count:F6}ms per date)");
+            Console.WriteLine($"Bulk conversion ({count:N0} dates): {sw.ElapsedMilliseconds}ms ({sw.ElapsedMilliseconds / (float)count:F6}ms per date)");
         }
 
         // Batched conversion (1000 per batch)

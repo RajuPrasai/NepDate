@@ -74,7 +74,7 @@ Console.WriteLine(d); // "2080-06-15"
 - **Fiscal year** - Nepali fiscal year start/end dates, quarter detection
 - **Date ranges** - `NepaliDateRange` with union, intersect, except, contains
 - **Calendar metadata** - tithi, public holidays, festivals for 2001-2089 BS
-- **Bulk conversion** - auto-parallelized `BulkConvert` for large collections
+- **Bulk conversion** - `BulkConvert` converts whole collections in one pass
 - **Serialization** - System.Text.Json (automatic), Newtonsoft.Json, XML
 - **ASP.NET binding** - `TypeConverter` for route params, query strings, form fields
 - **Zero dependencies** - Newtonsoft and STJ support internalized via PrivateAssets
@@ -94,7 +94,7 @@ Console.WriteLine(d); // "2080-06-15"
 No. Newtonsoft.Json and System.Text.Json are internalized with `PrivateAssets=all`.
 
 **Is NepDate thread-safe?**
-Yes. `NepaliDate` is an immutable readonly struct. `BulkConvert` uses thread-safe parallel processing.
+Yes. `NepaliDate` is an immutable readonly struct. `BulkConvert` is safe to call from several threads.
 
 **How does NepDate handle invalid dates?**
 Constructors and `Parse` throw typed exceptions. Use `TryParse` for non-throwing validation.

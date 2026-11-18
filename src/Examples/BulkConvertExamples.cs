@@ -14,7 +14,6 @@ public class BulkConvertExamples
         BasicBulkConversion();
         PerformanceComparison();
         BatchProcessing();
-        ParallelProcessing();
     }
 
     public static void BasicBulkConversion()
@@ -86,21 +85,14 @@ public class BulkConvertExamples
         sw.Stop();
         Console.WriteLine($"Individual conversion: {sw.ElapsedMilliseconds} ms");
 
-        // Method 2: Bulk conversion (sequential)
+        // Method 2: Bulk conversion
         sw.Restart();
-        var bulkSequential = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: false).ToList();
+        var bulk = NepaliDate.BulkConvert.ToNepaliDates(englishDates).ToList();
         sw.Stop();
-        Console.WriteLine($"Bulk sequential conversion: {sw.ElapsedMilliseconds} ms");
-
-        // Method 3: Bulk conversion (parallel)
-        sw.Restart();
-        var bulkParallel = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: true).ToList();
-        sw.Stop();
-        Console.WriteLine($"Bulk parallel conversion: {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine($"Bulk conversion: {sw.ElapsedMilliseconds} ms");
 
         // Verify results are the same
-        bool allSame = individualConversion.SequenceEqual(bulkSequential) &&
-                       bulkSequential.SequenceEqual(bulkParallel);
+        bool allSame = individualConversion.SequenceEqual(bulk);
 
         Console.WriteLine($"All results are identical: {allSame}");
 
@@ -143,58 +135,6 @@ public class BulkConvertExamples
 
         sw.Stop();
         Console.WriteLine($"Total processed: {totalProcessed} dates in {sw.ElapsedMilliseconds} ms");
-
-        Console.WriteLine();
-    }
-
-    public static void ParallelProcessing()
-    {
-        Console.WriteLine("--- Parallel Processing Options ---");
-
-        // Create dates for testing parallel options
-        int count = 5000;
-        List<DateTime> englishDates = new(count);
-        DateTime startDate = new(2023, 1, 1);
-
-        for (int i = 0; i < count; i++)
-        {
-            englishDates.Add(startDate.AddDays(i));
-        }
-
-        Console.WriteLine($"Converting {count} dates with different parallel options:");
-
-        // Auto mode (parallel for large collections)
-        Stopwatch sw = Stopwatch.StartNew();
-        var autoResult = NepaliDate.BulkConvert.ToNepaliDates(englishDates).ToList();
-        sw.Stop();
-        Console.WriteLine($"Auto mode: {sw.ElapsedMilliseconds} ms");
-
-        // Force sequential
-        sw.Restart();
-        var sequentialResult = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: false).ToList();
-        sw.Stop();
-        Console.WriteLine($"Force sequential: {sw.ElapsedMilliseconds} ms");
-
-        // Force parallel
-        sw.Restart();
-        var parallelResult = NepaliDate.BulkConvert.ToNepaliDates(englishDates, useParallel: true).ToList();
-        sw.Stop();
-        Console.WriteLine($"Force parallel: {sw.ElapsedMilliseconds} ms");
-
-        // Testing with a small collection where parallel might be overhead
-        List<DateTime> smallCollection = englishDates.Take(100).ToList();
-
-        Console.WriteLine($"\nConverting small collection ({smallCollection.Count} dates):");
-
-        sw.Restart();
-        var smallAuto = NepaliDate.BulkConvert.ToNepaliDates(smallCollection).ToList();
-        sw.Stop();
-        Console.WriteLine($"Auto mode (small): {sw.ElapsedMilliseconds} ms");
-
-        sw.Restart();
-        var smallParallel = NepaliDate.BulkConvert.ToNepaliDates(smallCollection, useParallel: true).ToList();
-        sw.Stop();
-        Console.WriteLine($"Force parallel (small): {sw.ElapsedMilliseconds} ms");
 
         Console.WriteLine();
     }

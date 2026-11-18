@@ -15,7 +15,7 @@ namespace NepDate
         /// </returns>
         public int CompareTo(NepaliDate obj)
         {
-            return AsInteger.CompareTo(obj.AsInteger);
+            return _dayNumber.CompareTo(obj._dayNumber);
         }
 
         /// <summary>

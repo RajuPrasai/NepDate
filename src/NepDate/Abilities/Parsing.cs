@@ -17,11 +17,7 @@ namespace NepDate
             if (!TrySplitNepaliDate(rawNepDate, out var year, out var month, out var day))
                 return false;
 
-            if (!IsValidDate(year, month, day))
-                return false;
-
-            result = new NepaliDate(year, month, day);
-            return true;
+            return TryCreate(year, month, day, out result);
         }
 
         /// <summary>
@@ -63,19 +59,15 @@ namespace NepDate
                     year = currentMillennium * 1000 + year;
             }
 
-            if (!IsValidDate(year, month, day))
-                return false;
-
-            result = new NepaliDate(year, month, day);
-            return true;
+            return TryCreate(year, month, day, out result);
         }
 
         /// <summary>
         /// Parses the specified string representation of a Nepali date and returns a <see cref="NepaliDate"/>.
         /// </summary>
-        /// <param name="rawNepDate">The raw Nepali date string in the format <c>"YYYY/MM/DD"</c> or any supported separator variant.</param>
-        /// <returns>A <see cref="NepaliDate"/> equivalent to the date in <paramref name="rawNepDate"/>.</returns>
-        /// <exception cref="InvalidNepaliDateFormatException">Thrown when <paramref name="rawNepDate"/> cannot be parsed as a valid Nepali date.</exception>
+        /// <param name="rawNepaliDate">The raw Nepali date string in the format <c>"YYYY/MM/DD"</c> or any supported separator variant.</param>
+        /// <returns>A <see cref="NepaliDate"/> equivalent to the date in <paramref name="rawNepaliDate"/>.</returns>
+        /// <exception cref="InvalidNepaliDateFormatException">Thrown when <paramref name="rawNepaliDate"/> cannot be parsed as a valid Nepali date.</exception>
         public static NepaliDate Parse(string rawNepaliDate)
         {
             return new NepaliDate(rawNepaliDate);

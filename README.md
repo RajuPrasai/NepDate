@@ -171,7 +171,7 @@ IEnumerable<DateTime>  engResult1  = NepaliDate.BulkConvert.ToEnglishDates(nepDa
 IEnumerable<DateTime>  engResult2  = NepaliDate.BulkConvert.ToEnglishDates(nepStrings);
 ```
 
-Collections above 500 items are processed in parallel automatically. Use `BatchProcessToNepaliDates` or `BatchProcessToEnglishDates` for explicit batch size control.
+Each call converts the collection in one pass and keeps the input order. One conversion takes a few nanoseconds, so no threads are used.
 
 ## 🔄 Date Range Operations
 

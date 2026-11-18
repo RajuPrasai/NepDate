@@ -18,6 +18,26 @@
     <ApplicationIcon>Assets\nuget-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Ship the XML documentation, so the comments show up in IntelliSense. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Reproducible builds with source debugging (Source Link is built into the SDK). -->
+    <Deterministic>true</Deterministic>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>portable</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <!-- Turns on the trimming and Native AOT analyzers for the modern target. -->
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="Assets\nuget-icon.ico" />
   </ItemGroup>
@@ -41,7 +61,14 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="10.0.6">
+  </ItemGroup>
+
+  <!-- net8.0 uses the System.Text.Json that ships with the runtime. Referencing the package there
+       would bind the assembly to a newer version than a .NET 8 application has. netstandard2.0
+       references the oldest patched 8.0 release, so .NET Framework applications on 8.0.5 or later
+       can call ConfigureForNepaliDate. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" Version="8.0.5">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
