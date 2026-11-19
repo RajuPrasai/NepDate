@@ -105,4 +105,35 @@ public class FiscalYearTests
 
         Assert.Equal(new NepaliDate(2080, 12, new NepaliDate(2080, 12, 1).MonthEndDay), endDate); // Ends with Chaitra (month 12)
     }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void GetFiscalYearQuarter_FourthQuarterMonths_FallInTheNextBsYear(int month)
+    {
+        // Baisakh to Ashad close fiscal year 2080, so its fourth quarter is 2081/01/01 to the end of Ashad 2081.
+        var expectedStart = new NepaliDate(2081, 1, 1);
+        var expectedEnd = new NepaliDate(2081, 3, 1).MonthEndDate();
+
+        Assert.Equal(expectedStart, NepaliDate.GetFiscalYearQuarterStartDate(2080, month));
+        Assert.Equal(expectedEnd, NepaliDate.GetFiscalYearQuarterEndDate(2080, month));
+        Assert.Equal((expectedStart, expectedEnd), NepaliDate.GetFiscalYearQuarterStartAndEndDate(2080, month));
+        Assert.Equal(NepaliDate.GetFiscalYearEndDate(2080), NepaliDate.GetFiscalYearQuarterEndDate(2080, month));
+    }
+
+    [Fact]
+    public void GetFiscalYearQuarter_EveryMonth_MatchesTheInstanceMethodsOfThatMonth()
+    {
+        for (int fiscalYear = 1901; fiscalYear <= 2198; fiscalYear++)
+        {
+            for (int month = 1; month <= 12; month++)
+            {
+                var date = new NepaliDate(month <= 3 ? fiscalYear + 1 : fiscalYear, month, 1);
+
+                Assert.Equal(date.FiscalYearQuarterStartAndEndDate(), NepaliDate.GetFiscalYearQuarterStartAndEndDate(fiscalYear, month));
+                Assert.Equal(NepaliDate.GetFiscalYearStartDate(fiscalYear), date.FiscalYearStartDate());
+            }
+        }
+    }
 }
