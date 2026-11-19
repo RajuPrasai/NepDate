@@ -1,7 +1,7 @@
 {
   "serverInfo": {
     "name": "NepDate",
-    "version": "2.0.7"
+    "version": "2.1.0"
   },
   "transport": {
     "type": "static-site",
@@ -12,7 +12,7 @@
     "prompts": false,
     "tools": false
   },
-  "description": "Documentation site for NepDate, a zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year operations, calendar metadata (tithi, public holidays, festivals for 2001-2089 BS), NepaliDateRange with set operations, bulk conversion, and serialization. MIT licensed. NuGet: https://www.nuget.org/packages/NepDate/",
+  "description": "Documentation site for NepDate, a zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year operations, calendar metadata (tithi, public holidays, festivals; tithi for 2078-2083 BS, events and holidays for 2077-2083 BS), NepaliDateRange with set operations, bulk conversion, and serialization. MIT licensed. NuGet: https://www.nuget.org/packages/NepDate/",
   "resources": [
     {
       "uri": "https://nepdate.rajuprasai.com.np/",
@@ -22,12 +22,12 @@
     {
       "uri": "https://nepdate.rajuprasai.com.np/docs.html",
       "name": "API Reference",
-      "description": "Complete API reference for NepDate v2.0.7. Every public method, property, enum, and exception documented with C# signatures and working code examples."
+      "description": "Complete API reference for NepDate v2.1.0. Every public method, property, enum, and exception documented with C# signatures and working code examples."
     },
     {
       "uri": "https://nepdate.rajuprasai.com.np/changelog.html",
       "name": "Changelog",
-      "description": "Version history and release notes for all NepDate releases from v1.x to v2.0.7."
+      "description": "Version history and release notes for all NepDate releases from v1.x to v2.1.0."
     },
     {
       "uri": "https://nepdate.rajuprasai.com.np/docs.html.md",

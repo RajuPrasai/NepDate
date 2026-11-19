@@ -226,8 +226,8 @@ namespace NepDate
         /// Gets the Tithi (lunar day) name in Nepali for this date.
         /// </summary>
         /// <value>
-        /// A Devanagari string such as <c>"एकादशी"</c>, or <see cref="string.Empty"/> when the
-        /// date falls outside the 2001–2089 BS data range or no Tithi is recorded for this day.
+        /// A Devanagari string such as <c>"एकादशी"</c>, or <see cref="string.Empty"/> when no Tithi is
+        /// recorded for this day. The bundled data has Tithi for 2078–2083 BS.
         /// </value>
         public string TithiNp => CalendarBridge.GetTithiNp(CalendarOffset);
 
@@ -235,8 +235,8 @@ namespace NepDate
         /// Gets the Tithi (lunar day) name in English for this date.
         /// </summary>
         /// <value>
-        /// A transliterated string such as <c>"Ekadashi"</c>, or <see cref="string.Empty"/> when the
-        /// date falls outside the 2001–2089 BS data range or no Tithi is recorded for this day.
+        /// A transliterated string such as <c>"Ekadashi"</c>, or <see cref="string.Empty"/> when no Tithi
+        /// is recorded for this day. The bundled data has Tithi for 2078–2083 BS.
         /// </value>
         public string TithiEn => CalendarBridge.GetTithiEn(CalendarOffset);
 
@@ -246,7 +246,7 @@ namespace NepDate
         /// <value>
         /// <see langword="true"/> when the date is a gazetted public holiday according to the bundled
         /// Bikram Sambat calendar data;
-        /// <see langword="false"/> when it is not a holiday or falls outside the 2001–2089 BS data range.
+        /// <see langword="false"/> otherwise. The bundled data has holidays for 2077–2083 BS.
         /// </value>
         public bool IsPublicHoliday => CalendarBridge.IsHoliday(CalendarOffset);
 
@@ -255,7 +255,7 @@ namespace NepDate
         /// </summary>
         /// <value>
         /// An array of Devanagari event-name strings. Returns an empty (non-null) array when no events
-        /// are recorded or when this date falls outside the 2001–2089 BS data range.
+        /// are recorded. The bundled data has events for 2077–2083 BS.
         /// </value>
         public string[] EventsNp => CalendarBridge.GetEventsNp(CalendarOffset);
 
@@ -264,7 +264,7 @@ namespace NepDate
         /// </summary>
         /// <value>
         /// An array of transliterated event-name strings. Returns an empty (non-null) array when no events
-        /// are recorded or when this date falls outside the 2001–2089 BS data range.
+        /// are recorded. The bundled data has events for 2077–2083 BS.
         /// </value>
         public string[] EventsEn => CalendarBridge.GetEventsEn(CalendarOffset);
 
@@ -275,7 +275,7 @@ namespace NepDate
         /// <returns>
         /// A <see cref="Core.Calendar.CalendarInfo"/> struct populated from the bundled Bikram Sambat calendar data.
         /// All string members return <see cref="string.Empty"/> and event arrays return empty arrays
-        /// when this date falls outside the supported range (2001–2089 BS).
+        /// when nothing is recorded for this date (tithi data covers 2078–2083 BS, events and holidays 2077–2083 BS).
         /// </returns>
         /// <remarks>
         /// Prefer this method over accessing <see cref="TithiNp"/>, <see cref="TithiEn"/>,

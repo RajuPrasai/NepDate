@@ -16,8 +16,8 @@ GitHub: https://github.com/RajuPrasai/NepDate
 - Primary type: `NepaliDate` (readonly partial struct in `NepDate` namespace)
 - Performance: 4.55 ns/op BS-to-AD conversion, zero heap allocations
 - Supported range: 1901/01/01 BS through 2199/12/last-day BS
-- Calendar metadata (tithi, holidays, events): 2001-2089 BS only
-- Zero external runtime dependencies (Newtonsoft and STJ internalized via PrivateAssets=all)
+- Calendar metadata: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS; other dates return empty values
+- No NuGet dependencies (Newtonsoft.Json and System.Text.Json referenced with PrivateAssets=all; reference them yourself to use the JSON helpers)
 - Targets: .NET Standard 2.0, net8.0
 
 ## Pages

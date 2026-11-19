@@ -55,9 +55,9 @@
         "@id": "https://nepdate.rajuprasai.com.np/#library",
         "name": "NepDate",
         "alternateName": ["NepDate Library", "Bikram Sambat .NET Library", "Nepali Date Library"],
-        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) for 2001-2089 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
+        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) for 2077-2083 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
         "url": "https://nepdate.rajuprasai.com.np/",
-        "softwareVersion": "2.0.7",
+        "softwareVersion": "2.1.0",
         "datePublished": "2023-04-22T00:00:00+05:45",
         "dateModified": "2026-06-01T00:00:00+05:45",
         "applicationCategory": "DeveloperApplication",
@@ -97,7 +97,7 @@
         "programmingLanguage": "C#",
         "runtimePlatform": ".NET Standard 2.0, .NET 8",
         "license": "https://opensource.org/licenses/MIT",
-        "version": "2.0.7",
+        "version": "2.1.0",
         "author": {
           "@type": "Person",
           "@id": "https://rajuprasai.com.np/#person",
@@ -313,7 +313,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <h3>Calendar Metadata</h3>
-            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English for 2001–2089 BS.</p>
+            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
@@ -548,7 +548,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">How is calendar data (Tithi, holidays) sourced?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 through 2089 BS</strong>. The data is compiled into the library at build time. Properties return empty/default values for dates outside this range without throwing exceptions.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong>. The data is compiled into the library at build time. Properties return empty/default values for other dates without throwing exceptions.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the advantage of the struct design?</button>

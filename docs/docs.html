@@ -432,8 +432,8 @@ bool isDefault  = date.IsDefault;       // false</code></pre>
         <table class="data-table api-table">
           <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari. Empty outside 2001–2089 BS.</td></tr>
-            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi transliterated to English. Empty outside 2001–2089 BS.</td></tr>
+            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari. Empty when no tithi is recorded (data covers 2078–2083 BS).</td></tr>
+            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi transliterated to English. Empty when no tithi is recorded (data covers 2078–2083 BS).</td></tr>
             <tr><td><code>IsPublicHoliday</code></td><td><code>bool</code></td><td>Gazetted public holiday flag based on cross-verified calendar data.</td></tr>
             <tr><td><code>EventsNp</code></td><td><code>string[]</code></td><td>Event names in Nepali. Empty array if none.</td></tr>
             <tr><td><code>EventsEn</code></td><td><code>string[]</code></td><td>Event names in English. Empty array if none.</td></tr>
@@ -648,11 +648,11 @@ IEnumerable&lt;NepaliDate&gt; working       = range.WorkingDays();
 // Working days (excludes Saturdays and Sundays)
 IEnumerable&lt;NepaliDate&gt; workingNoSun  = range.WorkingDays(excludeSunday: true);
 
-// Weekend days (Saturdays only)
+// Weekend days (Saturdays and Sundays, the default)
 IEnumerable&lt;NepaliDate&gt; weekends      = range.WeekendDays();
 
-// Weekend days (Saturdays and Sundays)
-IEnumerable&lt;NepaliDate&gt; weekendsBoth  = range.WeekendDays(includeSunday: true);</code></pre>
+// Weekend days (Saturdays only)
+IEnumerable&lt;NepaliDate&gt; saturdays     = range.WeekendDays(includeSunday: false);</code></pre>
 
         <h3 id="range-format">Range Formatting</h3>
 <pre><code class="language-csharp">string basic     = range.ToString();
@@ -689,7 +689,7 @@ date.ToLongDateString(leadingZeros: false, displayDayName: true, displayYear: fa
 
         <h3 id="format-long-unicode">Long Date Unicode String</h3>
 <pre><code class="language-csharp">date.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false)
-// "शुक्रबार, जेठ ६"</code></pre>
+// "शुक्रवार, जेठ ६"</code></pre>
         <p><strong>Signature:</strong> <code>string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)</code>.</p>
 
         <h3 id="format-iformattable">IFormattable Format Specifiers</h3>
@@ -735,9 +735,9 @@ string.Format("{0:yyyy/MM/dd}", date)  // 2079/02/06</code></pre>
         </div>
 
         <h3 id="format-span">ISpanFormattable</h3>
-        <p>On .NET 6+, NepaliDate implements <code>ISpanFormattable</code> for allocation-free formatting into <code>Span&lt;char&gt;</code>.</p>
+        <p>On .NET 6+, NepaliDate implements <code>ISpanFormattable</code> for formatting into <code>Span&lt;char&gt;</code>. The implementation is explicit, so call it through the interface.</p>
 <pre><code class="language-csharp">Span&lt;char&gt; buffer = stackalloc char[32];
-bool success = date.TryFormat(buffer, out int charsWritten, "yyyy-MM-dd", null);</code></pre>
+bool success = ((ISpanFormattable)date).TryFormat(buffer, out int charsWritten, "yyyy-MM-dd", null);</code></pre>
 
         <!-- ============= Smart Parsing ============= -->
         <h2 id="smart-parsing">Smart Date Parsing</h2>
@@ -896,7 +896,7 @@ date.FiscalYearStartDate(yearOffset: -1);  // 2080/04/01 (previous)</code></pre>
 <pre><code class="language-csharp">var date = new NepaliDate(2081, 4, 15);
 string tithiNp = date.TithiNp;  // Nepali Devanagari tithi name
 string tithiEn = date.TithiEn;  // English transliterated tithi name</code></pre>
-        <p>Returns the lunar day (Tithi) for the date. Empty string for dates outside 2001–2089 BS.</p>
+        <p>Returns the lunar day (Tithi) for the date. The bundled data has tithi for 2078–2083 BS; other dates return an empty string.</p>
 
         <h3 id="cal-holidays">Public Holidays</h3>
 <pre><code class="language-csharp">bool isHoliday = date.IsPublicHoliday;  // true if gazetted holiday</code></pre>
@@ -927,7 +927,7 @@ string[] eventsEn = date.EventsEn;  // event names in English</code></pre>
         </div>
 
         <h3 id="cal-coverage">Data Coverage</h3>
-        <p>Calendar data (Tithi, holidays, events) is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 to 2089 BS</strong>. All properties gracefully return empty or default values for dates outside this range without throwing exceptions.</p>
+        <p>Calendar data (Tithi, holidays, events) is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 to 2083 BS</strong>, events and public holidays for <strong>2077 to 2083 BS</strong> (plus a few days of 2084). All properties return empty or default values for other dates without throwing exceptions.</p>
 
         <!-- ============= Serialization ============= -->
         <h2 id="serialization">Serialization</h2>
@@ -1024,9 +1024,9 @@ string t = $"{date:MMMM dd, yyyy}";</code></pre>
         <p>Enables format string support in interpolation, <code>string.Format</code>, and any <code>IFormattable</code> consumer.</p>
 
         <h3 id="ts-ispanformattable">ISpanFormattable</h3>
-        <p>Available on .NET 6+. Enables allocation-free formatting.</p>
+        <p>Available on .NET 6+. Formats into a <code>Span&lt;char&gt;</code>; call it through the interface.</p>
 <pre><code class="language-csharp">Span&lt;char&gt; buf = stackalloc char[32];
-date.TryFormat(buf, out int written, "yyyy-MM-dd", null);</code></pre>
+((ISpanFormattable)date).TryFormat(buf, out int written, "yyyy-MM-dd", null);</code></pre>
 
         <h3 id="ts-iparsable">IParsable and ISpanParsable</h3>
         <p>Available on .NET 7+. Enables generic parsing in contexts that accept <code>IParsable&lt;T&gt;</code>.</p>
@@ -1144,7 +1144,7 @@ catch (InvalidNepaliDateFormatException ex)
           <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
           <tbody>
             <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (1844-04-11 AD) through 2199/12/last BS (2143-04-15 AD).</td></tr>
-            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>2001 BS through 2089 BS. Outside this range, properties return empty defaults without throwing.</td></tr>
+            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>Tithi: 2078 BS through 2083 BS. Events and holidays: 2077 BS through 2083 BS. Other dates return empty defaults without throwing.</td></tr>
             <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
           </tbody>
         </table>
