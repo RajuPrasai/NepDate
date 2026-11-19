@@ -11,14 +11,26 @@
 
 ## Performance
 
-| Operation | Time | Allocations |
-|---|---|---|
-| BS to AD conversion | 4.55 ns/op | 0 bytes |
-| AD to BS conversion | ~5 ns/op | 0 bytes |
-| `ToString()` | ~24 ns/op | 48 bytes (the result string) |
-| Strict parse | ~11 ns/op | 0 bytes |
+| Operation | NepDate 2.1.0 | Allocated | Next fastest library |
+|---|---|---|---|
+| BS to AD conversion | 0.78 ns | 0 bytes | NepaliCalendarBS 14,772 ns |
+| AD to BS conversion | 2.73 ns | 0 bytes | NepaliCalendarBS 183 ns |
+| `ToString()` | 11.3 ns | 48 bytes (the result string) | |
+| Strict parse | 5.5 ns | 0 bytes | |
 
-Benchmarked with BenchmarkDotNet on .NET 8 (Apple M1). `NepaliDate` is a `readonly partial struct` with O(1) calendar table lookups.
+BenchmarkDotNet 0.15.8, .NET 10.0.12, Intel Core i5-12500H, Windows 11, one pinned core. Each call converts a different date from a pool of 1,024 (2070-2085 BS), so nothing can be precomputed. `NepaliDate` is an 8-byte `readonly partial struct` with O(1) calendar table lookups.
+
+---
+
+## What's new in 2.1.0
+
+- 3.6 to 10 times faster than 2.0.7 for conversion, arithmetic and parsing; `NepaliDate` is 8 bytes instead of 32
+- System.Text.Json serialization works on .NET 8 (2.0.7 could fail with FileNotFoundException)
+- `GetFiscalYearQuarter...(fiscalYear, month)` treats months 1-3 as part of the given fiscal year
+- XML docs and a symbol package with Source Link
+- `EnglishDate` always has `DateTimeKind.Unspecified`; `BulkConvert` converts the whole collection on the calling thread
+
+Full notes: https://nepdate.rajuprasai.com.np/changelog.html
 
 ---
 
@@ -60,15 +72,16 @@ var bs2 = new NepaliDate(new DateTime(2024, 1, 15));
 Console.WriteLine($"2024-01-15 = {bs2}");
 
 // Parse from string
-var d = NepaliDate.Parse("2080 Ashwin 15");
-Console.WriteLine(d); // "2080-06-15"
+var d = NepaliDate.Parse("2080-06-15");            // strict: year, month, day
+var s = SmartDateParser.Parse("2080 Ashwin 15");   // month names, Nepali text
+Console.WriteLine(s); // "2080/06/15"
 ```
 
 ---
 
 ## Features
 
-- **BS/AD conversion** - bidirectional, 4.55 ns/op, zero allocations
+- **BS/AD conversion** - bidirectional, under 1 ns BS to AD and under 3 ns AD to BS, zero allocations
 - **Smart parsing** - 100+ month-name spellings, Nepali Unicode digits, any separator
 - **Rich formatting** - 6 format patterns, 6 separators, Nepali numeral output
 - **Fiscal year** - Nepali fiscal year start/end dates, quarter detection

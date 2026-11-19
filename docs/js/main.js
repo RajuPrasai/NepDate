@@ -254,15 +254,15 @@
     const lines = [
       'using NepDate;',
       '',
-      'var today    = NepaliDate.Today;                  // 2083/01/08',
-      'var ad       = today.EnglishDate;                 // 2026/04/21',
-      'var parsed   = NepaliDate.Parse("Baisakh 15, 2080");',
-      'var nepali   = today.ToUnicodeString();           // २०८३/०१/०८',
-      'var info     = today.GetCalendarInfo();           // tithi + events',
-      'var holiday  = today.IsPublicHoliday;             // false',
-      'var monthEnd = today.MonthEndDate();              // 2083/01/31',
-      'var month    = NepaliDateRange.ForMonth(2083, 1); // 31 days',
-      'var fyStart  = today.FiscalYearStartDate();       // 2082/04/01'
+      'var date     = new NepaliDate(2081, 6, 26);       // Vijaya Dashami',
+      'var ad       = date.EnglishDate;                  // 2024/10/12',
+      'var parsed   = SmartDateParser.Parse("26 Ashoj 2081");',
+      'var nepali   = date.ToUnicodeString();            // २०८१/०६/२६',
+      'var info     = date.GetCalendarInfo();            // tithi + events',
+      'var holiday  = date.IsPublicHoliday;              // true',
+      'var monthEnd = date.MonthEndDate();               // 2081/06/30',
+      'var month    = NepaliDateRange.ForMonth(2081, 6); // 30 days',
+      'var fyStart  = date.FiscalYearStartDate();        // 2081/04/01'
     ];
     el.innerHTML = '';
     let li = 0, ci = 0;

@@ -514,6 +514,7 @@ body {
   gap: 20px;
 }
 .bench-card { display: flex; flex-direction: column; }
+.bench-release { margin-top: 20px; }
 .bench-card-head {
   display: flex;
   align-items: baseline;
@@ -581,7 +582,8 @@ body {
 
 @media (max-width: 900px) {
   .bench-headline { grid-template-columns: 1fr; }
-  .bench-grid { grid-template-columns: 1fr; }
+  /* minmax(0, ...) lets the cards shrink so wide tables scroll inside them on phones */
+  .bench-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* -------- FAQ Accordion -------- */
@@ -675,6 +677,8 @@ code {
   border: 1px solid var(--border);
 }
 [data-theme="dark"] code { border-color: #2a3449; }
+/* Long identifiers in running text may break so they never widen the page on phones */
+p code, li code { overflow-wrap: anywhere; }
 
 .copy-btn {
   position: absolute; top: 10px; right: 10px;

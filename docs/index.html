@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#dc3f10" />
   <title>NepDate - Bikram Sambat .NET Library for Nepali Date Conversion</title>
-  <meta name="description" content="Zero-dependency .NET library for Bikram Sambat date conversion, smart parsing, fiscal year, and bulk operations. 4.55 ns/op, zero allocations." />
+  <meta name="description" content="Zero-dependency .NET library for Bikram Sambat date conversion, smart parsing, fiscal year, and bulk operations. Under 1 ns BS to AD, zero allocations." />
   <link rel="canonical" href="https://nepdate.rajuprasai.com.np/" />
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="assets/logo.png" />
@@ -26,7 +26,7 @@
   <meta property="og:site_name" content="NepDate" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="NepDate - Bikram Sambat .NET Library for Nepali Date Conversion" />
-  <meta property="og:description" content="Zero-dependency .NET library for Bikram Sambat date conversion, smart parsing, fiscal year helpers, calendar metadata, and bulk operations. 4.55 ns/op, zero allocations." />
+  <meta property="og:description" content="Zero-dependency .NET library for Bikram Sambat date conversion, smart parsing, fiscal year helpers, calendar metadata, and bulk operations. Under 1 ns BS to AD, zero allocations." />
   <meta property="og:image" content="https://nepdate.rajuprasai.com.np/assets/full-logo.png" />
   <meta property="og:image:width" content="1897" />
   <meta property="og:image:height" content="541" />
@@ -55,7 +55,7 @@
         "@id": "https://nepdate.rajuprasai.com.np/#library",
         "name": "NepDate",
         "alternateName": ["NepDate Library", "Bikram Sambat .NET Library", "Nepali Date Library"],
-        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) mainly for 2077-2083 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
+        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) mainly for 2077-2083 BS, date range operations, serialization, and bulk conversion. Under 1 ns BS to AD conversion, zero allocations.",
         "url": "https://nepdate.rajuprasai.com.np/",
         "softwareVersion": "2.1.0",
         "datePublished": "2023-04-22T00:00:00+05:45",
@@ -110,7 +110,7 @@
         "@id": "https://nepdate.rajuprasai.com.np/#webpage",
         "url": "https://nepdate.rajuprasai.com.np/",
         "name": "NepDate - Bikram Sambat .NET Library for Nepali Date Conversion",
-        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing, fiscal year, calendar metadata, and bulk operations. 4.55 ns/op, zero allocations.",
+        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing, fiscal year, calendar metadata, and bulk operations. Under 1 ns BS to AD, zero allocations.",
         "isPartOf": { "@id": "https://nepdate.rajuprasai.com.np/#website" },
         "about": { "@id": "https://nepdate.rajuprasai.com.np/#library" },
         "datePublished": "2023-04-22T00:00:00+05:45",
@@ -142,6 +142,78 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-7T6NBRE9KT');
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What .NET versions does NepDate support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NepDate targets .NET Standard 2.0, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, and MAUI. It also ships a net8.0 target for newer API features like IParsable and ISpanFormattable."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the supported date range?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NepDate supports Bikram Sambat dates from 1901/01/01 BS (1844-04-11 AD) to the last day of 2199/12 BS (2143-04-15 AD). Tithi is available for 2078 through 2083 BS, events and public holidays for 2077 through 2083 BS (plus a few days of 2084)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does NepDate have any external dependencies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. NepDate has no NuGet dependencies. Newtonsoft.Json and System.Text.Json are referenced with PrivateAssets=all, so they are not added to your project. To call ConfigureForNepaliDate(), reference Newtonsoft.Json and, outside .NET 8 and later, System.Text.Json 8.0.5 or later; adding a converter class directly needs only its own library."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is NepDate thread-safe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. NepaliDate is a readonly struct, making it inherently immutable and safe for concurrent access. BulkConvert operations are safe to call from several threads."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does NepDate handle invalid dates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Constructors and Parse throw InvalidNepaliDateFormatException or ArgumentOutOfRangeException for invalid input. Use TryParse for non-throwing validation. Each month's day count is enforced per year (29 to 32 days depending on month and year)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use NepDate with ASP.NET model binding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. NepaliDate has a registered TypeConverter that enables automatic model binding in ASP.NET MVC/Web API, WPF, and WinForms property grids. It converts to/from string, int (YYYYMMDD), and DateTime."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is calendar data (Tithi, holidays) sourced?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for 2078 through 2083 BS, events and public holidays for 2077 through 2083 BS (plus a few days of 2084). The data is compiled into the library at build time. Properties return empty/default values for other dates without throwing exceptions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the advantage of the struct design?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NepaliDate is a readonly partial struct, which means instances live on the stack rather than the heap. This eliminates garbage collection pressure and makes it extremely efficient for high-throughput scenarios like bulk date processing, large LINQ pipelines, and server-side batch jobs."
+      }
+    }
+  ]
+}
   </script>
 </head>
 <body>
@@ -229,8 +301,8 @@
               </a>
             </div>
             <div class="hero-stats">
-              <div class="hero-stat"><span class="n">4.5<small style="font-size:.6em;color:var(--text-muted)">ns</small></span><span class="l">BS → AD</span></div>
-              <div class="hero-stat"><span class="n">8,600<small style="font-size:.6em;color:var(--text-muted)">×</small></span><span class="l">Faster</span></div>
+              <div class="hero-stat"><span class="n">0.8<small style="font-size:.6em;color:var(--text-muted)">ns</small></span><span class="l">BS → AD</span></div>
+              <div class="hero-stat"><span class="n">41,800<small style="font-size:.6em;color:var(--text-muted)">×</small></span><span class="l">Faster</span></div>
               <div class="hero-stat"><span class="n">0<small style="font-size:.6em;color:var(--text-muted)">B</small></span><span class="l">Allocations</span></div>
               <div class="hero-stat"><span class="n">1901–2199</span><span class="l">Year Range</span></div>
             </div>
@@ -288,7 +360,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
             <h3>Blazing Fast</h3>
-            <p>Up to 8,600× faster than alternatives. Zero heap allocations on both conversion paths. Sub 5 ns BS → AD, sub 14 ns AD → BS.</p>
+            <p>Up to 41,800× faster than other Nepali date libraries. Zero heap allocations on both conversion paths. Under 1 ns BS → AD, under 3 ns AD → BS.</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4M3 11v-1a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 01-4 4H3"/></svg></div>
@@ -355,19 +427,19 @@
         <div class="section-head">
           <div class="section-eyebrow">Performance</div>
           <h2 class="section-title">Benchmarked, not just advertised</h2>
-          <p class="section-sub">One flat month table for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
+          <p class="section-sub">One flat month table for O(1) lookups and zero heap allocations on both conversion paths. Measured with BenchmarkDotNet on NepDate 2.1.0: every call converts a different date, so no result can be precomputed.</p>
         </div>
 
         <div class="bench-headline">
           <div class="bench-kpi">
             <div class="bench-kpi-label">BS &rarr; AD (NepDate)</div>
-            <div class="bench-kpi-value">4.55 <span>ns</span></div>
-            <div class="bench-kpi-sub">vs 39,144 ns &middot; up to <strong>8,603&times;</strong> faster</div>
+            <div class="bench-kpi-value">0.78 <span>ns</span></div>
+            <div class="bench-kpi-sub">vs 32,665 ns &middot; up to <strong>41,865&times;</strong> faster</div>
           </div>
           <div class="bench-kpi">
             <div class="bench-kpi-label">AD &rarr; BS (NepDate)</div>
-            <div class="bench-kpi-value">13.60 <span>ns</span></div>
-            <div class="bench-kpi-sub">vs 66,488 ns &middot; up to <strong>4,890&times;</strong> faster</div>
+            <div class="bench-kpi-value">2.73 <span>ns</span></div>
+            <div class="bench-kpi-sub">vs 67,715 ns &middot; up to <strong>24,770&times;</strong> faster</div>
           </div>
           <div class="bench-kpi">
             <div class="bench-kpi-label">Allocations</div>
@@ -394,27 +466,27 @@
                 <tbody>
                   <tr class="highlight">
                     <td><strong>NepDate</strong></td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.012%"></span></div><span class="bench-num">4.55 ns</span></div></td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.0024%"></span></div><span class="bench-num">0.78 ns</span></div></td>
                     <td class="num">1.00&times;</td>
                     <td class="num">0 B</td>
                   </tr>
                   <tr>
                     <td>NepaliCalendarBS</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:36.92%"></span></div><span class="bench-num">14.45 &micro;s</span></div></td>
-                    <td class="num">3,176&times;</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:45.22%"></span></div><span class="bench-num">14.77 &micro;s</span></div></td>
+                    <td class="num">18,933&times;</td>
                     <td class="num">688 B</td>
                   </tr>
                   <tr>
                     <td>NepaliDateConverter.Net</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:94.91%"></span></div><span class="bench-num">37.15 &micro;s</span></div></td>
-                    <td class="num">8,164&times;</td>
-                    <td class="num">19,968 B</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:97.48%"></span></div><span class="bench-num">31.84 &micro;s</span></div></td>
+                    <td class="num">40,812&times;</td>
+                    <td class="num">20,016 B</td>
                   </tr>
                   <tr>
                     <td>NepaliDateConverter.NETCORE</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">39.14 &micro;s</span></div></td>
-                    <td class="num">8,603&times;</td>
-                    <td class="num">20,688 B</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">32.66 &micro;s</span></div></td>
+                    <td class="num">41,865&times;</td>
+                    <td class="num">20,736 B</td>
                   </tr>
                 </tbody>
               </table>
@@ -438,27 +510,27 @@
                 <tbody>
                   <tr class="highlight">
                     <td><strong>NepDate</strong></td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.020%"></span></div><span class="bench-num">13.60 ns</span></div></td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.0040%"></span></div><span class="bench-num">2.73 ns</span></div></td>
                     <td class="num">1.00&times;</td>
                     <td class="num">0 B</td>
                   </tr>
                   <tr>
                     <td>NepaliCalendarBS</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.244%"></span></div><span class="bench-num">162.5 ns</span></div></td>
-                    <td class="num">12&times;</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:0.271%"></span></div><span class="bench-num">183.3 ns</span></div></td>
+                    <td class="num">67&times;</td>
                     <td class="num">32 B</td>
                   </tr>
                   <tr>
                     <td>NepaliDateConverter.Net</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:99.97%"></span></div><span class="bench-num">66.47 &micro;s</span></div></td>
-                    <td class="num">4,889&times;</td>
-                    <td class="num">19,968 B</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:96.44%"></span></div><span class="bench-num">65.30 &micro;s</span></div></td>
+                    <td class="num">23,888&times;</td>
+                    <td class="num">20,016 B</td>
                   </tr>
                   <tr>
                     <td>NepaliDateConverter.NETCORE</td>
-                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">66.49 &micro;s</span></div></td>
-                    <td class="num">4,890&times;</td>
-                    <td class="num">20,688 B</td>
+                    <td><div class="bench-bar-row"><div class="bench-bar"><span style="width:100%"></span></div><span class="bench-num">67.72 &micro;s</span></div></td>
+                    <td class="num">24,770&times;</td>
+                    <td class="num">20,736 B</td>
                   </tr>
                 </tbody>
               </table>
@@ -466,9 +538,39 @@
           </div>
         </div>
 
+        <div class="bench-card bench-release">
+          <div class="bench-card-head">
+            <h3>NepDate 2.1.0 vs 2.0.7 <span class="bench-card-tag">Release over release</span></h3>
+          </div>
+          <div class="benchmark-wrap">
+            <table class="data-table bench-table">
+              <thead>
+                <tr>
+                  <th>Operation</th>
+                  <th style="text-align:right">2.0.7</th>
+                  <th style="text-align:right">2.1.0</th>
+                  <th style="text-align:right">Faster</th>
+                  <th style="text-align:right">Allocated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>BS &rarr; AD</td><td class="num">6.05 ns</td><td class="num"><strong>0.80 ns</strong></td><td class="num">7.5&times;</td><td class="num">0 B</td></tr>
+                <tr><td>AD &rarr; BS</td><td class="num">13.65 ns</td><td class="num"><strong>2.72 ns</strong></td><td class="num">5.0&times;</td><td class="num">0 B</td></tr>
+                <tr><td>Add 1,000 days</td><td class="num">14.69 ns</td><td class="num"><strong>2.07 ns</strong></td><td class="num">7.1&times;</td><td class="num">0 B</td></tr>
+                <tr><td>Add 13 months</td><td class="num">17.39 ns</td><td class="num"><strong>1.75 ns</strong></td><td class="num">9.9&times;</td><td class="num">0 B</td></tr>
+                <tr><td>Strict parse</td><td class="num">19.92 ns</td><td class="num"><strong>5.50 ns</strong></td><td class="num">3.6&times;</td><td class="num">0 B</td></tr>
+                <tr><td><code>ToString()</code></td><td class="num">13.37 ns</td><td class="num"><strong>11.34 ns</strong></td><td class="num">1.2&times;</td><td class="num">96 B &rarr; 48 B</td></tr>
+                <tr><td>Long Nepali date with weekday</td><td class="num">145.7 ns</td><td class="num"><strong>27.7 ns</strong></td><td class="num">5.3&times;</td><td class="num">435 B &rarr; 69 B</td></tr>
+                <tr><td>Calendar info for a day</td><td class="num">109.4 ns</td><td class="num"><strong>13.6 ns</strong></td><td class="num">8.0&times;</td><td class="num">50 B</td></tr>
+                <tr><td>Bulk convert 1,000 dates</td><td class="num">36.6 &micro;s</td><td class="num"><strong>4.0 &micro;s</strong></td><td class="num">9.1&times;</td><td class="num">141 KB &rarr; 8 KB</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <p class="bench-caption">
-          BenchmarkDotNet 0.15.8 &middot; .NET 10.0.5 (X64 RyuJIT, AVX2) &middot; 12th Gen Intel Core i5-12500H 3.10 GHz, Windows 11.
-          Smaller is better. Bars are scaled to the slowest method per category.
+          BenchmarkDotNet 0.15.8 &middot; NepDate 2.1.0 &middot; .NET 10.0.12 (X64 RyuJIT, AVX2) &middot; 12th Gen Intel Core i5-12500H 3.10 GHz, Windows 11, one pinned core.
+          Each call converts a different date from a pool of 1,024 (2070&ndash;2085 BS). Smaller is better. Bars are scaled to the slowest method per category.
         </p>
       </div>
     </section>
