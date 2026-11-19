@@ -10,9 +10,9 @@
     <RepositoryUrl>https://github.com/RajuPrasai/NepDate</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Nepali Date Converter;Nepali Date;Nepali Calendar;NepDate;Date Converter;Patro;Nepali Patro;Nepal;Nepali-Date-Converter;NepaliDateConverter;Nepali;Date;Converter;Miti</PackageTags>
-    <PackageProjectUrl>https://rajuprasai.github.io/NepDate/</PackageProjectUrl>
+    <PackageProjectUrl>https://nepdate.rajuprasai.com.np/</PackageProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
-    <Version>2.0.7</Version>
+    <Version>2.1.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright © 2023-2026 NepDate</Copyright>
     <ApplicationIcon>Assets\nuget-icon.ico</ApplicationIcon>
@@ -39,7 +39,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Assets\nuget-icon.ico" />
+    <Content Include="Assets\nuget-icon.ico" Pack="false" />
   </ItemGroup>
 
   <ItemGroup>

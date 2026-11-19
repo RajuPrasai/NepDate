@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#dc3f10" />
   <title>NepDate API Reference - Bikram Sambat .NET Library Docs</title>
-  <meta name="description" content="Complete API reference for NepDate v2.0.7. Every public method, property, enum, and exception documented with C# signatures and working code examples." />
+  <meta name="description" content="Complete API reference for NepDate v2.1.0. Every public method, property, enum, and exception documented with C# signatures and working code examples." />
   <link rel="canonical" href="https://nepdate.rajuprasai.com.np/docs.html" />
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="assets/logo.png" />
@@ -26,20 +26,20 @@
   <meta property="og:site_name" content="NepDate" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="NepDate API Reference - Bikram Sambat .NET Library Docs" />
-  <meta property="og:description" content="Complete API reference for NepDate v2.0.7. Every public method, property, enum, and exception documented with C# signatures and working code examples." />
+  <meta property="og:description" content="Complete API reference for NepDate v2.1.0. Every public method, property, enum, and exception documented with C# signatures and working code examples." />
   <meta property="og:image" content="https://nepdate.rajuprasai.com.np/assets/full-logo.png" />
   <meta property="og:image:width" content="1897" />
   <meta property="og:image:height" content="541" />
   <meta property="og:image:alt" content="NepDate library logo" />
   <meta property="og:url" content="https://nepdate.rajuprasai.com.np/docs.html" />
   <meta property="article:published_time" content="2026-04-22T00:00:00+05:45" />
-  <meta property="article:modified_time" content="2026-06-01T00:00:00+05:45" />
+  <meta property="article:modified_time" content="2026-11-19T00:00:00+05:45" />
   <meta property="article:author" content="https://rajuprasai.com.np/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@CrossLegCoder" />
   <meta name="twitter:creator" content="@CrossLegCoder" />
   <meta name="twitter:title" content="NepDate API Reference - Bikram Sambat .NET Library Docs" />
-  <meta name="twitter:description" content="Complete API reference for NepDate v2.0.7. Every public method, property, enum, and exception documented with C# examples." />
+  <meta name="twitter:description" content="Complete API reference for NepDate v2.1.0. Every public method, property, enum, and exception documented with C# examples." />
   <meta name="twitter:image" content="https://nepdate.rajuprasai.com.np/assets/full-logo.png" />
   <meta name="twitter:image:alt" content="NepDate library logo" />
   <script type="application/ld+json">
@@ -50,10 +50,10 @@
         "@type": "TechArticle",
         "@id": "https://nepdate.rajuprasai.com.np/docs.html#article",
         "headline": "NepDate API Reference - Bikram Sambat .NET Library Documentation",
-        "description": "Complete API reference for NepDate v2.0.7. Every public method, property, enum, and exception documented with C# signatures and working code examples.",
+        "description": "Complete API reference for NepDate v2.1.0. Every public method, property, enum, and exception documented with C# signatures and working code examples.",
         "url": "https://nepdate.rajuprasai.com.np/docs.html",
         "datePublished": "2026-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "author": {
           "@type": "Person",
@@ -77,10 +77,10 @@
         "@id": "https://nepdate.rajuprasai.com.np/docs.html#webpage",
         "url": "https://nepdate.rajuprasai.com.np/docs.html",
         "name": "NepDate API Reference - Bikram Sambat .NET Library Docs",
-        "description": "Complete API reference for NepDate v2.0.7.",
+        "description": "Complete API reference for NepDate v2.1.0.",
         "isPartOf": { "@id": "https://nepdate.rajuprasai.com.np/#website" },
         "datePublished": "2026-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "breadcrumb": {
           "@type": "BreadcrumbList",
@@ -318,7 +318,7 @@
           <ul>
             <li><a href="#adv-struct">Struct Design</a></li>
             <li><a href="#adv-threadsafe">Thread Safety</a></li>
-            <li><a href="#adv-internalized">Internalized Dependencies</a></li>
+            <li><a href="#adv-internalized">Dependencies</a></li>
             <li><a href="#adv-range">Supported Range</a></li>
           </ul>
         </div>
@@ -327,7 +327,7 @@
       <!-- Main content -->
       <article class="docs-content">
         <h1>NepDate API Reference - Bikram Sambat .NET Library</h1>
-        <p class="docs-lede">Complete API reference for NepDate <strong>v2.0.7</strong>. Every public method, property, enum, and exception is documented with signatures and working code examples.</p>
+        <p class="docs-lede">Complete API reference for NepDate <strong>v2.1.0</strong>. Every public method, property, enum, and exception is documented with signatures and working code examples.</p>
 
         <!-- ============= Getting Started ============= -->
         <h2 id="getting-started">Getting Started</h2>
@@ -347,10 +347,10 @@
 <pre><code class="language-bash">Install-Package NepDate</code></pre>
           </div>
           <div class="tab-panel" data-panel="ref">
-<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.0.7" /&gt;</code></pre>
+<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.1.0" /&gt;</code></pre>
           </div>
         </div>
-        <p>NepDate has zero external runtime dependencies. Both <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> references are internalized using <code>PrivateAssets=all</code>.</p>
+        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p>
 
         <h3 id="quick-start">Quick Start</h3>
 <pre><code class="language-csharp">using NepDate;
@@ -374,7 +374,7 @@ var weekLater = date.AddDays(7);
 
 // Formatting
 Console.WriteLine(date.ToString("MMMM dd, yyyy"));   // Shrawan 15, 2081
-Console.WriteLine(date.ToLongDateUnicodeString());    // श्रावण १५, २०८१</code></pre>
+Console.WriteLine(date.ToLongDateUnicodeString());    // साउन १५, २०८१</code></pre>
 
         <h3 id="creating-dates">Creating NepaliDate Instances</h3>
 <pre><code class="language-csharp">// From individual components
@@ -432,8 +432,8 @@ bool isDefault  = date.IsDefault;       // false</code></pre>
         <table class="data-table api-table">
           <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari. Empty outside 2001–2089 BS.</td></tr>
-            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi transliterated to English. Empty outside 2001–2089 BS.</td></tr>
+            <tr><td><code>TithiNp</code></td><td><code>string</code></td><td>Tithi in Nepali Devanagari. Empty when no tithi is recorded (data covers 2078–2083 BS).</td></tr>
+            <tr><td><code>TithiEn</code></td><td><code>string</code></td><td>Tithi transliterated to English. Empty when no tithi is recorded (data covers 2078–2083 BS).</td></tr>
             <tr><td><code>IsPublicHoliday</code></td><td><code>bool</code></td><td>Gazetted public holiday flag based on cross-verified calendar data.</td></tr>
             <tr><td><code>EventsNp</code></td><td><code>string[]</code></td><td>Event names in Nepali. Empty array if none.</td></tr>
             <tr><td><code>EventsEn</code></td><td><code>string[]</code></td><td>Event names in English. Empty array if none.</td></tr>
@@ -462,7 +462,7 @@ bool isDefault  = date.IsDefault;       // false</code></pre>
 
 var later   = date.AddDays(5);   // 2081/05/05
 var earlier = date.AddDays(-5);  // 2081/04/27</code></pre>
-        <p><strong>Signature:</strong> <code>NepaliDate AddDays(double days)</code>. Adds the specified number of days. Performed in the Gregorian domain then converted back. Negative values move backward.</p>
+        <p><strong>Signature:</strong> <code>NepaliDate AddDays(double days)</code>. Adds the specified number of days. A whole number moves the internal day count directly; a fractional value is added through <code>DateTime</code> and converted back. Negative values move backward.</p>
 
         <h3 id="add-months">Adding and Subtracting Months</h3>
 <pre><code class="language-csharp">var date = new NepaliDate("2081/04/32");
@@ -616,7 +616,7 @@ bool adjacent = range.IsAdjacentTo(otherRange);</code></pre>
 
         <h3 id="range-set-ops">Set Operations (Intersect, Union, Except)</h3>
 <pre><code class="language-csharp">NepaliDateRange intersection = range.Intersect(otherRange);  // dates in both
-NepaliDateRange union        = range.Union(otherRange);       // all dates from both
+NepaliDateRange union        = range.Union(otherRange);       // earliest start to latest end; fills any gap
 NepaliDateRange[] remaining  = range.Except(otherRange);      // 0, 1, or 2 ranges</code></pre>
         <div class="api-table-wrap">
         <table class="data-table api-table">
@@ -648,11 +648,11 @@ IEnumerable&lt;NepaliDate&gt; working       = range.WorkingDays();
 // Working days (excludes Saturdays and Sundays)
 IEnumerable&lt;NepaliDate&gt; workingNoSun  = range.WorkingDays(excludeSunday: true);
 
-// Weekend days (Saturdays only)
+// Weekend days (Saturdays and Sundays, the default)
 IEnumerable&lt;NepaliDate&gt; weekends      = range.WeekendDays();
 
-// Weekend days (Saturdays and Sundays)
-IEnumerable&lt;NepaliDate&gt; weekendsBoth  = range.WeekendDays(includeSunday: true);</code></pre>
+// Weekend days (Saturdays only)
+IEnumerable&lt;NepaliDate&gt; saturdays     = range.WeekendDays(includeSunday: false);</code></pre>
 
         <h3 id="range-format">Range Formatting</h3>
 <pre><code class="language-csharp">string basic     = range.ToString();
@@ -689,11 +689,11 @@ date.ToLongDateString(leadingZeros: false, displayDayName: true, displayYear: fa
 
         <h3 id="format-long-unicode">Long Date Unicode String</h3>
 <pre><code class="language-csharp">date.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false)
-// "शुक्रबार, जेठ ६"</code></pre>
+// "शुक्रवार, जेठ ६"</code></pre>
         <p><strong>Signature:</strong> <code>string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)</code>.</p>
 
         <h3 id="format-iformattable">IFormattable Format Specifiers</h3>
-        <p>NepaliDate implements <code>IFormattable</code> (and <code>ISpanFormattable</code> on .NET 6+). Format strings work in string interpolation, <code>string.Format</code>, and any <code>IFormattable</code> context.</p>
+        <p>NepaliDate implements <code>IFormattable</code> (and <code>ISpanFormattable</code> on .NET 8 and later (the net8.0 build)). Format strings work in string interpolation, <code>string.Format</code>, and any <code>IFormattable</code> context.</p>
         <div class="api-table-wrap">
         <table class="data-table api-table">
           <thead><tr><th>Specifier</th><th>Output</th><th>Notes</th></tr></thead>
@@ -735,9 +735,9 @@ string.Format("{0:yyyy/MM/dd}", date)  // 2079/02/06</code></pre>
         </div>
 
         <h3 id="format-span">ISpanFormattable</h3>
-        <p>On .NET 6+, NepaliDate implements <code>ISpanFormattable</code> for allocation-free formatting into <code>Span&lt;char&gt;</code>.</p>
+        <p>On .NET 8 and later (the net8.0 build), NepaliDate implements <code>ISpanFormattable</code> for formatting into <code>Span&lt;char&gt;</code>. The implementation is explicit, so call it through the interface.</p>
 <pre><code class="language-csharp">Span&lt;char&gt; buffer = stackalloc char[32];
-bool success = date.TryFormat(buffer, out int charsWritten, "yyyy-MM-dd", null);</code></pre>
+bool success = ((ISpanFormattable)date).TryFormat(buffer, out int charsWritten, "yyyy-MM-dd", null);</code></pre>
 
         <!-- ============= Smart Parsing ============= -->
         <h2 id="smart-parsing">Smart Date Parsing</h2>
@@ -896,7 +896,7 @@ date.FiscalYearStartDate(yearOffset: -1);  // 2080/04/01 (previous)</code></pre>
 <pre><code class="language-csharp">var date = new NepaliDate(2081, 4, 15);
 string tithiNp = date.TithiNp;  // Nepali Devanagari tithi name
 string tithiEn = date.TithiEn;  // English transliterated tithi name</code></pre>
-        <p>Returns the lunar day (Tithi) for the date. Empty string for dates outside 2001–2089 BS.</p>
+        <p>Returns the lunar day (Tithi) for the date. The bundled data has tithi for 2078–2083 BS; other dates return an empty string.</p>
 
         <h3 id="cal-holidays">Public Holidays</h3>
 <pre><code class="language-csharp">bool isHoliday = date.IsPublicHoliday;  // true if gazetted holiday</code></pre>
@@ -927,13 +927,13 @@ string[] eventsEn = date.EventsEn;  // event names in English</code></pre>
         </div>
 
         <h3 id="cal-coverage">Data Coverage</h3>
-        <p>Calendar data (Tithi, holidays, events) is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 to 2089 BS</strong>. All properties gracefully return empty or default values for dates outside this range without throwing exceptions.</p>
+        <p>Calendar data (Tithi, holidays, events) is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 to 2083 BS</strong>, events and public holidays for <strong>2077 to 2083 BS</strong> (plus a few days of 2084). All properties return empty or default values for other dates without throwing exceptions.</p>
 
         <!-- ============= Serialization ============= -->
         <h2 id="serialization">Serialization</h2>
 
         <h3 id="ser-stj">System.Text.Json</h3>
-        <p>On .NET 5+, a <code>[JsonConverter]</code> is auto-registered on <code>NepaliDate</code>, so basic serialization works without setup.</p>
+        <p>On .NET 8 and later (the net8.0 build), a <code>[JsonConverter]</code> is auto-registered on <code>NepaliDate</code>, so basic serialization works without setup. On older targets, which use the netstandard2.0 build, call <code>ConfigureForNepaliDate()</code>.</p>
 <pre><code class="language-csharp">using System.Text.Json;
 using NepDate.Serialization;
 
@@ -1024,14 +1024,15 @@ string t = $"{date:MMMM dd, yyyy}";</code></pre>
         <p>Enables format string support in interpolation, <code>string.Format</code>, and any <code>IFormattable</code> consumer.</p>
 
         <h3 id="ts-ispanformattable">ISpanFormattable</h3>
-        <p>Available on .NET 6+. Enables allocation-free formatting.</p>
+        <p>Available on .NET 8 and later (the net8.0 build). Formats into a <code>Span&lt;char&gt;</code>; call it through the interface.</p>
 <pre><code class="language-csharp">Span&lt;char&gt; buf = stackalloc char[32];
-date.TryFormat(buf, out int written, "yyyy-MM-dd", null);</code></pre>
+((ISpanFormattable)date).TryFormat(buf, out int written, "yyyy-MM-dd", null);</code></pre>
 
         <h3 id="ts-iparsable">IParsable and ISpanParsable</h3>
-        <p>Available on .NET 7+. Enables generic parsing in contexts that accept <code>IParsable&lt;T&gt;</code>.</p>
-<pre><code class="language-csharp">var d = NepaliDate.Parse("2080/04/15", null);  // IParsable&lt;NepaliDate&gt;.Parse
-bool ok = NepaliDate.TryParse("2080/04/15", null, out var result);</code></pre>
+        <p>Available on .NET 8 and later (the net8.0 build). Enables generic parsing in contexts that accept <code>IParsable&lt;T&gt;</code>. The implementation is explicit, so use it through a generic method or the interface.</p>
+<pre><code class="language-csharp">static T ParseAny&lt;T&gt;(string s) where T : IParsable&lt;T&gt; =&gt; T.Parse(s, null);
+
+NepaliDate d = ParseAny&lt;NepaliDate&gt;("2080/04/15");  // 2080/04/15</code></pre>
 
         <h3 id="ts-typeconverter">TypeConverter</h3>
         <p><code>NepaliDateTypeConverter</code> is auto-registered via the <code>[TypeConverter]</code> attribute. It enables:</p>
@@ -1043,7 +1044,7 @@ bool ok = NepaliDate.TryParse("2080/04/15", null, out var result);</code></pre>
         <p>Supports conversion to/from <code>string</code>, <code>int</code> (YYYYMMDD format), and <code>DateTime</code>.</p>
 
         <h3 id="ts-jsonconverter">JsonConverter Auto Registration</h3>
-        <p>On .NET 5+, the <code>System.Text.Json</code> converter is registered via a <code>[JsonConverter]</code> attribute on the type, so basic <code>JsonSerializer.Serialize/Deserialize</code> calls work without any options configuration. Use <code>ConfigureForNepaliDate()</code> to opt into object-mode serialization or to support Newtonsoft.Json.</p>
+        <p>On .NET 8 and later (the net8.0 build), the <code>System.Text.Json</code> converter is registered via a <code>[JsonConverter]</code> attribute on the type, so basic <code>JsonSerializer.Serialize/Deserialize</code> calls work without any options configuration. Use <code>ConfigureForNepaliDate()</code> to opt into object-mode serialization or to support Newtonsoft.Json.</p>
 
         <!-- ============= Enums ============= -->
         <h2 id="enums">Enums</h2>
@@ -1115,7 +1116,7 @@ catch (InvalidNepaliDateFormatException ex)
         <p>Thrown when numeric arguments fall outside valid ranges: day not in <code>1..MonthEndDay</code>, month not in <code>1..12</code>, year not in <code>1901..2199</code>, <code>batchSize &lt; 1</code> in bulk operations, <code>interval &lt; 1</code> in <code>DatesWithInterval</code>, <code>days &lt; 1</code> in <code>FromDayCount</code>.</p>
 
         <h3 id="exc-argument-null">ArgumentNullException</h3>
-        <p>Thrown by <code>SmartDateParser.Parse</code> and string-based constructors when input is <code>null</code>. Use <code>TryParse</code> or <code>TryToNepaliDate</code> variants to avoid throws.</p>
+        <p>Thrown by <code>SmartDateParser.Parse</code> when input is <code>null</code> or empty, and by <code>BulkConvert</code> methods when the collection is <code>null</code>. <code>NepaliDate.Parse</code> and the string constructors throw <code>InvalidNepaliDateFormatException</code> for <code>null</code> instead. Use <code>TryParse</code> or <code>TryToNepaliDate</code> variants to avoid throws.</p>
 
         <h3 id="exc-format">FormatException</h3>
         <p>Thrown by <code>SmartDateParser.Parse</code> when input is non-null but unparseable. <code>InvalidNepaliDateFormatException</code> derives from this type, so a single <code>catch (FormatException)</code> handles both.</p>
@@ -1135,8 +1136,8 @@ catch (InvalidNepaliDateFormatException ex)
         <h3 id="adv-threadsafe">Thread Safety</h3>
         <p>All public types are immutable. <code>NepaliDate</code>, <code>NepaliDateRange</code>, and <code>CalendarInfo</code> are readonly structs. <code>BulkConvert</code> operations are safe to invoke concurrently; each call runs on the calling thread.</p>
 
-        <h3 id="adv-internalized">Internalized Dependencies</h3>
-        <p>NepDate depends on <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> at build time only. Both are referenced with <code>PrivateAssets=all</code> so they never surface in your consuming project's dependency graph. NepDate has zero external runtime dependencies from the consumer's perspective.</p>
+        <h3 id="adv-internalized">Dependencies</h3>
+        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p>
 
         <h3 id="adv-range">Supported Range</h3>
         <div class="api-table-wrap">
@@ -1144,7 +1145,7 @@ catch (InvalidNepaliDateFormatException ex)
           <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
           <tbody>
             <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (1844-04-11 AD) through 2199/12/last BS (2143-04-15 AD).</td></tr>
-            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>2001 BS through 2089 BS. Outside this range, properties return empty defaults without throwing.</td></tr>
+            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>Tithi: 2078 BS through 2083 BS. Events and holidays: 2077 BS through 2083 BS (plus a few days of 2084). Other dates return empty defaults without throwing.</td></tr>
             <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
           </tbody>
         </table>

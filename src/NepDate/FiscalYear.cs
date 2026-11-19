@@ -272,9 +272,11 @@
         /// <param name="month">The Nepali month (1-12) within the fiscal year.</param>
         /// <returns>A NepaliDate representing the start date of the fiscal year quarter containing the specified month.</returns>
         /// <remarks>
-        /// This static method first creates a NepaliDate for the first day of the specified month and year,
-        /// then determines which fiscal quarter that date falls in, and returns the start date of that quarter.
-        /// 
+        /// This static method first creates a NepaliDate for the first day of the specified month within
+        /// the fiscal year, then determines which fiscal quarter that date falls in, and returns the start
+        /// date of that quarter. Months 1-3 close the fiscal year, so they fall in the BS year after
+        /// <paramref name="fiscalYear"/>: month 1 of fiscal year 2080 is Baisakh 2081.
+        ///
         /// The month parameter determines which quarter will be calculated:
         /// - Months 4-6 (Shrawan, Bhadra, Ashwin): First Quarter
         /// - Months 7-9 (Kartik, Mangsir, Poush): Second Quarter
@@ -283,7 +285,16 @@
         /// </remarks>
         public static NepaliDate GetFiscalYearQuarterStartDate(int fiscalYear, int month)
         {
-            return new NepaliDate(fiscalYear, month, 1).FiscalYearQuarterStartDate();
+            return FirstDayOfFiscalMonth(fiscalYear, month).FiscalYearQuarterStartDate();
+        }
+
+        /// <summary>
+        /// Returns the first day of <paramref name="month"/> inside the given fiscal year. Months 1-3
+        /// (Baisakh to Ashad) close the fiscal year, so they belong to the next BS year.
+        /// </summary>
+        private static NepaliDate FirstDayOfFiscalMonth(int fiscalYear, int month)
+        {
+            return new NepaliDate(month <= 3 ? fiscalYear + 1 : fiscalYear, month, 1);
         }
 
 
@@ -294,20 +305,22 @@
         /// <param name="month">The Nepali month (1-12) within the fiscal year.</param>
         /// <returns>A NepaliDate representing the end date of the fiscal year quarter containing the specified month.</returns>
         /// <remarks>
-        /// This static method first creates a NepaliDate for the first day of the specified month and year,
-        /// then determines which fiscal quarter that date falls in, and returns the end date of that quarter.
-        /// 
+        /// This static method first creates a NepaliDate for the first day of the specified month within
+        /// the fiscal year, then determines which fiscal quarter that date falls in, and returns the end
+        /// date of that quarter. Months 1-3 close the fiscal year, so they fall in the BS year after
+        /// <paramref name="fiscalYear"/>.
+        ///
         /// The month parameter determines which quarter will be calculated:
         /// - Months 4-6 (Shrawan, Bhadra, Ashwin): First Quarter
         /// - Months 7-9 (Kartik, Mangsir, Poush): Second Quarter
         /// - Months 10-12 (Magh, Falgun, Chaitra): Third Quarter
         /// - Months 1-3 (Baisakh, Jestha, Ashadh): Fourth Quarter
-        /// 
+        ///
         /// The end date is the last day of the last month in the quarter.
         /// </remarks>
         public static NepaliDate GetFiscalYearQuarterEndDate(int fiscalYear, int month)
         {
-            return new NepaliDate(fiscalYear, month, 1).FiscalYearQuarterEndDate();
+            return FirstDayOfFiscalMonth(fiscalYear, month).FiscalYearQuarterEndDate();
         }
 
 

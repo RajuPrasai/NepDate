@@ -1,6 +1,8 @@
 # NepDate - Complete API Reference
 
-Version: 2.0.7 | License: MIT | NuGet: https://www.nuget.org/packages/NepDate/ | GitHub: https://github.com/RajuPrasai/NepDate
+Version: 2.1.0 | License: MIT | NuGet: https://www.nuget.org/packages/NepDate/ | GitHub: https://github.com/RajuPrasai/NepDate
+
+Targets: netstandard2.0 and net8.0. Every name below exists in the public API; anything not listed here does not exist.
 
 ---
 
@@ -16,15 +18,16 @@ dotnet add package NepDate
 using NepDate;
 
 // Today in BS
-var today = NepaliDate.Now;
-Console.WriteLine(today); // e.g. "2083-02-19"
+var today = NepaliDate.Today;
+Console.WriteLine(today); // e.g. "2083/08/03"
 
 // BS to AD
 var bs = new NepaliDate(2080, 6, 15);
-DateTime ad = bs.EnglishDate;
+DateTime ad = bs.EnglishDate; // 2023-10-02
 
 // AD to BS
 var bs2 = new NepaliDate(DateTime.Today);
+var bs3 = DateTime.Today.ToNepaliDate(); // extension method
 ```
 
 ---
@@ -32,148 +35,187 @@ var bs2 = new NepaliDate(DateTime.Today);
 ## NepaliDate struct
 
 `namespace NepDate`
-`readonly partial struct NepaliDate : IComparable<NepaliDate>, IEquatable<NepaliDate>, IFormattable`
-(net8.0 also: `ISpanFormattable, IParsable<NepaliDate>`)
+`readonly partial struct NepaliDate : IComparable, IComparable<NepaliDate>, IEquatable<NepaliDate>, IFormattable`
+(net8.0 build also: `ISpanFormattable, IParsable<NepaliDate>, ISpanParsable<NepaliDate>`)
 
-### Constructors and factory methods
+### Constructors and static members
 
 ```csharp
-// From BS year, month, day
-NepaliDate(int year, int month, int day)
+NepaliDate(int yearBs, int monthBs, int dayBs)
+NepaliDate(DateTime engDate)                     // time part and DateTimeKind are ignored
+NepaliDate(string rawNepaliDate)                 // "2080/06/15", "2080-6-15", ...
+NepaliDate(string rawNepaliDate, bool autoAdjust, bool monthInMiddle = true)
 
-// From DateTime (AD to BS)
-NepaliDate(DateTime englishDate)
+static NepaliDate Today { get; }                 // local date
+static NepaliDate Now { get; }                   // same date as Today
+static readonly NepaliDate MinValue              // 1901/01/01 BS = 1844-04-11 AD
+static readonly NepaliDate MaxValue              // 2199/12/30 BS = 2143-04-15 AD
 
-// Today in BS
-static NepaliDate NepaliDate.Now { get; }
-
-// Parse from string
-static NepaliDate NepaliDate.Parse(string s)
-
-// Non-throwing parse
-static bool NepaliDate.TryParse(string s, out NepaliDate result)
-
-// From int YYYYMMDD
-static NepaliDate NepaliDate.FromInt(int yyyymmdd)
+static NepaliDate Parse(string rawNepaliDate)
+static NepaliDate Parse(string rawNepaliDate, bool autoAdjust, bool monthInMiddle = true)
+static bool TryParse(string rawNepDate, out NepaliDate result)
+static bool TryParse(string rawNepDate, out NepaliDate result, bool autoAdjust, bool monthInMiddle = true)
 ```
 
 ### Properties
 
 ```csharp
-int Year         // BS year (1901-2199)
-int Month        // BS month (1-12)
-int Day          // BS day (1-32)
-DateTime EnglishDate    // Gregorian equivalent
-DayOfWeek DayOfWeek     // .NET DayOfWeek enum
-string DayName          // "Sunday", "Monday", ...
-NepaliMonths MonthName  // Enum value for month
-int MonthEndDay         // Last day of this month (29, 30, 31, or 32)
-bool IsLeapYear         // Whether the BS year is a leap year
-NepaliDate YearStartDate   // 1st of same BS year
-NepaliDate YearEndDate     // Last day of same BS year
-NepaliDate MonthStartDate  // 1st of same BS month
-NepaliDate MonthEndDate    // Last day of same BS month
+int Year                  // BS year (1901-2199)
+int Month                 // BS month (1-12)
+int Day                   // BS day (1-32)
+DateTime EnglishDate      // Gregorian date at midnight, DateTimeKind.Unspecified
+DayOfWeek DayOfWeek       // System.DayOfWeek
+NepaliMonths MonthName    // NepaliMonths.Ashoj for month 6
+int MonthEndDay           // Days in this month (29, 30, 31 or 32)
+int DayOfYear             // 1 on 1 Baisakh
+bool IsDefault            // true for default(NepaliDate)
 
-// Calendar metadata (2001-2089 BS; returns empty/default outside range without throwing)
-string TithiNp       // Tithi (lunar day) in Nepali Devanagari; empty string outside 2001-2089 BS
-string TithiEn       // Tithi transliterated to English; empty string outside 2001-2089 BS
-bool IsPublicHoliday // true when gazetted public holiday; false outside 2001-2089 BS
-string[] EventsNp    // Event names in Devanagari; empty array if none
-string[] EventsEn    // Event names in English; empty array if none
-CalendarInfo GetCalendarInfo() // All five fields in a single lookup; prefer this over per-property access in loops
+// Calendar data. See "Calendar Data" for the years covered; other dates return empty values.
+string TithiNp            // Tithi in Devanagari, e.g. "दशमी*"; empty string when none
+string TithiEn            // Tithi in English, e.g. "Dashami (K)"; empty string when none
+bool IsPublicHoliday      // Nepal gazetted public holiday
+string[] EventsNp         // Event names in Devanagari; empty array when none
+string[] EventsEn         // Event names in English; empty array when none
 ```
 
-### Arithmetic
+### Methods
 
 ```csharp
 NepaliDate AddDays(double days)
-NepaliDate AddMonths(double months, bool awayFromMonthEnd = false)
+NepaliDate AddMonths(double months, bool awayFromMonthEnd = false) // false clamps to the month end
 NepaliDate AddYears(int years, bool awayFromMonthEnd = false)
-TimeSpan   operator -(NepaliDate left, NepaliDate right) // Total days between two dates
-
-// Operators
-bool operator ==(NepaliDate left, NepaliDate right)
-bool operator !=(NepaliDate left, NepaliDate right)
-bool operator < (NepaliDate left, NepaliDate right)
-bool operator > (NepaliDate left, NepaliDate right)
-bool operator <=(NepaliDate left, NepaliDate right)
-bool operator >=(NepaliDate left, NepaliDate right)
-
+NepaliDate MonthEndDate()                     // last day of this month
+TimeSpan Subtract(NepaliDate nepDateTo)       // same as left - right
+bool IsLeapYear()                             // Gregorian leap year of EnglishDate
+bool IsToday()
+bool IsYesterday()
+bool IsTomorrow()
+CalendarInfo GetCalendarInfo()                // all calendar data in one lookup; prefer it in loops
+void Deconstruct(out int year, out int month, out int day)   // var (y, m, d) = date;
 int CompareTo(NepaliDate other)
 bool Equals(NepaliDate other)
+
+TimeSpan operator -(NepaliDate left, NepaliDate right)
+bool operator ==, !=, <, >, <=, >=
 ```
 
-### Fiscal Year properties
+```csharp
+var d = new NepaliDate(2080, 6, 15);
+d.AddDays(20);                               // 2080/07/05
+d.AddMonths(-2);                             // 2080/04/15
+new NepaliDate(2081, 4, 32).AddMonths(1);    // 2081/05/31 (clamped)
+new NepaliDate(2081, 4, 32).AddMonths(1, awayFromMonthEnd: true); // 2081/06/01
+(d - new NepaliDate(2080, 1, 1)).Days;       // 171
+```
 
-Nepal's fiscal year: Shrawan 1 (month 4) through Ashadh end (month 3 of next year).
+### Fiscal year
+
+Nepal's fiscal year runs from 1 Shrawan (month 4) to the last day of Ashad (month 3) of the next year.
 
 ```csharp
-NepaliDate FiscalYearStartDate     // Shrawan 1 of the current fiscal year
-NepaliDate FiscalYearEndDate       // Ashadh last-day of the current fiscal year
-FiscalYearQuarters FiscalYearQuarter  // Current quarter
+NepaliDate FiscalYearStartDate(int yearOffset = 0)
+NepaliDate FiscalYearEndDate(int yearOffset = 0)
+(NepaliDate startDate, NepaliDate endDate) FiscalYearStartAndEndDate(int yearOffset = 0)
+NepaliDate FiscalYearQuarterStartDate(FiscalYearQuarters fiscalYearQuarters = FiscalYearQuarters.Current, int yearOffset = 0)
+NepaliDate FiscalYearQuarterEndDate(FiscalYearQuarters fiscalYearQuarters = FiscalYearQuarters.Current, int yearOffset = 0)
+(NepaliDate startDate, NepaliDate endDate) FiscalYearQuarterStartAndEndDate(FiscalYearQuarters fiscalYearQuarters = FiscalYearQuarters.Current, int yearOffset = 0)
+
+static NepaliDate GetFiscalYearStartDate(int fiscalYear)
+static NepaliDate GetFiscalYearEndDate(int fiscalYear)
+static (NepaliDate startDate, NepaliDate endDate) GetFiscalYearStartAndEndDate(int fiscalYear)
+static NepaliDate GetFiscalYearQuarterStartDate(int fiscalYear, int month)
+static NepaliDate GetFiscalYearQuarterEndDate(int fiscalYear, int month)
+static (NepaliDate startDate, NepaliDate endDate) GetFiscalYearQuarterStartAndEndDate(int fiscalYear, int month)
+```
+
+```csharp
+var d = new NepaliDate(2080, 6, 15);
+d.FiscalYearStartDate();                       // 2080/04/01
+d.FiscalYearEndDate();                         // 2081/03/31
+d.FiscalYearQuarterStartAndEndDate();          // (2080/04/01, 2080/06/30)
+NepaliDate.GetFiscalYearStartAndEndDate(2080); // (2080/04/01, 2081/03/31)
 ```
 
 ---
 
 ## Formatting
 
-### ToString overloads
-
 ```csharp
-// Default format: "2080-06-15"
-string ToString()
-
-// With DateFormats enum
-string ToString(DateFormats format)
-
-// With DateFormats and Separators
-string ToString(DateFormats format, Separators separator)
-
-// With Nepali Unicode digits
-string ToString(DateFormats format, Separators separator, bool useNepaliDigits)
-
-// IFormattable: format string is "<DateFormats>-<Separators>" e.g. "yMd-Slash"
-string ToString(string? format, IFormatProvider? formatProvider)
+string ToString()                                   // "2080/06/15"
+string ToString(DateFormats dateFormat, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)
+string ToUnicodeString(DateFormats dateFormat = DateFormats.YearMonthDay, Separators separator = Separators.ForwardSlash, bool leadingZeros = true)
+string ToLongDateString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)
+string ToLongDateUnicodeString(bool leadingZeros = true, bool displayDayName = false, bool displayYear = true)
+string ToString(string format, IFormatProvider formatProvider = null)   // IFormattable
 ```
 
-### DateFormats enum
+```csharp
+var d = new NepaliDate(2080, 6, 15);
+d.ToString(DateFormats.DayMonthYear, Separators.Dash);       // "15-06-2080"
+d.ToString(DateFormats.MonthDayYear, Separators.Dot, false); // "6.15.2080"
+d.ToUnicodeString();                                         // "२०८०/०६/१५"
+d.ToLongDateString();                                        // "Ashoj 15, 2080"
+d.ToLongDateString(displayDayName: true);                    // "Monday, Ashoj 15, 2080"
+d.ToLongDateUnicodeString(displayDayName: true);             // "सोमवार, असोज १५, २०८०"
+d.ToString("D");                                             // "Ashoj 15, 2080"
+d.ToString("s");                                             // "2080-06-15"
+d.ToString("MMMM dd, yyyy");                                 // "Ashoj 15, 2080"
+$"{d:yyyy-MM-dd}";                                           // "2080-06-15"
+```
 
-| Member | Example output |
-|---|---|
-| `yMd` | 2080-06-15 |
-| `dMy` | 15-6-2080 |
-| `mDy` | 6/15/2080 |
-| `dMMMy` | 15 Ashwin 2080 |
-| `ddMMMMyyyy` | 15 Aswin 2080 |
-| `yMMMd` | 2080 Ashwin 15 |
+Standard formats: `null`, `""`, `"G"`, `"g"`, `"d"` give `yyyy/MM/dd`; `"D"` gives the long date; `"s"` gives `yyyy-MM-dd`.
+Custom tokens: `yyyy`, `yy`, `MMMM` (month name), `MMM` (first 3 letters), `MM`, `M`, `dd`, `d`. Quote literal text with `'...'` or escape one character with `\`.
 
-### Separators enum
-
-`Dash` (-), `Slash` (/), `Dot` (.), `Space` ( ), `None` (no separator), `Comma` (,)
+On net8.0, `ISpanFormattable.TryFormat` is an explicit interface implementation: `((ISpanFormattable)d).TryFormat(buffer, out int written, "s", null)`.
 
 ---
 
-## Smart Parsing
+## Parsing
 
-`NepaliDate.Parse` accepts:
-- Numeric: `"2080-6-15"`, `"2080/6/15"`, `"2080.6.15"`, `"20800615"` (int-string)
-- Nepali digits: `"२०८०-०६-१५"`
-- Month names (100+ spellings): `"2080 Ashwin 15"`, `"2080 Aswin 15"`, `"2080 Asoj 15"`, `"Ashwin 15, 2080"`, etc.
-- Mixed: `"15 Aswin, 2080"`, `"2080 Aswin 15th"`
+### Strict: NepaliDate.Parse / TryParse / constructor
 
-Accepted month name variants (partial list):
-- Baisakh: Baisakh, Baishakh, Vaishakh, Baisak, Besak
+Year, month and day in that order, ASCII digits, separated by `/`, `-`, `.`, `_`, `\`, space, `|` or `।`.
+
+```csharp
+NepaliDate.Parse("2080-06-15");                    // 2080/06/15
+NepaliDate.Parse("2080/6/15");                     // 2080/06/15
+NepaliDate.Parse("15-06-2080", autoAdjust: true);  // 2080/06/15
+NepaliDate.TryParse("2080/13/01", out var bad);    // false
+```
+
+Strict parsing does not accept month names, Nepali digits or "20800615". Use SmartDateParser for those words and digits.
+
+### Smart: SmartDateParser (static class, namespace NepDate)
+
+```csharp
+static NepaliDate Parse(string input)                    // FormatException when it cannot read the input
+static bool TryParse(string input, out NepaliDate result)
+// Extension methods on string: ToNepaliDate(), TryToNepaliDate(out NepaliDate)
+```
+
+```csharp
+SmartDateParser.Parse("15 Ashoj 2080");      // 2080/06/15
+SmartDateParser.Parse("Asoj 15, 2080");      // 2080/06/15
+SmartDateParser.Parse("15th Shrawan 2080");  // 2080/04/15
+SmartDateParser.Parse("२०८० असोज १५");        // 2080/06/15
+SmartDateParser.Parse("२०८०/०६/१५");          // 2080/06/15
+SmartDateParser.Parse("080/6/15");           // 2080/06/15
+SmartDateParser.Parse("2080/04/15 BS");      // 2080/04/15
+```
+
+Accepted month spellings (sample):
+- Baishakh: Baisakh, Baishakh, Vaishakh, Baisak
 - Jestha: Jestha, Jeshtha, Jesth, Jeth
-- Ashadh: Ashadh, Ashad, Asad, Asar, Ashar
+- Ashad: Ashadh, Ashad, Asad, Asar, Ashar
 - Shrawan: Shrawan, Shravan, Sawan, Saun
-- Bhadra: Bhadra, Bhadau, Bhado, Bhadon, Bhaadra
-- Ashwin: Ashwin, Aswin, Asoj, Aaswin, Ashoj
-- Kartik: Kartik, Kartick, Kartika, Karthik
-- Mangsir: Mangsir, Mangshir, Margashirsha, Aghan
-- Poush: Poush, Push, Paush, Pous, Posh
+- Bhadra: Bhadra, Bhadau, Bhado, Bhadon
+- Ashoj: Ashoj, Ashwin, Aswin, Asoj
+- Kartik: Kartik, Kartick, Karthik
+- Mangsir: Mangsir, Mangshir, Margashirsha
+- Poush: Poush, Push, Paush
 - Magh: Magh, Maagh
-- Falgun: Falgun, Phalgun, Phagun, Phalguna, Faagun
-- Chaitra: Chaitra, Chait, Chatra
+- Falgun: Falgun, Phalgun, Phagun
+- Chaitra: Chaitra, Chait
 
 ---
 
@@ -181,110 +223,143 @@ Accepted month name variants (partial list):
 
 `namespace NepDate`
 ```csharp
-struct NepaliDateRange : IEnumerable<NepaliDate>
+readonly struct NepaliDateRange : IEnumerable<NepaliDate>, IEquatable<NepaliDateRange>
 
-// Constructor
 NepaliDateRange(NepaliDate start, NepaliDate end)
+static NepaliDateRange SingleDay(NepaliDate date)
+static NepaliDateRange FromDayCount(NepaliDate start, int days)
+static NepaliDateRange ForMonth(int year, int month)
+static NepaliDateRange ForFiscalYear(int fiscalYear)
+static NepaliDateRange ForCalendarYear(int year)
+static NepaliDateRange CurrentMonth()
+static NepaliDateRange CurrentFiscalYear()
+static NepaliDateRange CurrentCalendarYear()
 
-// Properties
-NepaliDate Start  { get; }
-NepaliDate End    { get; }
-int DayCount      { get; }  // Number of days in range (inclusive)
+NepaliDate Start { get; }
+NepaliDate End   { get; }
+bool IsEmpty     { get; }   // Start > End
+int Length       { get; }   // days in the range, inclusive
 
-// Methods
 bool Contains(NepaliDate date)
+bool Contains(NepaliDateRange other)
 bool Overlaps(NepaliDateRange other)
-bool IsContiguousWith(NepaliDateRange other)
-NepaliDateRange Union(NepaliDateRange other)
+bool IsAdjacentTo(NepaliDateRange other)
 NepaliDateRange Intersect(NepaliDateRange other)
-NepaliDateRange Except(NepaliDateRange other)
-
-IEnumerator<NepaliDate> GetEnumerator()
+NepaliDateRange Union(NepaliDateRange other)   // earliest start to latest end; fills any gap
+NepaliDateRange[] Except(NepaliDateRange other)
+NepaliDateRange[] SplitByMonth()
+NepaliDateRange[] SplitByFiscalQuarter()
+IEnumerable<NepaliDate> DatesWithInterval(int interval)
+IEnumerable<NepaliDate> WorkingDays(bool excludeSunday = false)   // never includes Saturday
+IEnumerable<NepaliDate> WeekendDays(bool includeSunday = true)
+string ToString()                                                  // "2080/06/01 - 2080/06/30"
+string ToString(DateFormats format, Separators separator = Separators.ForwardSlash)
 ```
 
 **Example:**
 ```csharp
-var range = new NepaliDateRange(new NepaliDate(2080, 4, 1), new NepaliDate(2080, 6, 30));
-foreach (var day in range)
+var ashoj = NepaliDateRange.ForMonth(2080, 6);
+ashoj.Length;                                           // 30
+ashoj.Contains(new NepaliDate(2080, 6, 15));            // true
+ashoj.IsAdjacentTo(NepaliDateRange.ForMonth(2080, 7));  // true
+ashoj.Except(NepaliDateRange.FromDayCount(new NepaliDate(2080, 6, 10), 5));
+// [2080/06/01 - 2080/06/09, 2080/06/15 - 2080/06/30]
+foreach (var day in ashoj)
     Console.WriteLine(day);
-
-bool inQ1 = range.Contains(new NepaliDate(2080, 5, 15)); // true
 ```
 
 ---
 
 ## Bulk Conversion
 
-`namespace NepDate`
-`static class BulkConvert`
+`BulkConvert` is a public class nested in `NepaliDate`.
 
 ```csharp
-// Convert many AD dates to BS (one pass, input order kept)
-static IEnumerable<NepaliDate> ToNepaliDates(IEnumerable<DateTime> englishDates)
-
-// Convert many BS dates to AD (one pass, input order kept)
-static IEnumerable<DateTime> ToEnglishDates(IEnumerable<NepaliDate> nepaliDates)
+IEnumerable<NepaliDate> NepaliDate.BulkConvert.ToNepaliDates(IEnumerable<DateTime> engDates, bool useParallel = true)
+IEnumerable<DateTime>   NepaliDate.BulkConvert.ToEnglishDates(IEnumerable<NepaliDate> nepDates, bool useParallel = true)
+IEnumerable<DateTime>   NepaliDate.BulkConvert.ToEnglishDates(IEnumerable<string> nepDates, bool useParallel = true)
+IEnumerable<NepaliDate> NepaliDate.BulkConvert.BatchProcessToNepaliDates(IEnumerable<DateTime> engDates, int batchSize = 1000)
+IEnumerable<DateTime>   NepaliDate.BulkConvert.BatchProcessToEnglishDates(IEnumerable<NepaliDate> nepDates, int batchSize = 1000)
 ```
 
-Thread-safe. Results preserve input order.
+Each call converts the whole collection in one pass on the calling thread, keeps the input order and returns a filled collection. An invalid date throws from the call itself. `useParallel` and `batchSize` are kept for source compatibility and do not change the result; `batchSize < 1` throws `ArgumentOutOfRangeException`.
 
 ---
 
 ## Calendar Data
 
-For dates in 2001-2089 BS, access metadata via `date.GetCalendarInfo()` which returns a `CalendarInfo` struct:
-
 ```csharp
-CalendarInfo info = date.GetCalendarInfo();
+using NepDate.Core.Calendar;
 
-// info.TithiNp         - string:   tithi in Nepali Devanagari; empty string if none
-// info.TithiEn         - string:   tithi transliterated to English; empty string if none
-// info.IsPublicHoliday - bool:     true if Nepal gazetted public holiday
-// info.EventsNp        - string[]: event/observance names in Devanagari; empty array if none
-// info.EventsEn        - string[]: event/observance names in English; empty array if none
+var d = new NepaliDate(2081, 6, 26);
+CalendarInfo info = d.GetCalendarInfo();
+// info.TithiNp         = "दशमी*"
+// info.TithiEn         = "Dashami (K)"
+// info.IsPublicHoliday = true
+// info.EventsNp        = ["विजया दशमी", "देवी विसर्जन"]
+// info.EventsEn        = ["Vijaya Dashami", "Devi Visarjan"]
 ```
 
-Returns empty/default values for dates outside 2001-2089 BS. No exception is thrown.
+Data bundled with the library:
+
+| Data | Years covered |
+|---|---|
+| Tithi | 2078-2083 BS |
+| Events and public holidays | 2077-2083 BS, plus a few days of 2084 BS |
+
+Every other date returns empty strings, `false` and empty arrays. No exception is thrown.
 
 ---
 
 ## Serialization
 
-### System.Text.Json (automatic)
+Types are in `namespace NepDate.Serialization`.
 
-`NepaliDate` has `[JsonConverter(typeof(NepDateJsonConverter))]` applied, so no configuration needed:
+### System.Text.Json
+
+On the net8.0 build `NepaliDate` carries `[JsonConverter(typeof(SystemTextJsonConverters.NepaliDateJsonConverter))]`, so no configuration is needed:
 
 ```csharp
 string json = JsonSerializer.Serialize(new { Date = new NepaliDate(2080, 6, 15) });
-// Output: {"Date":"2080-06-15"}
-
-var obj = JsonSerializer.Deserialize<MyDto>(json);
-// obj.Date is NepaliDate { Year=2080, Month=6, Day=15 }
+// {"Date":"2080-06-15"}
 ```
+
+Object format, or the netstandard2.0 build (for example .NET Framework):
+
+```csharp
+var options = new JsonSerializerOptions().ConfigureForNepaliDate(useObjectFormat: true);
+JsonSerializer.Serialize(new NepaliDate(2080, 6, 15), options);
+// {"Year":2080,"Month":6,"Day":15}
+```
+
+On netstandard2.0, call `ConfigureForNepaliDate()` or add `SystemTextJsonConverters.NepaliDateJsonConverter` yourself.
 
 ### Newtonsoft.Json
 
 ```csharp
-using NepDate.Serialization;
-
-var settings = new JsonSerializerSettings();
-settings.Converters.Add(new NepDateNewtonsoftConverter());
-string json = JsonConvert.SerializeObject(value, settings);
+var settings = new JsonSerializerSettings().ConfigureForNepaliDate();   // or useObjectFormat: true
+string json = JsonConvert.SerializeObject(new { Date = new NepaliDate(2080, 6, 15) }, settings);
+// {"Date":"2080-06-15"}
+// Converter classes: NewtonsoftJsonConverters.NepaliDateJsonConverter, NewtonsoftJsonConverters.NepaliDateObjectJsonConverter
 ```
 
-### XML / DataContract
+`ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
-`NepaliDate` implements `IXmlSerializable`. Serializes as `<Date>2080-06-15</Date>`.
+### XML
+
+`NepaliDate` itself does not implement `IXmlSerializable`. Use the `NepaliDateXmlSerializer` wrapper:
 
 ```csharp
-var serializer = new XmlSerializer(typeof(MyType));
+var serializer = new XmlSerializer(typeof(NepaliDateXmlSerializer));
 using var writer = new StringWriter();
-serializer.Serialize(writer, obj);
+serializer.Serialize(writer, new NepaliDateXmlSerializer(new NepaliDate(2080, 6, 15)));
+// <NepaliDateXmlSerializer>2080-06-15</NepaliDateXmlSerializer>
+// Read back with ((NepaliDateXmlSerializer)serializer.Deserialize(reader)).Value
 ```
 
 ### ASP.NET Model Binding
 
-`NepaliDate` has a registered `TypeConverter`, enabling automatic binding in ASP.NET MVC/Web API from route parameters, query strings, and form fields:
+`NepaliDate` has a registered `TypeConverter`, so it binds from route parameters, query strings and form fields:
 
 ```csharp
 [HttpGet("{date}")]
@@ -297,24 +372,23 @@ public IActionResult GetRecord(NepaliDate date) { ... }
 
 ## Type System
 
-### Interfaces implemented
+### Interfaces implemented by NepaliDate
 
 | Interface | Target | Description |
 |---|---|---|
-| `IComparable<NepaliDate>` | both | Enables sorting and ordering |
-| `IEquatable<NepaliDate>` | both | Enables == and .Equals() |
-| `IFormattable` | both | Enables ToString(format, provider) |
-| `ISpanFormattable` | net8.0 | Enables span-based formatting |
-| `IParsable<NepaliDate>` | net8.0 | Enables NepaliDate.Parse(s, provider) |
-| `IXmlSerializable` | both | Enables XML serialization |
+| `IComparable`, `IComparable<NepaliDate>` | both | Sorting and ordering |
+| `IEquatable<NepaliDate>` | both | == and .Equals() |
+| `IFormattable` | both | ToString(format, provider) |
+| `ISpanFormattable` | net8.0 | Span formatting (explicit implementation) |
+| `IParsable<NepaliDate>`, `ISpanParsable<NepaliDate>` | net8.0 | Generic parsing |
 
 ### TypeConverter
 
-`NepaliDateTypeConverter` is registered via `[TypeConverter]`. Converts:
-- `string` -> `NepaliDate` (via Parse)
-- `int` -> `NepaliDate` (YYYYMMDD format)
+`NepaliDateTypeConverter` (namespace `NepDate.TypeConversion`) is registered via `[TypeConverter]`. It converts:
+- `string` -> `NepaliDate` (strict parse)
+- `int` -> `NepaliDate` (YYYYMMDD, e.g. 20800615)
 - `DateTime` -> `NepaliDate`
-- `NepaliDate` -> any of the above
+- `NepaliDate` -> `string`, `int` or `DateTime`
 
 ---
 
@@ -325,12 +399,12 @@ public IActionResult GetRecord(NepaliDate date) { ... }
 ```csharp
 enum NepaliMonths
 {
-    Baisakh  = 1,
+    Baishakh = 1,
     Jestha   = 2,
-    Ashadh   = 3,
+    Ashad    = 3,
     Shrawan  = 4,
     Bhadra   = 5,
-    Ashwin   = 6,
+    Ashoj    = 6,
     Kartik   = 7,
     Mangsir  = 8,
     Poush    = 9,
@@ -343,13 +417,13 @@ enum NepaliMonths
 ### DateFormats
 
 ```csharp
-enum DateFormats { yMd, dMy, mDy, dMMMy, ddMMMMyyyy, yMMMd }
+enum DateFormats { YearMonthDay, YearDayMonth, MonthYearDay, MonthDayYear, DayYearMonth, DayMonthYear }
 ```
 
 ### Separators
 
 ```csharp
-enum Separators { Dash, Slash, Dot, Space, None, Comma }
+enum Separators { ForwardSlash, BackwardSlash, Dot, Underscore, Dash, Space }
 ```
 
 ### FiscalYearQuarters
@@ -357,11 +431,11 @@ enum Separators { Dash, Slash, Dot, Space, None, Comma }
 ```csharp
 enum FiscalYearQuarters
 {
-    Current = 0,   // Resolved dynamically based on current month
-    First   = 4,   // Shrawan-Bhadra (months 4-6)
-    Second  = 7,   // Ashwin-Poush (months 7-9)
+    Current = 0,   // the quarter of the date
+    First   = 4,   // Shrawan-Ashoj (months 4-6)
+    Second  = 7,   // Kartik-Poush (months 7-9)
     Third   = 10,  // Magh-Chaitra (months 10-12)
-    Fourth  = 1    // Baisakh-Ashadh (months 1-3)
+    Fourth  = 1    // Baishakh-Ashad (months 1-3)
 }
 ```
 
@@ -371,35 +445,35 @@ enum FiscalYearQuarters
 
 | Type | Namespace | Thrown when |
 |---|---|---|
-| `InvalidNepaliDateFormatException` | NepDate | Input string cannot be parsed as a valid BS date |
-| `ArgumentOutOfRangeException` | System | Year, month, or day is numerically out of range |
-| `NepaliDateOutOfRangeException` | NepDate | Date falls outside the supported 1901-2199 BS range |
-| `NepaliMonthEndException` | NepDate | Day exceeds the month's maximum day count for that year |
+| `InvalidNepaliDateFormatException` (a `FormatException`) | NepDate | Text cannot be parsed, or a date-dependent member is used on `default(NepaliDate)` |
+| `ArgumentOutOfRangeException` | System | Year, month or day out of range, or a result outside 1901-2199 BS |
+| `ArgumentNullException` | System | A `BulkConvert` input collection is null, or `SmartDateParser.Parse` gets null or empty text |
+| `FormatException` | System | `SmartDateParser.Parse` cannot read the input |
 
 ---
 
 ## Advanced
 
-### Struct design rationale
+### Struct design
 
-`NepaliDate` is a `readonly partial struct` - instances live on the stack, not the heap. This eliminates GC pressure. In a tight loop over thousands of dates (e.g., bulk calendar rendering, payroll processing) there are zero allocations from date creation or arithmetic.
+`NepaliDate` is an 8-byte `readonly partial struct`. Creating dates, converting and doing arithmetic allocate nothing on the heap.
 
 ### Thread safety
 
-All instance methods and static methods are thread-safe. The struct is immutable by design. `BulkConvert` converts on the calling thread and is safe for concurrent invocation.
+All instance and static members are thread-safe. The struct is immutable. `BulkConvert` converts on the calling thread and is safe to call from several threads.
 
-### Internalized dependencies
+### Dependencies
 
-Newtonsoft.Json and System.Text.Json support are compiled into the NepDate assembly using `PrivateAssets=all`. They do not appear as transitive dependencies in consuming projects.
+The package has no NuGet dependencies. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. `ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 ### Supported range detail
 
-| BS | AD (approximate) |
+| BS | AD |
 |---|---|
 | 1901/01/01 BS | 1844-04-11 AD |
 | 2199/12/30 BS | 2143-04-15 AD |
 
-Calendar metadata: 2001-2089 BS. Outside this range: TithiNp/TithiEn return empty string, IsPublicHoliday returns false, EventsNp/EventsEn return empty arrays. No exception is thrown.
+Calendar data covers fewer years: tithi 2078-2083 BS, events and holidays 2077-2083 BS (plus a few days of 2084). Other dates: TithiNp/TithiEn return empty strings, IsPublicHoliday returns false, EventsNp/EventsEn return empty arrays. No exception is thrown.
 
 ---
 

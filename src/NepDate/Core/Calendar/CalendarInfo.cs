@@ -2,8 +2,8 @@ namespace NepDate.Core.Calendar
 {
     /// <summary>
     /// Immutable snapshot of calendar metadata for a specific Nepali date, compiled from
-    /// authoritative Bikram Sambat calendar references covering 2001–2089 BS. All members
-    /// return empty or default values when the date falls outside that range.
+    /// authoritative Bikram Sambat calendar references. Tithi is available for 2078–2083 BS, events
+    /// and public holidays for 2077–2083 BS (plus a few days of 2084). All members return empty or default values for other dates.
     /// </summary>
     public readonly struct CalendarInfo
     {

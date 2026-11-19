@@ -55,11 +55,11 @@
         "@id": "https://nepdate.rajuprasai.com.np/#library",
         "name": "NepDate",
         "alternateName": ["NepDate Library", "Bikram Sambat .NET Library", "Nepali Date Library"],
-        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) for 2001-2089 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
+        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) mainly for 2077-2083 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
         "url": "https://nepdate.rajuprasai.com.np/",
-        "softwareVersion": "2.0.7",
+        "softwareVersion": "2.1.0",
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "applicationCategory": "DeveloperApplication",
         "applicationSubCategory": "Date and Time Library",
         "operatingSystem": ".NET Standard 2.0, .NET 5, .NET 6, .NET 7, .NET 8, .NET 9, .NET 10, .NET Framework 4.6.1+, .NET Core 2.0+, Mono, Xamarin, MAUI, Unity",
@@ -97,7 +97,7 @@
         "programmingLanguage": "C#",
         "runtimePlatform": ".NET Standard 2.0, .NET 8",
         "license": "https://opensource.org/licenses/MIT",
-        "version": "2.0.7",
+        "version": "2.1.0",
         "author": {
           "@type": "Person",
           "@id": "https://rajuprasai.com.np/#person",
@@ -114,7 +114,7 @@
         "isPartOf": { "@id": "https://nepdate.rajuprasai.com.np/#website" },
         "about": { "@id": "https://nepdate.rajuprasai.com.np/#library" },
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "breadcrumb": {
           "@type": "BreadcrumbList",
@@ -253,7 +253,7 @@
         <div class="section-head">
           <div class="section-eyebrow">Installation</div>
           <h2 class="section-title">Get started in seconds</h2>
-          <p class="section-sub">One command, zero configuration. Works on .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 through 9, Xamarin, Unity, and MAUI.</p>
+          <p class="section-sub">One command, zero configuration. Works on .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, and MAUI.</p>
         </div>
 
         <div class="install-tabs" data-tabs>
@@ -269,7 +269,7 @@
             <pre><code class="language-bash">Install-Package NepDate</code></pre>
           </div>
           <div class="tab-panel" data-panel="ref">
-<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.0.7" /&gt;</code></pre>
+<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.1.0" /&gt;</code></pre>
           </div>
         </div>
       </div>
@@ -313,7 +313,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <h3>Calendar Metadata</h3>
-            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English for 2001–2089 BS.</p>
+            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084).</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
@@ -323,7 +323,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <h3>Serialization</h3>
-            <p><code>System.Text.Json</code>, <code>Newtonsoft.Json</code>, and XML. String and object modes. Zero config on .NET 5+.</p>
+            <p><code>System.Text.Json</code>, <code>Newtonsoft.Json</code>, and XML. String and object modes. Zero config on .NET 8+.</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
@@ -355,7 +355,7 @@
         <div class="section-head">
           <div class="section-eyebrow">Performance</div>
           <h2 class="section-title">Benchmarked, not just advertised</h2>
-          <p class="section-sub">Flat array dictionaries for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
+          <p class="section-sub">One flat month table for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
         </div>
 
         <div class="bench-headline">
@@ -524,15 +524,15 @@
         <div class="faq">
           <div class="faq-item">
             <button class="faq-q">What .NET versions does NepDate support?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate targets <code>.NET Standard 2.0</code>, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5/6/7/8/9, Xamarin, Unity, and MAUI. It also ships a <code>net8.0</code> target for newer API features like <code>IParsable</code> and <code>ISpanFormattable</code>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate targets <code>.NET Standard 2.0</code>, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, and MAUI. It also ships a <code>net8.0</code> target for newer API features like <code>IParsable</code> and <code>ISpanFormattable</code>.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the supported date range?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Calendar metadata (Tithi, holidays, events) is available for <strong>2001 through 2089 BS</strong>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong> (plus a few days of 2084).</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Does NepDate have any external dependencies?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has zero external runtime dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> references are internalized using <code>PrivateAssets=all</code>, so they never surface in your dependency graph.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Is NepDate thread-safe?</button>
@@ -548,7 +548,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">How is calendar data (Tithi, holidays) sourced?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy, covering <strong>2001 through 2089 BS</strong>. The data is compiled into the library at build time. Properties return empty/default values for dates outside this range without throwing exceptions.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong> (plus a few days of 2084). The data is compiled into the library at build time. Properties return empty/default values for other dates without throwing exceptions.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the advantage of the struct design?</button>

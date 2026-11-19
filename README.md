@@ -54,14 +54,14 @@ Install-Package NepDate
 - 🔄 **Bidirectional Conversion:** Convert between Bikram Sambat and Gregorian calendar in nanoseconds
 - ✅ **Robust Validation:** Correct per month, per year day limit enforcement across 1901–2199 BS
 - 🧮 **Date Arithmetic:** Add/subtract days and months (including fractional months) with boundary safe options
-- 🗓️ **Calendar Metadata:** Built in Tithi, public holiday flag, and event data in Nepali and English for 2001–2089 BS
+- 🗓️ **Calendar Metadata:** Built in Tithi, public holiday flag, and event data in Nepali and English (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084))
 - 📊 **Fiscal Year Support:** Full Nepal FY (Shrawan–Ashadh) quarter and boundary calculations, both instance and static
 - 🔍 **Smart Parsing:** Accepts 100+ month name spellings, Nepali Unicode digits, alternate separators, typo tolerant formats, and 2 digit year expansion
 - 🖋️ **Rich Formatting:** Standard and custom format tokens, Unicode Nepali digits, long form Nepali strings, and `IFormattable` integration
 - 🔄 **Date Range Operations:** Intersection, union, split by month or fiscal quarter, working days, and interval iteration
 - 💾 **Serialization:** System.Text.Json, Newtonsoft.Json, and XML support with string and object output modes
 - 📦 **Struct Design:** `readonly partial struct` keeps instances on the stack and eliminates GC pressure in high volume scenarios
-- 🔗 **First Class Type:** Implements `IFormattable`, `IComparable<T>`, `IEquatable<T>`, `IParsable<T>` (.NET 7+), `ISpanFormattable` (.NET 6+), `TypeConverter`, and auto registered `[JsonConverter]` (.NET 5+)
+- 🔗 **First Class Type:** Implements `IFormattable`, `IComparable<T>`, `IEquatable<T>`, `IParsable<T>` and `ISpanFormattable` (.NET 8+), `TypeConverter`, and auto registered `[JsonConverter]` (.NET 8+)
 
 ## 🚀 Getting Started
 
@@ -96,15 +96,15 @@ int month       = date.Month;           // 12
 int day         = date.Day;             // 16
 DateTime eng    = date.EnglishDate;     // 2023/03/30
 DayOfWeek dow   = date.DayOfWeek;      // Thursday
-int dayOfYear   = date.DayOfYear;      // 346
+int dayOfYear   = date.DayOfYear;      // 351
 int monthEndDay = date.MonthEndDay;    // 30
 NepaliDate end  = date.MonthEndDate(); // 2079/12/30
 NepaliMonths mn = date.MonthName;      // Chaitra
 bool isDefault  = date.IsDefault;      // false (true only for uninitialized default())
 
 // Calendar metadata
-string   tithiNp  = date.TithiNp;          // "फाल्गुण कृष्ण चतुर्दशी"
-string   tithiEn  = date.TithiEn;          // "Falgun Krishna Chaturdashi"
+string   tithiNp  = date.TithiNp;          // "नवमी"
+string   tithiEn  = date.TithiEn;          // "Navami"
 bool     holiday  = date.IsPublicHoliday;  // false
 string[] eventsNp = date.EventsNp;         // events in Nepali (empty array if none)
 string[] eventsEn = date.EventsEn;         // events in English (empty array if none)
@@ -217,7 +217,7 @@ bool adjacent = range.IsAdjacentTo(otherRange);
 
 ```csharp
 NepaliDateRange  intersection = range.Intersect(otherRange);
-NepaliDateRange  union        = range.Union(otherRange);
+NepaliDateRange  union        = range.Union(otherRange);      // earliest start to latest end; fills any gap
 NepaliDateRange[] segments    = range.Except(otherRange);   // returns array; may have 0–2 items
 ```
 
@@ -234,8 +234,8 @@ foreach (NepaliDate date in range) { }
 // Filtered collections
 IEnumerable<NepaliDate> working       = range.WorkingDays();                   // excludes Saturdays
 IEnumerable<NepaliDate> workingNoSun  = range.WorkingDays(excludeSunday: true);
-IEnumerable<NepaliDate> weekends      = range.WeekendDays();                   // Saturdays only by default
-IEnumerable<NepaliDate> weekendsIncSun = range.WeekendDays(includeSunday: true);
+IEnumerable<NepaliDate> weekends      = range.WeekendDays();                   // Saturdays and Sundays by default
+IEnumerable<NepaliDate> saturdaysOnly = range.WeekendDays(includeSunday: false);
 IEnumerable<NepaliDate> everyWeek     = range.DatesWithInterval(7);
 ```
 
@@ -256,7 +256,7 @@ string formatted = range.ToString(DateFormats.DayMonthYear, Separators.Dash); //
 | Custom | `6-2-2079` |
 | Long | `Friday, Jestha 6` |
 | Unicode digits | `०६.०२.२०७९` |
-| Nepali long | `शुक्रबार, जेठ ६` |
+| Nepali long | `शुक्रवार, जेठ ६` |
 
 ### Formatting Methods
 
@@ -276,7 +276,7 @@ date.ToLongDateString(leadingZeros: false, displayDayName: true, displayYear: fa
 date.ToUnicodeString(DateFormats.DayMonthYear, Separators.Dot, leadingZeros: true)   // "०६.०२.२०७९"
 
 // Long date in Nepali
-date.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false) // "शुक्रबार, जेठ ६"
+date.ToLongDateUnicodeString(leadingZeros: false, displayDayName: true, displayYear: false) // "शुक्रवार, जेठ ६"
 ```
 
 Available `DateFormats`: `YearMonthDay`, `YearDayMonth`, `MonthYearDay`, `MonthDayYear`, `DayYearMonth`, `DayMonthYear`.
@@ -284,7 +284,7 @@ Available `Separators`: `ForwardSlash`, `BackwardSlash`, `Dash`, `Dot`, `Undersc
 
 ### IFormattable Format Specifiers
 
-`NepaliDate` implements `IFormattable` (and `ISpanFormattable` on .NET 6+), so format strings work in string interpolation, `string.Format`, and any context that accepts `IFormattable`.
+`NepaliDate` implements `IFormattable` (and `ISpanFormattable` on .NET 8+), so format strings work in string interpolation, `string.Format`, and any context that accepts `IFormattable`.
 
 | Specifier | Output | Notes |
 | --------- | ------ | ----- |
@@ -384,16 +384,16 @@ NepaliDate qE  = NepaliDate.GetFiscalYearQuarterEndDate(2080, 4);           // 2
 
 ## 🗓️ Calendar Data
 
-Built in Tithi (lunar day), public holiday flag, and event data compiled from authoritative Bikram Sambat calendar references covers **2001–2089 BS**. All properties return empty/default values outside this range without throwing exceptions.
+Built in Tithi (lunar day), public holiday flag, and event data in Nepali and English. Tithi is available for **2078–2083 BS**, events and public holidays for **2077–2083 BS** (plus a few days of 2084). All other dates return empty/default values without throwing exceptions.
 
 ```csharp
-var date = new NepaliDate(2081, 4, 15);
+var date = new NepaliDate(2081, 5, 21);   // Haritalika Teej
 
-string   tithiNp   = date.TithiNp;          // "एकादशी"
-string   tithiEn   = date.TithiEn;          // "Ekadashi"
+string   tithiNp   = date.TithiNp;          // "तृतिया"
+string   tithiEn   = date.TithiEn;          // "Tritiya"
 bool     isHoliday = date.IsPublicHoliday;  // true
-string[] eventsNp  = date.EventsNp;         // ["हरितालिका तीज", "गौरा पर्व", ...]
-string[] eventsEn  = date.EventsEn;         // ["Haritalika Teej", "Gaura Parva", ...]
+string[] eventsNp  = date.EventsNp;         // ["हरितालिका तीज (महिला कर्मचारीहरूलाई मात्र)"]
+string[] eventsEn  = date.EventsEn;         // ["Haritalika Teej (Women Employees Only)"]
 
 // Retrieve all calendar info in a single call
 CalendarInfo info = date.GetCalendarInfo();
@@ -413,7 +413,7 @@ CalendarInfo info = date.GetCalendarInfo();
 
 ### System.Text.Json
 
-On .NET 5+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
+On .NET 8+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Older targets use the netstandard2.0 build: call `ConfigureForNepaliDate()` there. `ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
 
 ```csharp
 using System.Text.Json;
@@ -512,10 +512,10 @@ bool ok2 = NepaliDate.TryParse("05/06/2077", out NepaliDate result2, autoAdjust:
 
 - `IComparable<NepaliDate>` and `IEquatable<NepaliDate>` for sorting and equality
 - `IFormattable` for format-string support in interpolation and `string.Format`
-- `ISpanFormattable` (.NET 6+) for allocation free formatting into spans
-- `IParsable<NepaliDate>` and `ISpanParsable<NepaliDate>` (.NET 7+) for generic parsing
+- `ISpanFormattable` (.NET 8+) for formatting into spans
+- `IParsable<NepaliDate>` and `ISpanParsable<NepaliDate>` (.NET 8+) for generic parsing
 - `TypeConverter` registration for automatic binding in model binders and UI frameworks
-- Auto registered `[JsonConverter]` (.NET 5+) for zero config JSON support
+- Auto registered `[JsonConverter]` (.NET 8+) for zero config JSON support
 
 ## ⚡ Performance
 

@@ -93,7 +93,7 @@ public class NepaliDateExamples
         Console.WriteLine($"Is Leap Year: {date.IsLeapYear()}");
         Console.WriteLine($"Is Today: {date.IsToday()}");
 
-        // Calendar data (available for 2001-2089 BS)
+        // Calendar data (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS, plus a few days of 2084)
         NepaliDate calDate = new(2081, 1, 1);
         var calInfo = calDate.GetCalendarInfo();
         Console.WriteLine($"\nCalendar data for {calDate}:");

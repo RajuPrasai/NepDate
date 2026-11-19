@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#dc3f10" />
   <title>NepDate Changelog - Bikram Sambat .NET Library Version History</title>
-  <meta name="description" content="Release notes and version history for NepDate. What changed in v2.0.7, v2.0.6, v2.0.5 and earlier releases of the Bikram Sambat .NET library." />
+  <meta name="description" content="Release notes and version history for NepDate. What changed in v2.1.0, v2.0.7, v2.0.6 and earlier releases of the Bikram Sambat .NET library." />
   <link rel="canonical" href="https://nepdate.rajuprasai.com.np/changelog.html" />
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="assets/logo.png" />
@@ -26,20 +26,20 @@
   <meta property="og:site_name" content="NepDate" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="NepDate Changelog - Bikram Sambat .NET Library Version History" />
-  <meta property="og:description" content="Release notes and version history for NepDate. See what changed in v2.0.7, v2.0.6, v2.0.5 and earlier releases." />
+  <meta property="og:description" content="Release notes and version history for NepDate. See what changed in v2.1.0, v2.0.7, v2.0.6 and earlier releases." />
   <meta property="og:image" content="https://nepdate.rajuprasai.com.np/assets/full-logo.png" />
   <meta property="og:image:width" content="1897" />
   <meta property="og:image:height" content="541" />
   <meta property="og:image:alt" content="NepDate library logo" />
   <meta property="og:url" content="https://nepdate.rajuprasai.com.np/changelog.html" />
   <meta property="article:published_time" content="2023-04-22T00:00:00+05:45" />
-  <meta property="article:modified_time" content="2026-06-01T00:00:00+05:45" />
+  <meta property="article:modified_time" content="2026-11-19T00:00:00+05:45" />
   <meta property="article:author" content="https://rajuprasai.com.np/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@CrossLegCoder" />
   <meta name="twitter:creator" content="@CrossLegCoder" />
   <meta name="twitter:title" content="NepDate Changelog - Bikram Sambat .NET Library Version History" />
-  <meta name="twitter:description" content="Release notes for all NepDate versions. From v1.x through v2.0.7." />
+  <meta name="twitter:description" content="Release notes for all NepDate versions. From v1.x through v2.1.0." />
   <meta name="twitter:image" content="https://nepdate.rajuprasai.com.np/assets/full-logo.png" />
   <meta name="twitter:image:alt" content="NepDate library logo" />
   <script type="application/ld+json">
@@ -50,10 +50,10 @@
         "@type": "Article",
         "@id": "https://nepdate.rajuprasai.com.np/changelog.html#article",
         "headline": "NepDate Changelog - Bikram Sambat .NET Library Version History",
-        "description": "Release notes and version history for all NepDate releases from v1.x to v2.0.7.",
+        "description": "Release notes and version history for all NepDate releases from v1.x to v2.1.0.",
         "url": "https://nepdate.rajuprasai.com.np/changelog.html",
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "articleSection": "Changelog",
         "author": {
@@ -78,7 +78,7 @@
         "description": "Release notes and version history for all NepDate releases.",
         "isPartOf": { "@id": "https://nepdate.rajuprasai.com.np/#website" },
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "breadcrumb": {
           "@type": "BreadcrumbList",
@@ -168,11 +168,25 @@
             </p>
           </div>
 
-          <!-- v2.0.7 -->
+          <!-- v2.1.0 -->
           <article class="release latest">
             <header class="release-head">
-              <h2>v2.0.7</h2>
+              <h2>v2.1.0</h2>
               <span class="tag">Latest</span>
+              <span class="date">November 2026</span>
+            </header>
+
+            <p>Faster core, a fix for .NET 8 apps, and corrected docs. No public API was added, removed or changed.</p>
+            <p>Conversion, date arithmetic and parsing are 3 to 13 times faster, and <code>ToString()</code> is about 30% faster (measured on .NET 10). A <code>NepaliDate</code> now takes 8 bytes instead of 32.</p>
+            <p><strong>Fixes:</strong> System.Text.Json serialization on .NET 8 no longer fails with <code>FileNotFoundException</code>; the 1 Baisakh 2084 event is now "New Year 2084"; range operations at the end of the supported dates no longer throw; <code>GetFiscalYearQuarterStartDate</code>, <code>GetFiscalYearQuarterEndDate</code> and <code>GetFiscalYearQuarterStartAndEndDate</code> now treat months 1-3 as part of the given fiscal year, so <code>GetFiscalYearQuarterStartAndEndDate(2080, 1)</code> returns 2081/01/01 to 2081/03/31.</p>
+            <p><strong>Behaviour changes:</strong> <code>EnglishDate</code> always has <code>DateTimeKind.Unspecified</code>. <code>BulkConvert</code> converts the whole collection when you call it, on the calling thread, so an invalid date throws from the call; <code>useParallel</code> and <code>batchSize</code> have no effect.</p>
+            <p>The package now ships XML documentation and a symbol package with Source Link. The docs now state that automatic System.Text.Json support, <code>ISpanFormattable</code> and <code>IParsable</code> need .NET 8 or later. Calendar data coverage in the docs is corrected to tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084).</p>
+          </article>
+
+          <!-- v2.0.7 -->
+          <article class="release">
+            <header class="release-head">
+              <h2>v2.0.7</h2>
               <span class="date">May 2026</span>
             </header>
 
