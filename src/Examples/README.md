@@ -38,11 +38,8 @@ DateTime englishDate = date.EnglishDate;
 ### Fiscal Year Operations
 
 ```csharp
-// Get fiscal year for a date
-int fiscalYear = date.FiscalYear();
-
-// Get fiscal year start and end dates
-var (fyStart, fyEnd) = date.FiscalYearStartAndEndDate();
+// Get the start and end of the fiscal year the date falls in
+var (fyStart, fyEnd) = date.FiscalYearStartAndEndDate();   // (2079/04/01, 2080/03/31) for 2080/01/15
 
 // Get fiscal quarter dates
 var (qStart, qEnd) = date.FiscalYearQuarterStartAndEndDate();
@@ -73,10 +70,10 @@ foreach (NepaliDate date in range)
 // Parse from string
 NepaliDate date = SmartDateParser.Parse("15 Baisakh 2080");
 
-// Try parse with format preference
-if (SmartDateParser.TryParse("1/2/2080", out NepaliDate result, formatPreference: DateFormatPreference.DMY))
+// Try parse without exceptions; day-first input is recognised
+if (SmartDateParser.TryParse("1/2/2080", out NepaliDate result))
 {
-    // Use the parsed date
+    // result is 2080/02/01
 }
 ```
 
@@ -87,8 +84,10 @@ if (SmartDateParser.TryParse("1/2/2080", out NepaliDate result, formatPreference
 IEnumerable<NepaliDate> nepaliDates = NepaliDate.BulkConvert.ToNepaliDates(englishDates);
 
 // Convert a collection of Nepali dates to English
-IEnumerable<DateTime> englishDates = NepaliDate.BulkConvert.ToEnglishDates(nepaliDates);
+IEnumerable<DateTime> backToEnglish = NepaliDate.BulkConvert.ToEnglishDates(nepaliDates);
 ```
+
+Each call converts the whole collection in one pass, in input order, on the calling thread.
 
 ## Notes
 

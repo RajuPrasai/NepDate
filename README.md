@@ -8,7 +8,7 @@
 
 ---
 
-NepDate gives .NET a `NepaliDate` type that behaves like `DateTime` for the Bikram Sambat calendar. It converts BS to AD in under a nanosecond and AD to BS in under 3, does date arithmetic, formats and parses Nepali and English text, handles Nepal's fiscal year, works with date ranges, and ships tithi, holiday and event data. It is an 8-byte `readonly struct` with no NuGet dependencies.
+NepDate gives .NET a `NepaliDate` type that behaves like `DateTime` for the Bikram Sambat calendar. It converts BS to AD in under a nanosecond and AD to BS in under 3 nanoseconds, does date arithmetic, formats and parses Nepali and English text, handles Nepal's fiscal year, works with date ranges, and ships tithi, holiday and event data. It is an 8-byte `readonly struct` with no NuGet dependencies.
 
 | ⚡ Speed | 🧠 Memory | 📅 Range | 📦 Footprint |
 | :---: | :---: | :---: | :---: |
