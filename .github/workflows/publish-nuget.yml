@@ -3,6 +3,11 @@ name: Publish NepDate to NuGet
 # Triggered when a version tag is pushed (e.g. v2.0.6) or manually from the
 # Actions tab. The csproj <Version> is the source of truth; the tag (or
 # workflow_dispatch input) must match it exactly, otherwise publish fails.
+#
+# Publishing uses nuget.org Trusted Publishing: no API key is stored. The
+# nuget.org policy trusts this repository, this workflow file and the
+# "production" environment, and NuGet/login exchanges the job's OIDC token
+# for an API key that lives one hour.
 on:
   push:
     tags:
@@ -15,7 +20,7 @@ on:
 
 permissions:
   contents: write   # needed to create the GitHub Release on tag pushes
-  id-token: write   # reserved for future trusted publishing; harmless today
+  id-token: write   # lets the job request the OIDC token NuGet/login exchanges
 
 concurrency:
   group: publish-nuget-${{ github.ref }}
@@ -24,6 +29,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Must match the Environment in the nuget.org Trusted Publishing policy.
+    environment: production
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -81,15 +88,6 @@ jobs:
             exit 1
           fi
 
-      - name: Verify NUGET_API_KEY secret is configured
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "Repository secret NUGET_API_KEY is not set. Add it under Settings -> Secrets and variables -> Actions." >&2
-            exit 1
-          fi
-
       - name: Build
         run: dotnet build "$PROJECT" -c Release
 
@@ -106,9 +104,16 @@ jobs:
           path: ${{ env.ARTIFACTS }}/*.*nupkg
           if-no-files-found: error
 
+      # Requested right before the push: the key it returns is valid for one hour.
+      - name: NuGet login (OIDC to short-lived API key)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: TheCrossLegCoder   # nuget.org profile name that owns the Trusted Publishing policy
+
       - name: Push to NuGet.org
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         run: |
           set -euo pipefail
           dotnet nuget push "$ARTIFACTS/*.nupkg" \
