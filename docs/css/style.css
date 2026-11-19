@@ -514,6 +514,7 @@ body {
   gap: 20px;
 }
 .bench-card { display: flex; flex-direction: column; }
+.bench-release { margin-top: 20px; }
 .bench-card-head {
   display: flex;
   align-items: baseline;

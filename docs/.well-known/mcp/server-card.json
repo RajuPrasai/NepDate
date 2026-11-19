@@ -17,7 +17,7 @@
     {
       "uri": "https://nepdate.rajuprasai.com.np/",
       "name": "Homepage",
-      "description": "Library overview, performance benchmarks (4.55 ns/op BS-to-AD, zero allocations), installation, quick start, feature highlights, FAQ"
+      "description": "Library overview, performance benchmarks (0.78 ns BS-to-AD and 2.73 ns AD-to-BS in 2.1.0, zero allocations), installation, quick start, feature highlights, FAQ"
     },
     {
       "uri": "https://nepdate.rajuprasai.com.np/docs.html",

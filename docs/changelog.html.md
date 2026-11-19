@@ -8,7 +8,7 @@ https://nepdate.rajuprasai.com.np/changelog.html
 
 Faster core, a fix for .NET 8 apps, and corrected docs. No public API was added, removed or changed.
 
-- Conversion, date arithmetic and parsing are 3 to 13 times faster, and `ToString()` is about 30% faster (measured on .NET 10). A `NepaliDate` now takes 8 bytes instead of 32, and the assembly is about half the size.
+- Conversion, date arithmetic and parsing are 3.6 to 10 times faster, and `ToString()` is about 15% faster (BenchmarkDotNet on .NET 10; full table in the README). A `NepaliDate` now takes 8 bytes instead of 32, and the assembly is about half the size.
 - Fix: on .NET 8, serializing a `NepaliDate` with System.Text.Json could fail with `FileNotFoundException` for System.Text.Json 10.0.0.0. The net8.0 build now uses the runtime's System.Text.Json. The netstandard2.0 build needs System.Text.Json 8.0.5 or later when you call the JSON helpers.
 - Fix: the event on 1 Baisakh 2084 is now "New Year 2084" (it said 2083).
 - Fix: range operations at the end of the supported dates, such as the fiscal quarters of 2199, no longer throw.

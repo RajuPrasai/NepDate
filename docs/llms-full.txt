@@ -458,6 +458,19 @@ enum FiscalYearQuarters
 
 `NepaliDate` is an 8-byte `readonly partial struct`. Creating dates, converting and doing arithmetic allocate nothing on the heap.
 
+### Performance (2.1.0)
+
+| Operation | Mean | Allocated |
+|---|---|---|
+| BS to AD | 0.78 ns | 0 B |
+| AD to BS | 2.73 ns | 0 B |
+| Add 13 months | 1.75 ns | 0 B |
+| Strict parse | 5.50 ns | 0 B |
+| `ToString()` | 11.34 ns | 48 B |
+| Calendar info for a day | 13.6 ns | 50 B |
+
+BenchmarkDotNet 0.15.8, .NET 10.0.12, Intel Core i5-12500H, Windows 11, one pinned core. Each call converts a different date from a pool of 1,024 (2070-2085 BS), so nothing can be precomputed.
+
 ### Thread safety
 
 All instance and static members are thread-safe. The struct is immutable. `BulkConvert` converts on the calling thread and is safe to call from several threads.
