@@ -54,7 +54,7 @@ Install-Package NepDate
 - 🔄 **Bidirectional Conversion:** Convert between Bikram Sambat and Gregorian calendar in nanoseconds
 - ✅ **Robust Validation:** Correct per month, per year day limit enforcement across 1901–2199 BS
 - 🧮 **Date Arithmetic:** Add/subtract days and months (including fractional months) with boundary safe options
-- 🗓️ **Calendar Metadata:** Built in Tithi, public holiday flag, and event data in Nepali and English (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS)
+- 🗓️ **Calendar Metadata:** Built in Tithi, public holiday flag, and event data in Nepali and English (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084))
 - 📊 **Fiscal Year Support:** Full Nepal FY (Shrawan–Ashadh) quarter and boundary calculations, both instance and static
 - 🔍 **Smart Parsing:** Accepts 100+ month name spellings, Nepali Unicode digits, alternate separators, typo tolerant formats, and 2 digit year expansion
 - 🖋️ **Rich Formatting:** Standard and custom format tokens, Unicode Nepali digits, long form Nepali strings, and `IFormattable` integration
@@ -217,7 +217,7 @@ bool adjacent = range.IsAdjacentTo(otherRange);
 
 ```csharp
 NepaliDateRange  intersection = range.Intersect(otherRange);
-NepaliDateRange  union        = range.Union(otherRange);
+NepaliDateRange  union        = range.Union(otherRange);      // earliest start to latest end; fills any gap
 NepaliDateRange[] segments    = range.Except(otherRange);   // returns array; may have 0–2 items
 ```
 
@@ -413,7 +413,7 @@ CalendarInfo info = date.GetCalendarInfo();
 
 ### System.Text.Json
 
-On .NET 8+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Older targets use the netstandard2.0 build: call `ConfigureForNepaliDate()` there and reference System.Text.Json 8.0.5 or later. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
+On .NET 8+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Older targets use the netstandard2.0 build: call `ConfigureForNepaliDate()` there. `ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
 
 ```csharp
 using System.Text.Json;

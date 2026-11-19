@@ -246,7 +246,7 @@ namespace NepDate
         /// <value>
         /// <see langword="true"/> when the date is a gazetted public holiday according to the bundled
         /// Bikram Sambat calendar data;
-        /// <see langword="false"/> otherwise. The bundled data has holidays for 2077–2083 BS.
+        /// <see langword="false"/> otherwise. The bundled data has holidays for 2077–2083 BS (plus a few days of 2084).
         /// </value>
         public bool IsPublicHoliday => CalendarBridge.IsHoliday(CalendarOffset);
 
@@ -255,7 +255,7 @@ namespace NepDate
         /// </summary>
         /// <value>
         /// An array of Devanagari event-name strings. Returns an empty (non-null) array when no events
-        /// are recorded. The bundled data has events for 2077–2083 BS.
+        /// are recorded. The bundled data has events for 2077–2083 BS (plus a few days of 2084).
         /// </value>
         public string[] EventsNp => CalendarBridge.GetEventsNp(CalendarOffset);
 
@@ -264,7 +264,7 @@ namespace NepDate
         /// </summary>
         /// <value>
         /// An array of transliterated event-name strings. Returns an empty (non-null) array when no events
-        /// are recorded. The bundled data has events for 2077–2083 BS.
+        /// are recorded. The bundled data has events for 2077–2083 BS (plus a few days of 2084).
         /// </value>
         public string[] EventsEn => CalendarBridge.GetEventsEn(CalendarOffset);
 
@@ -275,7 +275,7 @@ namespace NepDate
         /// <returns>
         /// A <see cref="Core.Calendar.CalendarInfo"/> struct populated from the bundled Bikram Sambat calendar data.
         /// All string members return <see cref="string.Empty"/> and event arrays return empty arrays
-        /// when nothing is recorded for this date (tithi data covers 2078–2083 BS, events and holidays 2077–2083 BS).
+        /// when nothing is recorded for this date (tithi data covers 2078–2083 BS, events and holidays 2077–2083 BS, plus a few days of 2084).
         /// </returns>
         /// <remarks>
         /// Prefer this method over accessing <see cref="TithiNp"/>, <see cref="TithiEn"/>,

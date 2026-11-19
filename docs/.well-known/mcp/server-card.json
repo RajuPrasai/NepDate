@@ -12,7 +12,7 @@
     "prompts": false,
     "tools": false
   },
-  "description": "Documentation site for NepDate, a zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year operations, calendar metadata (tithi, public holidays, festivals; tithi for 2078-2083 BS, events and holidays for 2077-2083 BS), NepaliDateRange with set operations, bulk conversion, and serialization. MIT licensed. NuGet: https://www.nuget.org/packages/NepDate/",
+  "description": "Documentation site for NepDate, a zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year operations, calendar metadata (tithi, public holidays, festivals; tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084)), NepaliDateRange with set operations, bulk conversion, and serialization. MIT licensed. NuGet: https://www.nuget.org/packages/NepDate/",
   "resources": [
     {
       "uri": "https://nepdate.rajuprasai.com.np/",

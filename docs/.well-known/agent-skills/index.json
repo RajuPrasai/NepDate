@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Teaches agents the NepDate .NET library API for Bikram Sambat date conversion, parsing, fiscal year operations, date ranges, calendar metadata, serialization, and bulk conversion. Covers all public types, methods, properties, and enums.",
       "url": "https://nepdate.rajuprasai.com.np/.well-known/agent-skills/SKILL.md",
-      "digest": "sha256:c31997fd5d32024f4724aaf89d96ad7dee196ada5caa0e374df87b6689a50291"
+      "digest": "sha256:0d0270a3408fb21aba8627d25f7692cbc19a1776d8dbb69a584bb2c2bc53c2dc"
     }
   ]
 }

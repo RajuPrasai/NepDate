@@ -245,7 +245,7 @@ bool Contains(NepaliDateRange other)
 bool Overlaps(NepaliDateRange other)
 bool IsAdjacentTo(NepaliDateRange other)
 NepaliDateRange Intersect(NepaliDateRange other)
-NepaliDateRange Union(NepaliDateRange other)
+NepaliDateRange Union(NepaliDateRange other)   // earliest start to latest end; fills any gap
 NepaliDateRange[] Except(NepaliDateRange other)
 NepaliDateRange[] SplitByMonth()
 NepaliDateRange[] SplitByFiscalQuarter()
@@ -332,7 +332,7 @@ JsonSerializer.Serialize(new NepaliDate(2080, 6, 15), options);
 // {"Year":2080,"Month":6,"Day":15}
 ```
 
-On netstandard2.0 your project must reference System.Text.Json 8.0.5 or later.
+On netstandard2.0, call `ConfigureForNepaliDate()` or add `SystemTextJsonConverters.NepaliDateJsonConverter` yourself.
 
 ### Newtonsoft.Json
 
@@ -343,7 +343,7 @@ string json = JsonConvert.SerializeObject(new { Date = new NepaliDate(2080, 6, 1
 // Converter classes: NewtonsoftJsonConverters.NepaliDateJsonConverter, NewtonsoftJsonConverters.NepaliDateObjectJsonConverter
 ```
 
-Both `ConfigureForNepaliDate` overloads share a name, so a project calling either one must reference Newtonsoft.Json.
+`ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 ### XML
 
@@ -464,7 +464,7 @@ All instance and static members are thread-safe. The struct is immutable. `BulkC
 
 ### Dependencies
 
-The package has no NuGet dependencies. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. If you call the JSON helpers, reference the JSON library yourself (on the net8.0 build System.Text.Json comes with the runtime).
+The package has no NuGet dependencies. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. `ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 ### Supported range detail
 
@@ -473,7 +473,7 @@ The package has no NuGet dependencies. Newtonsoft.Json and System.Text.Json are 
 | 1901/01/01 BS | 1844-04-11 AD |
 | 2199/12/30 BS | 2143-04-15 AD |
 
-Calendar data covers fewer years: tithi 2078-2083 BS, events and holidays 2077-2083 BS. Other dates: TithiNp/TithiEn return empty strings, IsPublicHoliday returns false, EventsNp/EventsEn return empty arrays. No exception is thrown.
+Calendar data covers fewer years: tithi 2078-2083 BS, events and holidays 2077-2083 BS (plus a few days of 2084). Other dates: TithiNp/TithiEn return empty strings, IsPublicHoliday returns false, EventsNp/EventsEn return empty arrays. No exception is thrown.
 
 ---
 

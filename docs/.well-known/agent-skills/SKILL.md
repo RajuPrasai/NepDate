@@ -179,7 +179,7 @@ bool empty        = ashoj.IsEmpty;
 bool contains     = ashoj.Contains(new NepaliDate(2080, 6, 15));
 bool overlaps     = range1.Overlaps(range2);
 bool adjacent     = range1.IsAdjacentTo(range2);
-NepaliDateRange union        = range1.Union(range2);
+NepaliDateRange union        = range1.Union(range2);     // earliest start to latest end; fills any gap
 NepaliDateRange intersection = range1.Intersect(range2);
 NepaliDateRange[] difference = range1.Except(range2);   // array: may split into two ranges
 NepaliDateRange[] months     = fy.SplitByMonth();
@@ -216,18 +216,19 @@ var info = d.GetCalendarInfo();   // NepDate.Core.Calendar.CalendarInfo
 // info.TithiNp, info.TithiEn, info.IsPublicHoliday, info.EventsNp, info.EventsEn
 ```
 
-Covered years: tithi 2078-2083 BS; events and holidays 2077-2083 BS. Other dates return empty values.
+Covered years: tithi 2078-2083 BS; events and holidays 2077-2083 BS (plus a few days of 2084). Other dates return empty values.
 
 ### Serialization
 
 **System.Text.Json:**
 ```csharp
+using NepDate.Serialization;
+
 // net8.0 build: automatic through [JsonConverter] on NepaliDate
 string json = JsonSerializer.Serialize(new { Date = new NepaliDate(2080, 6, 15) });
 // {"Date":"2080-06-15"}
 
-// Object format, or the netstandard2.0 build (needs System.Text.Json 8.0.5+ in your project)
-using NepDate.Serialization;
+// Object format, or the netstandard2.0 build
 var options = new JsonSerializerOptions().ConfigureForNepaliDate(useObjectFormat: true);
 // {"Year":2080,"Month":6,"Day":15}
 ```
@@ -240,7 +241,7 @@ string json = JsonConvert.SerializeObject(value, settings);
 // Converters: NewtonsoftJsonConverters.NepaliDateJsonConverter, NewtonsoftJsonConverters.NepaliDateObjectJsonConverter
 ```
 
-Calling either `ConfigureForNepaliDate` overload needs a Newtonsoft.Json reference in your project.
+`ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 **XML:**
 ```csharp

@@ -235,7 +235,7 @@ bool Contains(NepaliDateRange other)
 bool Overlaps(NepaliDateRange other)
 bool IsAdjacentTo(NepaliDateRange other)
 NepaliDateRange Intersect(NepaliDateRange other)
-NepaliDateRange Union(NepaliDateRange other)
+NepaliDateRange Union(NepaliDateRange other)   // earliest start to latest end; fills any gap
 NepaliDateRange[] Except(NepaliDateRange other)
 NepaliDateRange[] SplitByMonth()
 NepaliDateRange[] SplitByFiscalQuarter()
@@ -305,16 +305,17 @@ For any other date the properties return empty strings, `false` and empty arrays
 Automatic on the net8.0 build through the `[JsonConverter]` attribute.
 
 ```csharp
+using NepDate.Serialization;
+
 JsonSerializer.Serialize(new { D = new NepaliDate(2080, 6, 15) });
 // {"D":"2080-06-15"}
 
-using NepDate.Serialization;
 var options = new JsonSerializerOptions().ConfigureForNepaliDate(useObjectFormat: true);
 JsonSerializer.Serialize(new NepaliDate(2080, 6, 15), options);
 // {"Year":2080,"Month":6,"Day":15}
 ```
 
-On the netstandard2.0 build (for example .NET Framework), call `ConfigureForNepaliDate()` and reference System.Text.Json 8.0.5 or later yourself.
+On the netstandard2.0 build (for example .NET Framework), call `ConfigureForNepaliDate()` or add `SystemTextJsonConverters.NepaliDateJsonConverter` yourself.
 
 ### Newtonsoft.Json
 
@@ -326,7 +327,7 @@ JsonConvert.SerializeObject(new { D = new NepaliDate(2080, 6, 15) }, settings);
 // Converters: NewtonsoftJsonConverters.NepaliDateJsonConverter, NewtonsoftJsonConverters.NepaliDateObjectJsonConverter
 ```
 
-Your project must reference Newtonsoft.Json to call either `ConfigureForNepaliDate` overload.
+`ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 ### XML
 

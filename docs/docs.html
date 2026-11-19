@@ -350,7 +350,7 @@
 <pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.1.0" /&gt;</code></pre>
           </div>
         </div>
-        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To use the JSON helpers, reference the JSON library yourself; <code>System.Text.Json</code> already comes with .NET 8 and later.</p>
+        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p>
 
         <h3 id="quick-start">Quick Start</h3>
 <pre><code class="language-csharp">using NepDate;
@@ -616,7 +616,7 @@ bool adjacent = range.IsAdjacentTo(otherRange);</code></pre>
 
         <h3 id="range-set-ops">Set Operations (Intersect, Union, Except)</h3>
 <pre><code class="language-csharp">NepaliDateRange intersection = range.Intersect(otherRange);  // dates in both
-NepaliDateRange union        = range.Union(otherRange);       // all dates from both
+NepaliDateRange union        = range.Union(otherRange);       // earliest start to latest end; fills any gap
 NepaliDateRange[] remaining  = range.Except(otherRange);      // 0, 1, or 2 ranges</code></pre>
         <div class="api-table-wrap">
         <table class="data-table api-table">
@@ -1137,7 +1137,7 @@ catch (InvalidNepaliDateFormatException ex)
         <p>All public types are immutable. <code>NepaliDate</code>, <code>NepaliDateRange</code>, and <code>CalendarInfo</code> are readonly structs. <code>BulkConvert</code> operations are safe to invoke concurrently; each call runs on the calling thread.</p>
 
         <h3 id="adv-internalized">Dependencies</h3>
-        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To use the JSON helpers, reference the JSON library yourself; <code>System.Text.Json</code> already comes with .NET 8 and later.</p>
+        <p>NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p>
 
         <h3 id="adv-range">Supported Range</h3>
         <div class="api-table-wrap">
@@ -1145,7 +1145,7 @@ catch (InvalidNepaliDateFormatException ex)
           <thead><tr><th>Range</th><th>Coverage</th></tr></thead>
           <tbody>
             <tr><td>Conversion (BS ↔ AD)</td><td>1901/01/01 BS (1844-04-11 AD) through 2199/12/last BS (2143-04-15 AD).</td></tr>
-            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>Tithi: 2078 BS through 2083 BS. Events and holidays: 2077 BS through 2083 BS. Other dates return empty defaults without throwing.</td></tr>
+            <tr><td>Calendar metadata (Tithi, holidays, events)</td><td>Tithi: 2078 BS through 2083 BS. Events and holidays: 2077 BS through 2083 BS (plus a few days of 2084). Other dates return empty defaults without throwing.</td></tr>
             <tr><td>Fiscal year operations</td><td>Same as conversion range.</td></tr>
           </tbody>
         </table>

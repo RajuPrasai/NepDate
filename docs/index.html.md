@@ -73,11 +73,11 @@ Console.WriteLine(d); // "2080-06-15"
 - **Rich formatting** - 6 format patterns, 6 separators, Nepali numeral output
 - **Fiscal year** - Nepali fiscal year start/end dates, quarter detection
 - **Date ranges** - `NepaliDateRange` with union, intersect, except, contains
-- **Calendar metadata** - tithi for 2078-2083 BS, public holidays and festivals for 2077-2083 BS
+- **Calendar metadata** - tithi for 2078-2083 BS, public holidays and festivals for 2077-2083 BS (plus a few days of 2084)
 - **Bulk conversion** - `BulkConvert` converts whole collections in one pass
 - **Serialization** - System.Text.Json (automatic on .NET 8+), Newtonsoft.Json, XML
 - **ASP.NET binding** - `TypeConverter` for route params, query strings, form fields
-- **No NuGet dependencies** - Newtonsoft.Json and System.Text.Json are referenced with PrivateAssets=all; reference them yourself to use the JSON helpers
+- **No NuGet dependencies** - Newtonsoft.Json and System.Text.Json are referenced with PrivateAssets=all; to call `ConfigureForNepaliDate()` reference Newtonsoft.Json, plus System.Text.Json 8.0.5+ outside .NET 8
 - **Broad compatibility** - .NET Standard 2.0, .NET 5-10, Framework 4.6.1+, Xamarin, MAUI, Unity
 
 ---
@@ -88,10 +88,10 @@ Console.WriteLine(d); // "2080-06-15"
 .NET Standard 2.0 covers .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, MAUI. A net8.0 target adds `IParsable` and `ISpanFormattable`.
 
 **What is the supported date range?**
-1901/01/01 BS through 2199/12/last-day BS. Calendar data covers fewer years: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.
+1901/01/01 BS through 2199/12/last-day BS. Calendar data covers fewer years: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084).
 
 **Does NepDate have external dependencies?**
-No. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. Reference them yourself to use the JSON helpers (System.Text.Json comes with .NET 8+).
+No. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. `ConfigureForNepaliDate()` needs Newtonsoft.Json referenced in your project, because both overloads share the name, and on netstandard2.0 targets such as .NET Framework also System.Text.Json 8.0.5 or later. Adding a converter from `SystemTextJsonConverters` or `NewtonsoftJsonConverters` directly needs only that library.
 
 **Is NepDate thread-safe?**
 Yes. `NepaliDate` is an immutable readonly struct. `BulkConvert` is safe to call from several threads.
@@ -103,7 +103,7 @@ Constructors and `Parse` throw typed exceptions. Use `TryParse` for non-throwing
 Yes. The registered `TypeConverter` enables automatic binding from route params, query strings, and form fields.
 
 **How is calendar data sourced?**
-Compiled from authoritative BS calendar references: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS. Other dates return empty values without throwing.
+Compiled from authoritative BS calendar references: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084). Other dates return empty values without throwing.
 
 **What is the advantage of the struct design?**
 Stack allocation eliminates GC pressure, making it ideal for bulk date processing, large LINQ pipelines, and server-side batch jobs.

@@ -55,7 +55,7 @@
         "@id": "https://nepdate.rajuprasai.com.np/#library",
         "name": "NepDate",
         "alternateName": ["NepDate Library", "Bikram Sambat .NET Library", "Nepali Date Library"],
-        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) for 2077-2083 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
+        "description": "Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing with 100+ month-name spellings, fiscal year helpers, calendar metadata (tithi, holidays, events) mainly for 2077-2083 BS, date range operations, serialization, and bulk conversion. 4.55 ns/op BS to AD conversion, zero allocations.",
         "url": "https://nepdate.rajuprasai.com.np/",
         "softwareVersion": "2.1.0",
         "datePublished": "2023-04-22T00:00:00+05:45",
@@ -313,7 +313,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <h3>Calendar Metadata</h3>
-            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.</p>
+            <p>Built-in Tithi, public holiday flag, and event data in Nepali and English: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS (plus a few days of 2084).</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
@@ -528,11 +528,11 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the supported date range?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong> (plus a few days of 2084).</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Does NepDate have any external dependencies?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To use the JSON helpers, reference the JSON library yourself; <code>System.Text.Json</code> already comes with .NET 8 and later.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To call <code>ConfigureForNepaliDate()</code>, reference <code>Newtonsoft.Json</code> and, outside .NET 8 and later, <code>System.Text.Json</code> 8.0.5 or later; adding a converter class directly needs only its own library.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Is NepDate thread-safe?</button>
@@ -548,7 +548,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q">How is calendar data (Tithi, holidays) sourced?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong>. The data is compiled into the library at build time. Properties return empty/default values for other dates without throwing exceptions.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>Calendar data is compiled from authoritative Bikram Sambat calendar references and cross-verified for accuracy. Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong> (plus a few days of 2084). The data is compiled into the library at build time. Properties return empty/default values for other dates without throwing exceptions.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the advantage of the struct design?</button>
