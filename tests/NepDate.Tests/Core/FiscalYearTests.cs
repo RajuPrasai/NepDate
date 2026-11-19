@@ -138,9 +138,9 @@ public class FiscalYearTests
     }
 
     [Theory]
-    [InlineData(1901, 1, 1902, 32)]
-    [InlineData(1901, 2, 1902, 32)]
-    [InlineData(1901, 3, 1902, 32)]
+    [InlineData(1901, 1, 1902, 31)]
+    [InlineData(1901, 2, 1902, 31)]
+    [InlineData(1901, 3, 1902, 31)]
     [InlineData(2079, 1, 2080, 31)]
     [InlineData(2079, 2, 2080, 31)]
     [InlineData(2079, 3, 2080, 31)]
