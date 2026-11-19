@@ -1,6 +1,6 @@
 # NepDate
 
-> Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing, fiscal year, calendar metadata, and bulk operations. MIT licensed. Current version: 2.0.7.
+> Zero-dependency .NET library for Bikram Sambat (BS) date conversion, smart parsing, fiscal year, calendar metadata, and bulk operations. MIT licensed. Current version: 2.1.0.
 
 ## Install
 

@@ -287,7 +287,7 @@ namespace NepDate
         /// var date = new NepaliDate(2081, 4, 15);
         /// var info = date.GetCalendarInfo();
         ///
-        /// Console.WriteLine(info.TithiEn);         // "Ekadashi"
+        /// Console.WriteLine(info.TithiEn);         // "Dashami"
         /// Console.WriteLine(info.IsPublicHoliday); // True or False
         /// foreach (var ev in info.EventsEn)
         ///     Console.WriteLine(ev);

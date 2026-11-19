@@ -61,7 +61,7 @@ Install-Package NepDate
 - 🔄 **Date Range Operations:** Intersection, union, split by month or fiscal quarter, working days, and interval iteration
 - 💾 **Serialization:** System.Text.Json, Newtonsoft.Json, and XML support with string and object output modes
 - 📦 **Struct Design:** `readonly partial struct` keeps instances on the stack and eliminates GC pressure in high volume scenarios
-- 🔗 **First Class Type:** Implements `IFormattable`, `IComparable<T>`, `IEquatable<T>`, `IParsable<T>` (.NET 7+), `ISpanFormattable` (.NET 6+), `TypeConverter`, and auto registered `[JsonConverter]` (.NET 5+)
+- 🔗 **First Class Type:** Implements `IFormattable`, `IComparable<T>`, `IEquatable<T>`, `IParsable<T>` and `ISpanFormattable` (.NET 8+), `TypeConverter`, and auto registered `[JsonConverter]` (.NET 8+)
 
 ## 🚀 Getting Started
 
@@ -284,7 +284,7 @@ Available `Separators`: `ForwardSlash`, `BackwardSlash`, `Dash`, `Dot`, `Undersc
 
 ### IFormattable Format Specifiers
 
-`NepaliDate` implements `IFormattable` (and `ISpanFormattable` on .NET 6+), so format strings work in string interpolation, `string.Format`, and any context that accepts `IFormattable`.
+`NepaliDate` implements `IFormattable` (and `ISpanFormattable` on .NET 8+), so format strings work in string interpolation, `string.Format`, and any context that accepts `IFormattable`.
 
 | Specifier | Output | Notes |
 | --------- | ------ | ----- |
@@ -413,7 +413,7 @@ CalendarInfo info = date.GetCalendarInfo();
 
 ### System.Text.Json
 
-On .NET 5+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
+On .NET 8+, a `[JsonConverter]` is registered on `NepaliDate` automatically, so basic serialization works without any setup. Older targets use the netstandard2.0 build: call `ConfigureForNepaliDate()` there and reference System.Text.Json 8.0.5 or later. Call `ConfigureForNepaliDate()` when you need explicit control over the output format.
 
 ```csharp
 using System.Text.Json;
@@ -512,10 +512,10 @@ bool ok2 = NepaliDate.TryParse("05/06/2077", out NepaliDate result2, autoAdjust:
 
 - `IComparable<NepaliDate>` and `IEquatable<NepaliDate>` for sorting and equality
 - `IFormattable` for format-string support in interpolation and `string.Format`
-- `ISpanFormattable` (.NET 6+) for allocation free formatting into spans
-- `IParsable<NepaliDate>` and `ISpanParsable<NepaliDate>` (.NET 7+) for generic parsing
+- `ISpanFormattable` (.NET 8+) for formatting into spans
+- `IParsable<NepaliDate>` and `ISpanParsable<NepaliDate>` (.NET 8+) for generic parsing
 - `TypeConverter` registration for automatic binding in model binders and UI frameworks
-- Auto registered `[JsonConverter]` (.NET 5+) for zero config JSON support
+- Auto registered `[JsonConverter]` (.NET 8+) for zero config JSON support
 
 ## ⚡ Performance
 

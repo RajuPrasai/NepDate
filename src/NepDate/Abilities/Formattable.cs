@@ -309,7 +309,7 @@ namespace NepDate
 #if NET6_0_OR_GREATER
         /// <summary>
         /// Attempts to format this <see cref="NepaliDate"/> directly into a character span,
-        /// implementing <see cref="ISpanFormattable"/> for allocation-free formatting on .NET 6+.
+        /// implementing <see cref="ISpanFormattable"/> on .NET 6+ (the package ships it in the net8.0 build).
         /// </summary>
         /// <param name="destination">The span to write into.</param>
         /// <param name="charsWritten">

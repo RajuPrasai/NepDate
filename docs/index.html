@@ -59,7 +59,7 @@
         "url": "https://nepdate.rajuprasai.com.np/",
         "softwareVersion": "2.1.0",
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "applicationCategory": "DeveloperApplication",
         "applicationSubCategory": "Date and Time Library",
         "operatingSystem": ".NET Standard 2.0, .NET 5, .NET 6, .NET 7, .NET 8, .NET 9, .NET 10, .NET Framework 4.6.1+, .NET Core 2.0+, Mono, Xamarin, MAUI, Unity",
@@ -114,7 +114,7 @@
         "isPartOf": { "@id": "https://nepdate.rajuprasai.com.np/#website" },
         "about": { "@id": "https://nepdate.rajuprasai.com.np/#library" },
         "datePublished": "2023-04-22T00:00:00+05:45",
-        "dateModified": "2026-06-01T00:00:00+05:45",
+        "dateModified": "2026-11-19T00:00:00+05:45",
         "inLanguage": "en",
         "breadcrumb": {
           "@type": "BreadcrumbList",
@@ -253,7 +253,7 @@
         <div class="section-head">
           <div class="section-eyebrow">Installation</div>
           <h2 class="section-title">Get started in seconds</h2>
-          <p class="section-sub">One command, zero configuration. Works on .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 through 9, Xamarin, Unity, and MAUI.</p>
+          <p class="section-sub">One command, zero configuration. Works on .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, and MAUI.</p>
         </div>
 
         <div class="install-tabs" data-tabs>
@@ -269,7 +269,7 @@
             <pre><code class="language-bash">Install-Package NepDate</code></pre>
           </div>
           <div class="tab-panel" data-panel="ref">
-<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.0.7" /&gt;</code></pre>
+<pre><code class="language-bash">&lt;PackageReference Include="NepDate" Version="2.1.0" /&gt;</code></pre>
           </div>
         </div>
       </div>
@@ -323,7 +323,7 @@
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <h3>Serialization</h3>
-            <p><code>System.Text.Json</code>, <code>Newtonsoft.Json</code>, and XML. String and object modes. Zero config on .NET 5+.</p>
+            <p><code>System.Text.Json</code>, <code>Newtonsoft.Json</code>, and XML. String and object modes. Zero config on .NET 8+.</p>
           </div>
           <div class="feature">
             <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
@@ -355,7 +355,7 @@
         <div class="section-head">
           <div class="section-eyebrow">Performance</div>
           <h2 class="section-title">Benchmarked, not just advertised</h2>
-          <p class="section-sub">Flat array dictionaries for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
+          <p class="section-sub">One flat month table for O(1) lookups and zero heap allocations on both conversion paths. Numbers below come from a fresh BenchmarkDotNet run, not marketing.</p>
         </div>
 
         <div class="bench-headline">
@@ -524,15 +524,15 @@
         <div class="faq">
           <div class="faq-item">
             <button class="faq-q">What .NET versions does NepDate support?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate targets <code>.NET Standard 2.0</code>, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5/6/7/8/9, Xamarin, Unity, and MAUI. It also ships a <code>net8.0</code> target for newer API features like <code>IParsable</code> and <code>ISpanFormattable</code>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate targets <code>.NET Standard 2.0</code>, which means it works with .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, and MAUI. It also ships a <code>net8.0</code> target for newer API features like <code>IParsable</code> and <code>ISpanFormattable</code>.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">What is the supported date range?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Calendar metadata (Tithi, holidays, events) is available for <strong>2001 through 2089 BS</strong>.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>NepDate supports Bikram Sambat dates from <strong>1901/01/01 BS</strong> (1844-04-11 AD) to the last day of <strong>2199/12 BS</strong> (2143-04-15 AD). Tithi is available for <strong>2078 through 2083 BS</strong>, events and public holidays for <strong>2077 through 2083 BS</strong>.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Does NepDate have any external dependencies?</button>
-            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has zero external runtime dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> references are internalized using <code>PrivateAssets=all</code>, so they never surface in your dependency graph.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>No. NepDate has no NuGet dependencies. <code>Newtonsoft.Json</code> and <code>System.Text.Json</code> are referenced with <code>PrivateAssets=all</code>, so they are not added to your project. To use the JSON helpers, reference the JSON library yourself; <code>System.Text.Json</code> already comes with .NET 8 and later.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q">Is NepDate thread-safe?</button>

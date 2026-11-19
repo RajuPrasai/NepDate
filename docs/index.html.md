@@ -75,9 +75,9 @@ Console.WriteLine(d); // "2080-06-15"
 - **Date ranges** - `NepaliDateRange` with union, intersect, except, contains
 - **Calendar metadata** - tithi for 2078-2083 BS, public holidays and festivals for 2077-2083 BS
 - **Bulk conversion** - `BulkConvert` converts whole collections in one pass
-- **Serialization** - System.Text.Json (automatic), Newtonsoft.Json, XML
+- **Serialization** - System.Text.Json (automatic on .NET 8+), Newtonsoft.Json, XML
 - **ASP.NET binding** - `TypeConverter` for route params, query strings, form fields
-- **Zero dependencies** - Newtonsoft and STJ support internalized via PrivateAssets
+- **No NuGet dependencies** - Newtonsoft.Json and System.Text.Json are referenced with PrivateAssets=all; reference them yourself to use the JSON helpers
 - **Broad compatibility** - .NET Standard 2.0, .NET 5-10, Framework 4.6.1+, Xamarin, MAUI, Unity
 
 ---
@@ -85,13 +85,13 @@ Console.WriteLine(d); // "2080-06-15"
 ## FAQ
 
 **What .NET versions does NepDate support?**
-.NET Standard 2.0 covers .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5/6/7/8/9, Xamarin, Unity, MAUI. A net8.0 target adds `IParsable` and `ISpanFormattable`.
+.NET Standard 2.0 covers .NET Framework 4.6.1+, .NET Core 2.0+, .NET 5 and later, Xamarin, Unity, MAUI. A net8.0 target adds `IParsable` and `ISpanFormattable`.
 
 **What is the supported date range?**
 1901/01/01 BS through 2199/12/last-day BS. Calendar data covers fewer years: tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.
 
 **Does NepDate have external dependencies?**
-No. Newtonsoft.Json and System.Text.Json are internalized with `PrivateAssets=all`.
+No. Newtonsoft.Json and System.Text.Json are referenced with `PrivateAssets=all`, so they are not added to your project. Reference them yourself to use the JSON helpers (System.Text.Json comes with .NET 8+).
 
 **Is NepDate thread-safe?**
 Yes. `NepaliDate` is an immutable readonly struct. `BulkConvert` is safe to call from several threads.

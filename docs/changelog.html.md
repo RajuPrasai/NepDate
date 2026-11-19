@@ -16,7 +16,7 @@ Faster core, a fix for .NET 8 apps, and corrected docs. No public API was added,
 - Behaviour change: `EnglishDate` always has `DateTimeKind.Unspecified`. It used to keep the kind of the `DateTime` the date was built from.
 - Behaviour change: `BulkConvert` converts the whole collection when you call it, on the calling thread. An invalid date now throws from the call instead of while you enumerate the result. `useParallel` and `batchSize` are kept for source compatibility and have no effect.
 - The package now ships XML documentation and a symbol package with Source Link, and no longer adds `nuget-icon.ico` to your project.
-- Docs: calendar data coverage corrected to the years the data really has (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS), and members that never existed were removed from the API reference.
+- Docs: calendar data coverage corrected to the years the data really has (tithi for 2078-2083 BS, events and holidays for 2077-2083 BS), and members that never existed were removed from the API reference. The docs now say that automatic System.Text.Json support, `ISpanFormattable` and `IParsable` come with the net8.0 build (.NET 8 and later); .NET 5 to 7 apps use the netstandard2.0 build.
 
 ---
 

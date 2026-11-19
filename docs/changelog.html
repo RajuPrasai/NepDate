@@ -180,7 +180,7 @@
             <p>Conversion, date arithmetic and parsing are 3 to 13 times faster, and <code>ToString()</code> is about 30% faster (measured on .NET 10). A <code>NepaliDate</code> now takes 8 bytes instead of 32.</p>
             <p><strong>Fixes:</strong> System.Text.Json serialization on .NET 8 no longer fails with <code>FileNotFoundException</code>; the 1 Baisakh 2084 event is now "New Year 2084"; range operations at the end of the supported dates no longer throw; <code>GetFiscalYearQuarterStartDate</code>, <code>GetFiscalYearQuarterEndDate</code> and <code>GetFiscalYearQuarterStartAndEndDate</code> now treat months 1-3 as part of the given fiscal year, so <code>GetFiscalYearQuarterStartAndEndDate(2080, 1)</code> returns 2081/01/01 to 2081/03/31.</p>
             <p><strong>Behaviour changes:</strong> <code>EnglishDate</code> always has <code>DateTimeKind.Unspecified</code>. <code>BulkConvert</code> converts the whole collection when you call it, on the calling thread, so an invalid date throws from the call; <code>useParallel</code> and <code>batchSize</code> have no effect.</p>
-            <p>The package now ships XML documentation and a symbol package with Source Link. Calendar data coverage in the docs is corrected to tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.</p>
+            <p>The package now ships XML documentation and a symbol package with Source Link. The docs now state that automatic System.Text.Json support, <code>ISpanFormattable</code> and <code>IParsable</code> need .NET 8 or later. Calendar data coverage in the docs is corrected to tithi for 2078-2083 BS, events and holidays for 2077-2083 BS.</p>
           </article>
 
           <!-- v2.0.7 -->

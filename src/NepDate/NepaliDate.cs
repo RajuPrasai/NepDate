@@ -626,7 +626,7 @@ namespace NepDate
         /// var start = new NepaliDate(2080, 1, 1);
         /// var end   = new NepaliDate(2080, 4, 1);
         /// TimeSpan gap = end.Subtract(start);
-        /// Console.WriteLine(gap.Days);  // 91
+        /// Console.WriteLine(gap.Days);  // 94
         /// </code>
         /// </example>
         public TimeSpan Subtract(NepaliDate nepDateTo)
